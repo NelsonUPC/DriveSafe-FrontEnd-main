@@ -5,7 +5,7 @@ import InputSwitch from 'primevue/inputswitch';
 import Sidebar from 'primevue/sidebar';
 
 import { ref } from 'vue';
-import { useLayout } from '@/AutoYa/composables/layout';
+import { useLayout } from '@/DriveSafe/composables/layout';
 defineProps({
     simple: {
         type: Boolean,
