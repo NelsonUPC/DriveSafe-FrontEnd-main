@@ -260,5 +260,17 @@
         {}
       ]
     }
+  ],
+  "arrendatario": [
+    {
+      "id": 4,
+      "nombres": "Jane",
+      "apellidos": "Doe",
+      "fecha_nacimiento": "1995-01-01",
+      "telefono": "0987654321",
+      "correo": "jane@example.com",
+      "antecedentes_penales_pdf": null,
+      "contrasenia": "password456"
+    }
   ]
 }
