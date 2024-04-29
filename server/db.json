@@ -50,5 +50,68 @@
       "latitude":37.856273,
       "longitude":-4.776992
     }
+  ],
+  "alquiler": [
+    {
+      "id": 1,
+      "estado": "no se",
+      "fecha_inicio": "29/04/2024",
+      "fecha_fin": "30/04/2024",
+      "costo_total": 20,
+      "vehiculo_id": 1,
+      "vehiculo": {
+        "id": 1,
+        "marca": "Toyota",
+        "modelo": "Corolla",
+        "velocidad_max": 180,
+        "consumo": 10,
+        "dimensiones": "compacto",
+        "peso": 1200,
+        "clase": "sedán",
+        "transmision": "automática",
+        "tiempo": 1,
+        "tipo_tiempo": "día",
+        "costo_alquiler": 50,
+        "lugar_recojo": "ciudad",
+        "url_imagen": "https://example.com/image.jpg",
+        "estado_renta": "disponible",
+        "propietario_id": 3,
+        "arrendatario_id": null,
+        "alquiler_id": null
+      },
+      "propietario_id": 3,
+      "propietario": {
+        "id": 3,
+        "nombres": "John",
+        "apellidos": "Doe",
+        "fecha_nacimiento": "1990-01-01",
+        "telefono": "1234567890",
+        "correo": "john@example.com",
+        "contrasenia": "password123"
+      },
+      "arrendatario_id": 4,
+      "arrendatario": {
+        "id": 4,
+        "nombres": "Jane",
+        "apellidos": "Doe",
+        "fecha_nacimiento": "1995-01-01",
+        "telefono": "0987654321",
+        "correo": "jane@example.com",
+        "antecedentes_penales_pdf": null,
+        "contrasenia": "password456"
+      },
+      "solicitudes_ids": [
+        {
+          "id": 2,
+          "body": "Solicitud 1",
+          "alquiler_id": 1
+        },
+        {
+          "id": 4,
+          "body": "Solicitud 2",
+          "alquiler_id": 1
+        }
+      ]
+    }
   ]
 }
