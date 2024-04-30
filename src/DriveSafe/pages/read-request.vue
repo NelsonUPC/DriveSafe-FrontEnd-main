@@ -117,9 +117,10 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
+            aria-label="Logo de la aplicación DriveSafe"
         />
       </template>
       <template #end>
@@ -135,16 +136,19 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                style="background-color: white; color: #14131B;"
+                :aria-label="`Ir a ${item.label}`"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-owner">
+          <router-link to="/profile-owner" aria-label="Perfil de usuario">
             <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
+                aria-label="Perfil de usuario"
             />
           </router-link>
         </div>
@@ -182,10 +186,10 @@ export default {
 
         </template>
         <template #content>
-          <Button @click="abrirAntecedentesPenales" style="font-family: 'Poppins',sans-serif" class="custom-button2">Ver antecedentes penales del arendatario</Button>
+          <Button @click="abrirAntecedentesPenales" style="font-family: 'Poppins',sans-serif" class="custom-button2" aria-label="Ver antecedentes penales del arrendatario">Ver antecedentes penales del arendatario</Button>
           <h2 style="font-family: 'Poppins', sans-serif">Opciones de alquiler:</h2>
-          <Button @click="aceptarAlquiler" class="accept-button">Aceptar</Button>
-          <Button @click="declinarAlquiler" class="decline-button">Declinar</Button>
+          <Button @click="aceptarAlquiler" class="accept-button" aria-label="Aceptar">Aceptar</Button>
+          <Button @click="declinarAlquiler" class="decline-button" aria-label="Declinar">Declinar</Button>
 
         </template>
       </Card>
@@ -205,7 +209,7 @@ export default {
 
 .custom-button:hover,
 .custom-button:focus {
-  background-color: #FF7A00 !important;
+  background-color: #1A2C63 !important;
   color: white !important;
 }
 
@@ -248,7 +252,7 @@ export default {
   width: auto;
   height: 30px;
   margin: 20px;
-  background-color: #FF7A00;
+  background-color: #1A2C63;
   color: white;
   font-family: 'Poppins', sans-serif;
   border: none;
@@ -265,12 +269,19 @@ export default {
 }
 
 .custom-button2:hover {
-  background-color: rgba(255, 122, 0, 0.9);
+  background-color: #1A2C63;
 }
 
 .custom-button3:hover {
   background-color: #CCCCCC;
   color: black
+}
+
+/* Estilo para el hover de los router-link */
+.custom-button:hover,
+.custom-button:focus {
+  background-color: #1A2C63 !important;
+  color: white !important;
 }
 
 .button-container {
@@ -296,7 +307,7 @@ export default {
 
 .accept-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #4CAF50;
+  background-color: #FF7A00; /* Cambiado a naranja */
   color: white;
   border: none;
   padding: 15px 30px;
@@ -306,7 +317,7 @@ export default {
 
 .decline-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #FF5733;
+  background-color: #1A2C63; /* Cambiado a azul */
   color: white;
   border: none;
   padding: 15px 30px;
@@ -314,11 +325,11 @@ export default {
 }
 
 .accept-button:hover {
-  background-color: #45a049;
+  background-color: black; /* Hover negro */
 }
 
 .decline-button:hover {
-  background-color: #d32f2f;
+  background-color: black; /* Hover negro */
 }
 
 @media (max-width: 50vmin) {
