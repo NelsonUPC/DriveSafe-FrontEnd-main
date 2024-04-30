@@ -24,7 +24,6 @@ export default {
       try {
         const response = await ArrendatarioService.getAll();
 
-        // Filtrar la información del arrendatario por el id almacenado en localStorage
         const arrendatario = response.data.find(
             (arrendatario) =>
                 arrendatario.id === parseInt(localStorage.getItem("arrendatarioId"))
@@ -42,15 +41,15 @@ export default {
       }
     },
     cerrarSesion() {
-      // Redirección a /login
+
       this.$router.push('/login');
-      // Limpiar el localStorage
+
       localStorage.setItem("arrendatarioId", null);
-      localStorage.setItem("fotoTenant", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png")
+      localStorage.setItem("fotoTenant", "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png")
     },
   },
   created() {
-    // Cargar la información del arrendatario al montar el componente
+
     this.cargarInformacionArrendatario();
   },
 };
@@ -58,14 +57,10 @@ export default {
 
 <template>
   <pv-toast />
-  <header>
+  <header aria-label="Barra de navegación">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
-        <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
-            alt="Logo"
-            style="height: 40px; margin-right: 20px;"
-        />
+        <img src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true" alt="Logo" style="height: 40px; margin-right: 20px;"/>
       </template>
       <template #end>
         <div class="flex-column">
@@ -80,29 +75,26 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Botón de navegación"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant">
-            <img
-                src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
-                alt="Usuario"
-                style="height: 30px; margin-left: 20px; cursor: pointer;"
-            />
+          <router-link to="/profile-tenant" aria-label="Enlace al perfil del arrendatario">
+            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="Usuario" style="height: 30px; margin-left: 20px; cursor: pointer;" aria-label="Imagen de perfil del arrendatario"/>
           </router-link>
         </div>
       </template>
     </pv-toolbar>
   </header>
   <body>
-  <div class="profile-container">
-    <div class="left-column">
-      <div class="title">
+  <div class="profile-container" aria-label="Contenedor del perfil del usuario">
+    <div class="left-column" aria-label="Columna izquierda del perfil del usuario">
+      <div class="title" aria-label="Título del perfil del usuario">
         <h1>Perfil del Usuario</h1>
         <h2>Arrendatario</h2>
       </div>
-      <div class="profile-info">
+      <div class="profile-info" aria-label="Información del perfil del usuario">
         <h2>Nombres: </h2>
         <h2>{{ user.name }}</h2><br>
         <h2>Apellidos: </h2>
@@ -112,19 +104,18 @@ export default {
         <h2>Correo: </h2>
         <h2>{{user.email}}</h2><br>
       </div>
-      <div class="buttons">
-
-        <router-link to="/update-tenant">
+      <div class="buttons" aria-label="Botones del perfil del usuario">
+        <router-link to="/update-tenant" aria-label="Enlace para actualizar datos del arrendatario">
           <pv-button class="font-button">Actualizar Datos</pv-button><br>
         </router-link>
 
-        <pv-button class="font-button" @click="cerrarSesion">Cerrar Sesión</pv-button>
+        <pv-button class="font-button" @click="cerrarSesion" aria-label="Botón para cerrar sesión">Cerrar Sesión</pv-button>
       </div>
     </div>
-    <div class="right-column">
-      <div class="profile-image-container">
+    <div class="right-column" aria-label="Columna derecha del perfil del usuario">
+      <div class="profile-image-container" aria-label="Contenedor de la imagen de perfil del usuario">
         <div class="profile-image">
-          <img :src="user.photo" alt="Profile Picture" class="size-photo"/>
+          <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="Profile Picture" class="size-photo" aria-label="Imagen de perfil del usuario"/>
         </div>
         <br>
       </div>
@@ -133,22 +124,22 @@ export default {
   </body>
 </template>
 
+
 <style scoped>
 body{
   font-family: 'Poppins', sans-serif;
-  color: black;
+  color: #000000; /* Cambiado a azul */
   background-color: white;
 }
 .custom-bg {
   background-color: white;
 }
 .custom-button, .font-button {
-  background-color: white;
-  color: #14131B;
+  background-color: #ffffff;
 }
 .custom-button:hover,
 .custom-button:focus {
-  background-color: #FF7A00 !important;
+  background-color: #1A2C63 !important; /* Cambiado a azul */
   color: white !important;
 }
 
@@ -167,20 +158,19 @@ body{
 }
 .font-button {
   margin: 2px 0;
-  background-color: black !important;
-  color: white !important;
+  background-color: #1A2C63;
+  color: white;
 }
 
-.font-button:hover,
-.font-button:focus{
-  background-color: #14131B !important;
-  color: white !important;
+.font-button:hover{
+  background-color: #FFA500;
+  color: white;
 }
-/*Cosas a cambiar*/
+
 .profile-container {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between; /**/
+  justify-content: space-between;
 }
 
 .left-column {
