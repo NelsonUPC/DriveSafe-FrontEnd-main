@@ -131,6 +131,7 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Navigate"
             >
               {{ item.label }}
             </pv-button>
