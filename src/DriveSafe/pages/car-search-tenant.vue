@@ -22,6 +22,7 @@
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Navigate"
             >
               {{ item.label }}
             </pv-button>
@@ -56,7 +57,7 @@
           <InputText v-model="filtro.transmision" placeholder="Transmisión" style="font-family: 'Poppins', sans-serif"/>
 
           <!-- Agrega el botón de búsqueda -->
-          <pv-button class="search-button" @click="buscarAutos">Buscar</pv-button>
+          <pv-button class="search-button" @click="buscarAutos" aria-label="search-button">Buscar</pv-button>
         </template>
       </Card>
     </div>
@@ -68,7 +69,6 @@
       </div>
 
       <Carousel v-else :value="vehiculosDisponibles" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions" circular :autoplayInterval="5000">
-        <!-- Utiliza la plantilla #item directamente para cada vehículo -->
         <template #item="slotProps">
           <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
             <div class="mb-3">
@@ -131,18 +131,6 @@ export default{
     vehiculosDisponibles() {
       return this.vehiculos.filter(vehiculo => vehiculo.estadoRenta === "Disponible");
     },
-    vehiculosDisponiblesFiltrados() {
-      // Filtrar la lista de vehículos disponibles considerando solo los campos no vacíos
-      return this.vehiculosDisponibles.filter(vehiculo => {
-        return (
-            (!this.filtro.tiempoAlquiler || vehiculo.tiempoAlquiler.includes(this.filtro.tiempoAlquiler)) ||
-            (!this.filtro.marca || vehiculo.marca.includes(this.filtro.marca)) ||
-            (!this.filtro.modelo || vehiculo.modelo.includes(this.filtro.modelo)) ||
-            (!this.filtro.clase || vehiculo.clase.includes(this.filtro.clase)) ||
-            (!this.filtro.transmision || vehiculo.transmision.includes(this.filtro.transmision))
-        );
-      });
-    },
   },
   methods: {
     alquilarAuto(vehiculoId) {
@@ -150,7 +138,6 @@ export default{
       this.router.push({path:"/rent-car"});
     },
     buscarAutos() {
-      // Filtrar la lista de vehículos considerando solo los campos no vacíos
       this.vehiculosDisponibles = this.vehiculos.filter(vehiculo => {
         return (
             (!this.filtro.tiempoAlquiler || vehiculo.tiempoAlquiler.includes(this.filtro.tiempoAlquiler)) &&
