@@ -1,7 +1,7 @@
 <script>
 import Card from 'primevue/card';
 import Dropdown from 'primevue/dropdown';
-import VehiculoService from "@/AutoYa/services/vehiculo.service";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
 export default {
   components: {
     Card,
@@ -92,17 +92,14 @@ export default {
         this.selectedClase = null;
         this.selectedTransmision = null;
 
-        // Puedes agregar una notificación de éxito aquí si lo deseas
         console.log('Vehículo registrado exitosamente.');
         this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Vehículo registrado exitosamente.' });
       } catch (error) {
         this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Hubo un problema al registrar el vehículo.' });
         console.error('Error al registrar el vehículo', error);
-        // Puedes agregar una notificación de error aquí si lo deseas
       }
     },
     subirImagen() {
-      // Guardar la URL de la imagen en el localStorage
       this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Imagen subida exitosamente.' });
       localStorage.setItem("urlVehiculo", this.urlImagen);
     },
