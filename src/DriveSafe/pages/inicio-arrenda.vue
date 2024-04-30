@@ -22,6 +22,7 @@
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Navigate"
             >
               {{ item.label }}
             </pv-button>
@@ -51,7 +52,7 @@
             <input type="text" id="ubicacion" placeholder="Surco - Lima, Perú">
 
             <router-link to="/car-search-tenant">
-              <button class="search-button">Buscar un auto</button>
+              <button class="search-button" aria-label="Search-vehicle">Buscar un auto</button>
             </router-link>
 
           </div>
