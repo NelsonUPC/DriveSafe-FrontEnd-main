@@ -27,7 +27,6 @@
             </pv-button>
           </router-link>
           <router-link to="/profile-tenant">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -97,7 +96,7 @@
 import Card from "primevue/card"
 import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
-import VehiculoService from "@/AutoYa/services/vehiculo.service";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
 import {useRouter} from "vue-router";
 export default{
   components: {
