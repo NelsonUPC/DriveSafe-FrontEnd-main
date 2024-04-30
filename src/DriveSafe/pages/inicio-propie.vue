@@ -22,6 +22,7 @@
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Navigate"
             >
               {{ item.label }}
             </pv-button>
@@ -31,6 +32,7 @@
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
+                aria-label="Imagen-usuario"
             />
           </router-link>
         </div>
@@ -40,7 +42,7 @@
   <div>
 
     <div class="body-container">
-      <img src="../../../public/cuerpo.jpg" alt="Imagen de fondo" class="background-image">
+      <img src="../../../public/cuerpo.jpg" alt="Imagen de fondo" class="background-image" aria-label="Background">
 
       <div class="floating-card">
         <h1 class="orange-text">Convierte tu auto</h1>
