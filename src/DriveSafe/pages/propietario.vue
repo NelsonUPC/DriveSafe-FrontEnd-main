@@ -1,9 +1,9 @@
 <script>
-import { useLayout } from '@/AutoYa/composables/layout'
+import { useLayout } from '@/DriveSafe/composables/layout'
 import { ref, computed } from 'vue';
-import AppConfig from '@/AutoYa/AppConfig.vue';
-import AuthService from "@/AutoYa/services/auth.service";
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import AppConfig from '@/DriveSafe/AppConfig.vue';
+import AuthService from "@/DriveSafe/services/auth.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 import { useRouter } from 'vue-router';
 
 
