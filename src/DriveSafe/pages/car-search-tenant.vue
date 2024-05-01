@@ -4,7 +4,7 @@
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -55,8 +55,6 @@
           <InputText v-model="filtro.clase" placeholder="Clase" style="font-family: 'Poppins', sans-serif"/>
           <p style="font-family: 'Poppins', sans-serif">Transmisión</p>
           <InputText v-model="filtro.transmision" placeholder="Transmisión" style="font-family: 'Poppins', sans-serif"/>
-
-          <!-- Agrega el botón de búsqueda -->
           <pv-button class="search-button" @click="buscarAutos" aria-label="search-button">Buscar</pv-button>
         </template>
       </Card>
@@ -150,7 +148,6 @@ export default{
     },
   },
   created() {
-    // Obtiene la lista de vehículos al cargar el componente
     VehiculoService.getAll()
         .then((response) => {
           this.vehiculos = response.data;
