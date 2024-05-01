@@ -4,7 +4,7 @@
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://acortar.link/jiFdz6"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
