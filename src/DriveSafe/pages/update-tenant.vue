@@ -1,6 +1,6 @@
 <script>
-import ArrendatarioService from "@/AutoYa/services/arrendatario.service";
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default {
   data(){
     return {
@@ -58,8 +58,8 @@ export default {
 </script>
 
 <template>
-  <pv-toast />
-  <header>
+  <pv-toast aria-live="polite" />
+  <header role="banner">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
@@ -69,50 +69,53 @@ export default {
         />
       </template>
       <template #end>
-        <div class="flex-column">
+        <nav class="flex-column">
           <router-link
               v-for="item in items"
               :to="item.to"
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
+              role="menuitem"
           >
             <pv-button
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="link"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant">
+          <router-link to="/profile-tenant" role="menuitem">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
             />
           </router-link>
-        </div>
+        </nav>
       </template>
     </pv-toolbar>
   </header>
-  <body class="center-container" style="margin-top: 150px;">
-  <h1 style="color: #FF7A00;">Actualice sus datos</h1>
+  <main class="center-container" style="margin-top: 150px;">
+  <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
   <h2>Nombres</h2><br>
-  <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+  <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
   <h2>Apellidos</h2><br>
-  <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+  <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
   <h2>Celular</h2><br>
-  <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+  <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
   <h2>Fecha de nacimiento</h2><br>
-  <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+  <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
   <h2>URL antecedentes penales</h2><br>
-  <pv-input placeholder="Antecedentes penales" v-model="antecedentesPenalesPdf" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+  <pv-input placeholder="Antecedentes penales" v-model="antecedentesPenalesPdf" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
   <h2>URL foto de perfil</h2><br>
-  <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif"></pv-input><br>
-  <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosTenant">Actualizar</Button>
-  </body>
+  <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosTenant" role="button">Actualizar</Button>
+  </main>
 </template>
+
 
 <style scoped>
 
