@@ -1,85 +1,3 @@
-<template>
-  <pv-toast aria-live="polite" />
-  <header>
-    <pv-toolbar class="custom-bg custom-toolbar">
-      <template #start>
-        <img
-            src="https://imgur.com/a/DWk9R7P"
-            alt="Logo"
-            style="height: 40px; margin-right: 20px;"
-        />
-      </template>
-      <template #end>
-        <div class="flex-column">
-          <router-link
-              v-for="item in items"
-              :to="item.to"
-              custom
-              v-slot="{ navigate, href }"
-              :key="item.label"
-          >
-            <pv-button
-                class="custom-button"
-                :href="href"
-                @click="navigate"
-            >
-              {{ item.label }}
-            </pv-button>
-          </router-link>
-          <router-link to="/profile-tenant">
-            <img
-                src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
-                alt="Usuario"
-                style="height: 30px; margin-left: 20px; cursor: pointer;"
-            />
-          </router-link>
-        </div>
-      </template>
-    </pv-toolbar>
-  </header>
-
-  <div class="container">
-    <div class="half-width-card">
-      <Card role="region" aria-labelledby="card1Title">
-        <template #title>
-          <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">MANTENIMIENTO</h1>
-        </template>
-        <template #content>
-          <p style="font-family: 'Poppins',sans-serif">Cree una solicitud para su arrendador en minutos con información detallada sobre el problema y fotografías relevantes. Además, puede comunicarse con el arrendador cuando le sea necesario.</p>
-          <p style="font-family: 'Poppins',sans-serif; color:#FF7A00">Vea la respuesta del propietario en su correo electrónico.</p>
-        </template>
-      </Card>
-    </div>
-    <div class="half-width-card">
-      <Card role="form" aria-labelledby="card2Title">
-        <template #title>
-          <h2 id="card2Title" style="font-family: 'Poppins',sans-serif">Formulario de Mantenimiento</h2>
-        </template>
-        <template #content>
-          <p style="font-family: 'Poppins',sans-serif">Seleccionar nombre del propietario del auto alquilado</p>
-          <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" role="combobox" aria-expanded="false" />
-           <Card role="region" aria-labelledby="card3Title">
-            </template>
-            <template #content>
-              <p style="font-family: 'Poppins',sans-serif">Tipo de problema</p>
-              <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif" role="textbox"/>
-              <p style="font-family: 'Poppins',sans-serif">Titulo</p>
-              <InputText v-model="value1" placeholder="Titulo" style="font-family: 'Poppins',sans-serif" role="textbox"/>
-              <p style="font-family: 'Poppins',sans-serif">Descripcion</p>
-              <InputText v-model="value1" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif" role="textbox"/>
-
-              <div class="button-container">
-                <Button class="custom-button3">Agregar Fotos</Button>
-                <Button class="custom-button3" @click="enviarSolicitud">Enviar</Button>
-              </div>
-            </template>
-          </Card>
-        </template>
-      </Card>
-    </div>
-  </div>
-
-</template>
 
 <script>
 import Card from "primevue/card";
@@ -169,6 +87,90 @@ export default{
   }
 };
 </script>
+
+<template>
+  <pv-toast aria-live="polite" />
+  <header>
+    <pv-toolbar class="custom-bg custom-toolbar">
+      <template #start>
+        <img
+            src="https://imgur.com/a/DWk9R7P"
+            alt="Logo"
+            style="height: 40px; margin-right: 20px;"
+        />
+      </template>
+      <template #end>
+        <div class="flex-column">
+          <router-link
+              v-for="item in items"
+              :to="item.to"
+              custom
+              v-slot="{ navigate, href }"
+              :key="item.label"
+          >
+            <pv-button
+                class="custom-button"
+                :href="href"
+                @click="navigate"
+            >
+              {{ item.label }}
+            </pv-button>
+          </router-link>
+          <router-link to="/profile-tenant">
+            <img
+                src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
+                alt="Usuario"
+                style="height: 30px; margin-left: 20px; cursor: pointer;"
+            />
+          </router-link>
+        </div>
+      </template>
+    </pv-toolbar>
+  </header>
+
+  <div class="container">
+    <div class="half-width-card">
+      <Card role="region" aria-labelledby="card1Title">
+        <template #title>
+          <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">MANTENIMIENTO</h1>
+        </template>
+        <template #content>
+          <p style="font-family: 'Poppins',sans-serif">Cree una solicitud para su arrendador en minutos con información detallada sobre el problema y fotografías relevantes. Además, puede comunicarse con el arrendador cuando le sea necesario.</p>
+          <p style="font-family: 'Poppins',sans-serif; color:#FF7A00">Vea la respuesta del propietario en su correo electrónico.</p>
+        </template>
+      </Card>
+    </div>
+    <div class="half-width-card">
+      <Card role="form" aria-labelledby="card2Title">
+        <template #title>
+          <h2 id="card2Title" style="font-family: 'Poppins',sans-serif">Formulario de Mantenimiento</h2>   // revicion de etiquetas
+        </template>
+        <template #content>
+          <p style="font-family: 'Poppins',sans-serif">Seleccionar nombre del propietario del auto alquilado</p>
+          <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" role="combobox" aria-expanded="false" />
+           <Card role="region" aria-labelledby="card3Title">
+             <template #title></template>
+            <template #content>
+              <p style="font-family: 'Poppins',sans-serif">Tipo de problema</p>
+              <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif" role="textbox"/>
+              <p style="font-family: 'Poppins',sans-serif">Titulo</p>
+              <InputText v-model="value1" placeholder="Titulo" style="font-family: 'Poppins',sans-serif" role="textbox"/>
+              <p style="font-family: 'Poppins',sans-serif">Descripcion</p>
+              <InputText v-model="value1" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif" role="textbox"/>
+
+              <div class="button-container">
+                <Button class="custom-button3">Agregar Fotos</Button>
+                <Button class="custom-button3" @click="enviarSolicitud">Enviar</Button>
+              </div>
+            </template>
+          </Card>
+        </template>
+      </Card>
+    </div>
+  </div>
+
+</template>
+
 
 <style scoped>
 .body-container {
