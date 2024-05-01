@@ -9,27 +9,24 @@ const { layoutConfig } = useLayout();
 const email = ref('');
 
 const checked = ref(false);
-const tipoUsuario = ref(''); // Agrega esta línea para la variable del tipo de usuario
+const tipoUsuario = ref(''); 
 const tipoUsuarioOptions = ['Arrendatario', 'Propietario'];
 const nombres = ref('');
 const apellidos = ref('');
 const telefono = ref(0);
 const correo = ref('');
 const password = ref('');
-const day = ref(''); // Agrega esta línea para la variable del día de nacimiento
-const month = ref(''); // Agrega esta línea para la variable del mes de nacimiento
+const day = ref(''); 
+const month = ref(''); 
 const year = ref('');
 
 const registerUser = async () => {
-  // Verifica que los campos requeridos estén llenos
   if (!nombres.value || !apellidos.value || !correo.value || !password.value || !tipoUsuario.value || !day.value || !month.value || !year.value || !telefono.value) {
-    // Manejar el caso en el que los campos estén vacíos
     console.error("Todos los campos son obligatorios.");
     console.log(`${nombres.value}, ${apellidos.value}, ${correo.value}, ${password.value}, ${tipoUsuario.value}, ${day.value}, ${month.value}, ${year.value}, ${telefono.value}`)
     return;
   }
 
-  // Construye un objeto de usuario de security con los datos ingresados por el usuario
   const user = {
     firstName: nombres.value,
     lastName: apellidos.value,
@@ -38,13 +35,8 @@ const registerUser = async () => {
   };
 
   try {
-    // Intenta registrar al usuario de security utilizando el servicio AuthService
     const response = await AuthService.register(user);
-
-    // Muestra un mensaje o realiza alguna acción adicional si es necesario
     console.log("Usuario registrado correctamente", response);
-
-    // Si el tipo de usuario es "Arrendatario", crea un arrendatario
     if (tipoUsuario.value === 'Arrendatario') {
       const fechaNacimientoFormatted = `${day.value}-${month.value}-${year.value}`;
 
@@ -58,13 +50,11 @@ const registerUser = async () => {
         contrasenia: password.value,
       };
 
-      // Llama al método create del servicio ArrendatarioService para crear el arrendatario
       await ArrendatarioService.create(arrendatarioData);
 
       console.log("Arrendatario creado correctamente");
     }
 
-    // Si el tipo de usuario es "Arrendatario", crea un arrendatario
     if (tipoUsuario.value === 'Propietario') {
       const fechaNacimientoFormatted = `${day.value}-${month.value}-${year.value}`;
 
@@ -77,13 +67,11 @@ const registerUser = async () => {
         contrasenia: password.value,
       };
 
-      // Llama al método create del servicio PropietarioService para crear el propietario
       await PropietarioService.create(propietarioData);
 
       console.log("Propietario creado correctamente");
     }
   } catch (error) {
-    // Muestra el cuerpo de la respuesta del servidor en caso de error
     console.error("Error al registrar usuario", error);
     if (error.response) {
       console.error("Respuesta del servidor:", error.response.data);
@@ -96,12 +84,12 @@ const registerUser = async () => {
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden" aria-label="Página de registro de usuario">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
+      <img data-v-f5a3c044="" src="https://imgur.com/a/DWk9R7P" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
 
       <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;"  aria-label="Fondo de la página de registro">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px" aria-label="Formulario de registro">
           <div class="text-center mb-5">
-            <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;" aria-label="Bienvenida a AutoYa!">Bienvenido a AutoYa!</div>
+            <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;" aria-label="Bienvenida a DriveSafe!">Bienvenido a DriveSafe!</div>
             <span class="text-600 font-medium" style="font-family: 'Poppins', sans-serif;" aria-label="Mensaje de bienvenida">Inicia sesión para continuar</span>
           </div>
 
@@ -169,18 +157,17 @@ const registerUser = async () => {
   color: black;
   color: #ffffff;
   background: #1A2C63;
-  border: 1px solid black; /* Añadir borde negro */
+  border: 1px solid black; 
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   border-radius: 6px;
 }
 
-/* Nuevo estilo para el estado de hover del botón */
 .p-button:hover {
   background-color: black;
   color: white;
-  transform: scale(1.05); /* Ampliar ligeramente el botón al pasar el cursor */
+  transform: scale(1.05); 
 }
 
 .TipoLoginUsuario{
@@ -195,6 +182,6 @@ const registerUser = async () => {
 }
 
 .w-30rem {
-  height: 3rem; /* Puedes ajustar la altura según tus necesidades */
+  height: 3rem;
 }
 </style>
