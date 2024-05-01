@@ -3,12 +3,10 @@ import App from './App.vue'
 import router from './router'
 import ToastService from "primevue/toastservice";
 import PrimeVue from "primevue/config";
-// PrimeVue Material Design Theme
 import "primevue/resources/themes/saga-orange/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
-// PrimeVue Components
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Toolbar from "primevue/toolbar";
