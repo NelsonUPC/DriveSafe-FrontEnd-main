@@ -1,9 +1,9 @@
 <script setup>
-import { useLayout } from '@/AutoYa/composables/layout'
+import { useLayout } from '@/DriveSafe/composables/layout'
 import { ref, computed } from 'vue';
-import AuthService from "@/AutoYa/services/auth.service";
-import ArrendatarioService from "@/AutoYa/services/arrendatario.service";
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import AuthService from "@/DriveSafe/services/auth.service";
+import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 
 const { layoutConfig } = useLayout();
 const email = ref('');
