@@ -1,10 +1,10 @@
 <template>
-  <pv-toast />
+  <pv-toast aria-live="polite" />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://acortar.link/jiFdz6"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -27,7 +27,6 @@
             </pv-button>
           </router-link>
           <router-link to="/profile-tenant">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -41,31 +40,33 @@
 
   <div class="container">
     <div class="half-width-card">
-      <Card>
+      <Card role="region" aria-labelledby="card1Title">
         <template #title>
+          <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">MANTENIMIENTO</h1>
         </template>
         <template #content>
-          <h1 style="font-family: 'Poppins',sans-serif; color:#FF7A00">MANTENIMIENTO</h1>
           <p style="font-family: 'Poppins',sans-serif">Cree una solicitud para su arrendador en minutos con información detallada sobre el problema y fotografías relevantes. Además, puede comunicarse con el arrendador cuando le sea necesario.</p>
           <p style="font-family: 'Poppins',sans-serif; color:#FF7A00">Vea la respuesta del propietario en su correo electrónico.</p>
         </template>
       </Card>
     </div>
     <div class="half-width-card">
-      <Card>
-        <template #title></template>
+      <Card role="form" aria-labelledby="card2Title">
+        <template #title>
+          <h2 id="card2Title" style="font-family: 'Poppins',sans-serif">Formulario de Mantenimiento</h2>
+        </template>
         <template #content>
           <p style="font-family: 'Poppins',sans-serif">Seleccionar nombre del propietario del auto alquilado</p>
-          <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" />
-          <Card>
-            <template #title></template>
+          <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" role="combobox" aria-expanded="false" />
+           <Card role="region" aria-labelledby="card3Title">
+            </template>
             <template #content>
               <p style="font-family: 'Poppins',sans-serif">Tipo de problema</p>
-              <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif"/>
+              <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif" role="textbox"/>
               <p style="font-family: 'Poppins',sans-serif">Titulo</p>
-              <InputText v-model="value1" placeholder="Titulo" style="font-family: 'Poppins',sans-serif"/>
+              <InputText v-model="value1" placeholder="Titulo" style="font-family: 'Poppins',sans-serif" role="textbox"/>
               <p style="font-family: 'Poppins',sans-serif">Descripcion</p>
-              <InputText v-model="value1" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif"/>
+              <InputText v-model="value1" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif" role="textbox"/>
 
               <div class="button-container">
                 <Button class="custom-button3">Agregar Fotos</Button>
