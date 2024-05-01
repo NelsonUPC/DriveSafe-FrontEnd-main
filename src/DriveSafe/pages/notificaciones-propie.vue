@@ -1,6 +1,6 @@
 <template>
   <pv-toast aria-live="polite" />
-  <header>
+  <header aria-label="Barra de navegación">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
@@ -33,6 +33,7 @@
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
+                aria-label="Imagen de perfil del usuario"
             />
           </router-link>
 
@@ -40,8 +41,8 @@
       </template>
     </pv-toolbar>
   </header>
-  <div class="notifications-section">
-    <h2 class="section-title">Notificaciones</h2>
+  <div class="notifications-section" aria-label="Seccion de notificaciones">
+    <h2 class="section-title" >Notificaciones</h2>
     <div v-if="notificacionesFiltradas.length === 0" class="notification-card">
       <p class="notification">No hay notificaciones disponibles.</p>
     </div>
