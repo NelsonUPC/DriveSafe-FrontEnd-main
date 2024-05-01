@@ -1,10 +1,10 @@
 <template>
-  <pv-toast />
+  <pv-toast aria-live="polite" />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -27,7 +27,6 @@
             </pv-button>
           </router-link>
           <router-link to="/profile-tenant">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -38,12 +37,13 @@
       </template>
     </pv-toolbar>
   </header>
-
+</template>
+<pv-toast aria-live="polite" />
   <div class="container">
     <div class="half-width-card">
-      <Card>
+       <Card role="region" aria-labelledby="card1Title">
         <template #title>
-          <h2 style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar vehículo</h2>
+          <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar vehículo</h2>
         </template>
         <template #content>
           <div v-if="vehiculo" class="center-content">
@@ -64,7 +64,6 @@
             <div style="font-family: 'Poppins',sans-serif">Lugar de Recojo: {{ vehiculo.lugarRecojo }}</div>
             <div style="font-family: 'Poppins',sans-serif">Propietario: {{ vehiculo.propietario.nombres }} {{vehiculo.propietario.apellidos}}</div><br>
             <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button">Ver Contrato de Alquiler</Button>
-            <!-- Agrega más campos según tus necesidades -->
           </div>
           <div v-else>
             <p>Cargando información del vehículo...</p>
@@ -73,20 +72,20 @@
       </Card>
     </div>
     <div class="half-width-card">
-      <Card>
+      <Card role="form" aria-labelledby="card2Title">
         <template #title>
           <div style="text-align: center;">
-            <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00;">Calcular Costo de Alquiler</h1>
+            <h1 id="card2Title" style="font-family: 'Poppins', sans-serif; color: #FF7A00;">Calcular Costo de Alquiler</h1>
           </div>
         </template>
         <template #content>
           <div>
             <h2 style="text-align: center;">Ingrese el tiempo de alquiler</h2>
             <div class="p-inputgroup input-container">
-              <InputText type="number" style="text-align: center;" v-model="tiempoAlquiler" placeholder="Ingrese el tiempo de alquiler" />
+              <InputText type="number" style="text-align: center;" v-model="tiempoAlquiler" placeholder="Ingrese el tiempo de alquiler" role="spinbutton" />
             </div><br>
             <div style="text-align: center;">
-              <Button @click="calcularCosto" class="font-button">Calcular</Button>
+              <Button @click="calcularCosto" class="font-button" role="button">Calcular</Button>
             </div><br>
             <h2 style="text-align: center;">Resultado del cálculo:</h2>
             <div v-if="resultadoCosto !== null" class="orange-text-body">
@@ -194,11 +193,11 @@ export default{
       this.router.push({path:"/rent-tenant"});
     },
   },
+  
   created() {
     const vehiculoId = localStorage.getItem("vehiculoId");
 
     if (vehiculoId) {
-      // Obtener información del vehículo por ID
       VehiculoService.getAll()
           .then((response) => {
             const vehiculoEncontrado = response.data.find(
