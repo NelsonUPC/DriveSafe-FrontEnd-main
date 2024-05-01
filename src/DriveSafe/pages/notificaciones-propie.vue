@@ -4,7 +4,7 @@
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -28,7 +28,6 @@
             </pv-button>
           </router-link>
           <router-link to="/profile-owner">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -47,7 +46,6 @@
     </div>
     <div v-for="notification in notificacionesFiltradas" :key="notification.id" class="notification-card">
       <p class="notification">{{ notification.body }}</p>
-<!--      <router-link :to="notification.enlace" class="view-notification">Ver Solicitud</router-link> CREAR PÁGINA PARA QUE EL PROPIETARIO ACEPTE O DECLINE LA SOLICITUD DE ALQUIER-->
     </div>
   </div>
 </template>
