@@ -105,9 +105,9 @@
 import Card from "primevue/card"
 import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
-import VehiculoService from "@/AutoYa/services/vehiculo.service";
-import NotificacionService from "@/AutoYa/services/notificacion.service";
-import AlquilerService from "@/AutoYa/services/alquiler.service";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import NotificacionService from "@/DriveSafe/services/notificacion.service";
+import AlquilerService from "@/DriveSafe/services/alquiler.service";
 import {useRouter} from "vue-router";
 export default{
   components: {
@@ -143,7 +143,6 @@ export default{
         this.resultadoCosto = this.tiempoAlquiler * this.vehiculo.costoAlquiler;
       } else {
         this.resultadoCosto = null;
-        // Puedes agregar un mensaje de error si deseas
       }
     },
     solicitarAlquiler() {
@@ -151,7 +150,6 @@ export default{
       this.nuevoVehiculo.estadoRenta = "Solicitado";
       this.nuevoVehiculo.arrendatarioId = localStorage.getItem("arrendatarioId");
       this.nuevoVehiculo.tiempo = parseInt(this.tiempoAlquiler);
-      // Actualizar estadoRenta del vehículo a 'Solicitado'
       VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
           .then(() => {
             const notificacionData = {
