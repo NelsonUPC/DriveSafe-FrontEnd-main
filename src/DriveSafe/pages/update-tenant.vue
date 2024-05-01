@@ -24,13 +24,11 @@ export default {
       const arrendatarioId = parseInt(localStorage.getItem("arrendatarioId"));
 
       if (!arrendatarioId) {
-        // Manejar el caso en que no haya un arrendatarioId en el localStorage
         return;
       }
 
       try {
         const response2 = await ArrendatarioService.getAll();
-        // Filtrar la información del propietario por el id almacenado en localStorage
         const arrendatario = response2.data.find(
             (arrendatario) =>
                 arrendatario.id === arrendatarioId
@@ -48,12 +46,10 @@ export default {
 
         localStorage.setItem("fotoTenant", this.fotoPerfil);
 
-        // Puedes manejar la respuesta según tus necesidades
         console.log("Respuesta del servicio de arrendatario:", response);
         this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Información actualizada exitosamente.' });
         this.$router.push('/profile-tenant');
       } catch (error) {
-        // Puedes manejar el error según tus necesidades
         console.error("Error al actualizar datos del arrendatario:", error);
       }
     },
@@ -67,7 +63,7 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -119,7 +115,7 @@ export default {
 </template>
 
 <style scoped>
-/* No va a cambiar*/
+
 body{
   font-family: 'Poppins', sans-serif;
   color: black;
@@ -166,7 +162,7 @@ body{
 .profile-container {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between; /**/
+  justify-content: space-between;
 }
 
 .left-column {
@@ -229,7 +225,7 @@ h2, p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* 100% de la altura de la ventana */
+  height: 100vh;
   margin: 0;
 }
 </style>
