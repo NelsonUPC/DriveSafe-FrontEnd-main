@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import NotificacionService from "@/AutoYa/services/notificacion.service";
+import NotificacionService from "@/DriveSafe/services/notificacion.service";
 export default {
   name: "NotificacionesPropie",
   data() {
