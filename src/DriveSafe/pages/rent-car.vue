@@ -1,3 +1,121 @@
+<script>
+
+import Card from "primevue/card"
+import Carousel from "primevue/carousel";
+import InputText from "primevue/inputtext";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import NotificacionService from "@/DriveSafe/services/notificacion.service";
+import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import {useRouter} from "vue-router";
+export default{
+  components: {
+    Card,
+    InputText,
+  },
+  data() {
+    return {
+      drawer: false,
+      items: [
+        { label: "Inicio", to: "/home" },
+        { label: "Buscar Autos", to: "/car-search-tenant" },
+        { label: "Mantenimiento", to: "/manteinance-tenant" },
+        { label: "Alquiler", to: "/rent-tenant" },
+      ],
+      value1: null,
+      cardCount: 4,
+      vehiculo: null,
+      tiempoAlquiler: null,
+      resultadoCosto: null,
+      nuevoVehiculo: null,
+      router: useRouter(),
+    };
+  },
+  methods: {
+    abrirContratoAlquiler() {
+      if (this.vehiculo && this.vehiculo.contratoAlquilerPdf) {
+        window.open(this.vehiculo.contratoAlquilerPdf, "_blank");
+      }
+    },
+    calcularCosto() {
+      if (this.tiempoAlquiler !== null && !isNaN(this.tiempoAlquiler) && this.vehiculo) {
+        this.resultadoCosto = this.tiempoAlquiler * this.vehiculo.costoAlquiler;
+      } else {
+        this.resultadoCosto = null;
+      }
+    },
+    solicitarAlquiler() {
+      this.nuevoVehiculo = this.vehiculo;
+      this.nuevoVehiculo.estadoRenta = "Solicitado";
+      this.nuevoVehiculo.arrendatarioId = localStorage.getItem("arrendatarioId");
+      this.nuevoVehiculo.tiempo = parseInt(this.tiempoAlquiler);
+      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
+          .then(() => {
+            const notificacionData = {
+              body: `${localStorage.getItem("arrendatarioNombres")} ${localStorage.getItem("arrendatarioApellidos")} ha solicitado alquilar el vehículo ${this.nuevoVehiculo.marca} ${this.nuevoVehiculo.modelo}, el pago total será de S/. ${this.resultadoCosto}.`,
+              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
+              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
+            };
+
+            const fechaActual = new Date();
+            const dia = fechaActual.getDate().toString().padStart(2, '0');
+            const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+            const anio = fechaActual.getFullYear();
+
+            const fechaFormateada = `${dia}-${mes}-${anio}`;
+
+            const alquilerData = {
+              estado: "Solicitado",
+              fecha_inicio: fechaFormateada,
+              fecha_fin: "fechaFin",
+              costo_total: this.resultadoCosto,
+              vehiculoId: this.nuevoVehiculo.id,
+              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
+              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
+            };
+
+            AlquilerService.create(alquilerData)
+
+            NotificacionService.create(notificacionData)
+                .then(() => {
+                  console.log("Notificación creada con éxito.");
+                })
+                .catch((error) => {
+                  console.error("Error al crear notificación:", error);
+                });
+          })
+          .catch((error) => {
+            console.error('Error al solicitar alquiler:', error);
+          });
+      this.router.push({path:"/rent-tenant"});
+    },
+  },
+
+  created() {
+    const vehiculoId = localStorage.getItem("vehiculoId");
+
+    if (vehiculoId) {
+      VehiculoService.getAll()
+          .then((response) => {
+            const vehiculoEncontrado = response.data.find(
+                (vehiculo) => vehiculo.id === parseInt(vehiculoId)
+            );
+
+            if (vehiculoEncontrado) {
+              this.vehiculo = vehiculoEncontrado;
+            } else {
+              console.error("No se encontró el vehículo con ID:", vehiculoId);
+            }
+          })
+          .catch((error) => {
+            console.error("Error al obtener la lista de vehículos:", error);
+          });
+    } else {
+      console.error("ID de vehículo no encontrado en el localStorage.");
+    }
+  },
+};
+</script>
+
 <template>
   <pv-toast aria-live="polite" />
   <header>
@@ -37,7 +155,7 @@
       </template>
     </pv-toolbar>
   </header>
-</template>
+
 <pv-toast aria-live="polite" />
   <div class="container">
     <div class="half-width-card">
@@ -98,125 +216,8 @@
       </Card>
     </div>
   </div>
-
 </template>
 
-<script>
-import Card from "primevue/card"
-import Carousel from "primevue/carousel";
-import InputText from "primevue/inputtext";
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import NotificacionService from "@/DriveSafe/services/notificacion.service";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
-import {useRouter} from "vue-router";
-export default{
-  components: {
-    Card,
-    InputText,
-  },
-  data() {
-    return {
-      drawer: false,
-      items: [
-        { label: "Inicio", to: "/home" },
-        { label: "Buscar Autos", to: "/car-search-tenant" },
-        { label: "Mantenimiento", to: "/manteinance-tenant" },
-        { label: "Alquiler", to: "/rent-tenant" },
-      ],
-      value1: null,
-      cardCount: 4,
-      vehiculo: null,
-      tiempoAlquiler: null,
-      resultadoCosto: null,
-      nuevoVehiculo: null,
-      router: useRouter(),
-    };
-  },
-  methods: {
-    abrirContratoAlquiler() {
-      if (this.vehiculo && this.vehiculo.contratoAlquilerPdf) {
-        window.open(this.vehiculo.contratoAlquilerPdf, "_blank");
-      }
-    },
-    calcularCosto() {
-      if (this.tiempoAlquiler !== null && !isNaN(this.tiempoAlquiler) && this.vehiculo) {
-        this.resultadoCosto = this.tiempoAlquiler * this.vehiculo.costoAlquiler;
-      } else {
-        this.resultadoCosto = null;
-      }
-    },
-    solicitarAlquiler() {
-      this.nuevoVehiculo = this.vehiculo;
-      this.nuevoVehiculo.estadoRenta = "Solicitado";
-      this.nuevoVehiculo.arrendatarioId = localStorage.getItem("arrendatarioId");
-      this.nuevoVehiculo.tiempo = parseInt(this.tiempoAlquiler);
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .then(() => {
-            const notificacionData = {
-              body: `${localStorage.getItem("arrendatarioNombres")} ${localStorage.getItem("arrendatarioApellidos")} ha solicitado alquilar el vehículo ${this.nuevoVehiculo.marca} ${this.nuevoVehiculo.modelo}, el pago total será de S/. ${this.resultadoCosto}.`,
-              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
-              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
-            };
-
-            const fechaActual = new Date();
-            const dia = fechaActual.getDate().toString().padStart(2, '0'); 
-            const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
-            const anio = fechaActual.getFullYear();
-
-            const fechaFormateada = `${dia}-${mes}-${anio}`;
-
-            const alquilerData = {
-              estado: "Solicitado",
-              fecha_inicio: fechaFormateada,
-              fecha_fin: "fechaFin",
-              costo_total: this.resultadoCosto,
-              vehiculoId: this.nuevoVehiculo.id,
-              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
-              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
-            };
-
-            AlquilerService.create(alquilerData)
-
-            NotificacionService.create(notificacionData)
-                .then(() => {
-                  console.log("Notificación creada con éxito.");
-                })
-                .catch((error) => {
-                  console.error("Error al crear notificación:", error);
-                });
-          })
-          .catch((error) => {
-            console.error('Error al solicitar alquiler:', error);
-          });
-      this.router.push({path:"/rent-tenant"});
-    },
-  },
-  
-  created() {
-    const vehiculoId = localStorage.getItem("vehiculoId");
-
-    if (vehiculoId) {
-      VehiculoService.getAll()
-          .then((response) => {
-            const vehiculoEncontrado = response.data.find(
-                (vehiculo) => vehiculo.id === parseInt(vehiculoId)
-            );
-
-            if (vehiculoEncontrado) {
-              this.vehiculo = vehiculoEncontrado;
-            } else {
-              console.error("No se encontró el vehículo con ID:", vehiculoId);
-            }
-          })
-          .catch((error) => {
-            console.error("Error al obtener la lista de vehículos:", error);
-          });
-    } else {
-      console.error("ID de vehículo no encontrado en el localStorage.");
-    }
-  },
-};
-</script>
 
 <style scoped>
 .body-container {
