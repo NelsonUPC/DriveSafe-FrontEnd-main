@@ -1,9 +1,9 @@
 <script>
-import { useLayout } from '@/AutoYa/composables/layout'
+import { useLayout } from '@/DriveSafe/composables/layout'
 import { ref, computed } from 'vue';
-import AppConfig from '@/AutoYa/AppConfig.vue';
-import AuthService from "@/AutoYa/services/auth.service";
-import ArrendatarioService from "@/AutoYa/services/arrendatario.service";
+import AppConfig from '@/DriveSafe/AppConfig.vue';
+import AuthService from "@/DriveSafe/services/auth.service";
+import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
 import { useRouter } from 'vue-router';
 
 export default {
@@ -54,7 +54,7 @@ export default {
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #FF7A00 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
                     <div class="text-center mb-5">
-                        <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;">Bienvenido a AutoYa!</div>
+                        <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;">Bienvenido a DriveSafe!</div>
                         <span class="text-600 font-medium" style="font-family: 'Poppins', sans-serif;">Inicia sesión para continuar</span>
                     </div>
 
