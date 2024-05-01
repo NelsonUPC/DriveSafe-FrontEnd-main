@@ -48,51 +48,53 @@ const applyScale = () => {
 </script>
 
 <template>
-    <button class="layout-config-button p-link" type="button" @click="onConfigButtonClick()">
+    <button class="layout-config-button p-link" type="button" @click="onConfigButtonClick()" role="button">
         <i class="pi pi-cog"></i>
     </button>
 
-    <Sidebar v-model:visible="visible" position="right" :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'" class="layout-config-sidebar w-20rem">
-        <h5>Scale</h5>
-        <div class="flex align-items-center">
-            <Button icon="pi pi-minus" type="button" @click="decrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem mr-2" :disabled="layoutConfig.scale.value === scales[0]"></Button>
-            <div class="flex gap-2 align-items-center">
-                <i class="pi pi-circle-fill text-300" v-for="s in scales" :key="s" :class="{ 'text-primary-500': s === layoutConfig.scale.value }"></i>
+    <Sidebar v-model:visible="visible" position="right" :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'" class="layout-config-sidebar w-20rem" role="dialog">
+        <h5 id="scaleTitle">Scale</h5>
+        <div class="flex align-items-center" role="group" aria-labelledby="scaleTitle">
+            <Button icon="pi pi-minus" type="button" @click="decrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem mr-2" :disabled="layoutConfig.scale.value === scales[0]" role="button"></Button>
+            <div class="flex gap-2 align-items-center" role="radiogroup">
+                <i class="pi pi-circle-fill text-300" v-for="s in scales" :key="s" :class="{ 'text-primary-500': s === layoutConfig.scale.value }" role="radio"></i>
             </div>
-            <Button icon="pi pi-plus" type="button" pButton @click="incrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem ml-2" :disabled="layoutConfig.scale.value === scales[scales.length - 1]"></Button>
+            <Button icon="pi pi-plus" type="button" pButton @click="incrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem ml-2" :disabled="layoutConfig.scale.value === scales[scales.length - 1]" role="button"></Button>
         </div>
 
         <template v-if="!simple">
-            <h5>Menu Type</h5>
-            <div class="flex">
+            <h5 id="menuTypeTitle">Menu Type</h5>
+            <div class="flex" role="radiogroup" aria-labelledby="menuTypeTitle">
                 <div class="field-radiobutton flex-1">
-                    <RadioButton name="menuMode" value="static" v-model="layoutConfig.menuMode.value" inputId="mode1"></RadioButton>
+                    <RadioButton name="menuMode" value="static" v-model="layoutConfig.menuMode.value" inputId="mode1" role="radio"></RadioButton>
                     <label for="mode1">Static</label>
                 </div>
 
                 <div class="field-radiobutton flex-1">
-                    <RadioButton name="menuMode" value="overlay" v-model="layoutConfig.menuMode.value" inputId="mode2"></RadioButton>
+                    <RadioButton name="menuMode" value="overlay" v-model="layoutConfig.menuMode.value" inputId="mode2" role="radio"></RadioButton>
                     <label for="mode2">Overlay</label>
                 </div>
             </div>
         </template>
 
         <template v-if="!simple">
-            <h5>Input Style</h5>
-            <div class="flex">
+            <h5 id="inputStyleTitle">Input Style</h5>
+            <div class="flex" role="radiogroup" aria-labelledby="inputStyleTitle">
                 <div class="field-radiobutton flex-1">
-                    <RadioButton name="inputStyle" value="outlined" v-model="layoutConfig.inputStyle.value" inputId="outlined_input"></RadioButton>
+                    <RadioButton name="inputStyle" value="outlined" v-model="layoutConfig.inputStyle.value" inputId="outlined_input" role="radio"></RadioButton>
                     <label for="outlined_input">Outlined</label>
                 </div>
                 <div class="field-radiobutton flex-1">
-                    <RadioButton name="inputStyle" value="filled" v-model="layoutConfig.inputStyle.value" inputId="filled_input"></RadioButton>
+                    <RadioButton name="inputStyle" value="filled" v-model="layoutConfig.inputStyle.value" inputId="filled_input" role="radio"></RadioButton>
                     <label for="filled_input">Filled</label>
                 </div>
             </div>
 
-            <h5>Ripple Effect</h5>
-            <InputSwitch v-model="layoutConfig.ripple.value"></InputSwitch>
+            <h5 id="rippleEffectTitle">Ripple Effect</h5>
+            <InputSwitch v-model="layoutConfig.ripple.value" role="switch" aria-checked="false" aria-labelledby="rippleEffectTitle"></InputSwitch>
         </template>
+</template>
+
 
 
 
