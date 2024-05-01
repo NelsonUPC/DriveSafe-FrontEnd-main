@@ -1,6 +1,6 @@
 <script>
 import Card from 'primevue/card';
-import VehiculoService from "@/AutoYa/services/vehiculo.service";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
 import {useRouter} from "vue-router";
 export default {
   components: {
