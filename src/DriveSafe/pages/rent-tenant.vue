@@ -23,7 +23,6 @@ export default {
     async cargarVehiculos() {
       try {
         const response = await VehiculoService.getAll();
-        // Filtrar vehículos por el id del arrendatario almacenado en localStorage
         this.vehiculos = response.data;
         this.vehiculosFiltrados = this.vehiculos.filter(vehiculo => vehiculo.arrendatario && vehiculo.arrendatario.id === parseInt(localStorage.getItem("arrendatarioId")));
       } catch (error) {
@@ -134,7 +133,7 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap; /* Permite que los items se muevan a la siguiente línea cuando no hay suficiente espacio */
-  gap: 10px; /* Espacio entre los items */
+  flex-wrap: wrap;
+  gap: 10px;
 }
 </style>
