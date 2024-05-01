@@ -38,35 +38,36 @@ export default {
 </script>
 
 <template>
-  <pv-toast />
-  <header>
-    <pv-toolbar class="custom-bg custom-toolbar">
+  <pv-toast aria-live="polite" />
+  <header role="banner">
+    <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
       </template>
       <template #end>
-        <div class="flex-column">
+        <div class="flex-column" role="menubar">
           <router-link
               v-for="item in items"
               :to="item.to"
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
+              role="menuitem"
           >
             <pv-button
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="button"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant">
-            <!-- Agrega la imagen a la derecha -->
+          <router-link to="/profile-tenant" role="menuitem">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -78,18 +79,16 @@ export default {
     </pv-toolbar>
   </header>
 
-  <div class="p-grid">
-    <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Vehículos alquilados</h1>
-    <div class="card-container">
+  <div class="p-grid" role="main">
+    <h1 id="vehiclesTitle" style="font-family: 'Poppins', sans-serif; color: #FF7A00">Vehículos alquilados</h1>
+    <div class="card-container" role="region" aria-labelledby="vehiclesTitle">
       <div v-if="vehiculosFiltrados.length > 0" class="card-container">
-      <!-- Itera sobre los vehículos y muestra un card por cada uno -->
         <div class="card-item" v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-          <Card>
+          <Card role="region" aria-labelledby="cardTitle{{vehiculo.id}}">
             <template #title></template>
             <template #content>
-              <!-- Contenido del card con la información del vehículo -->
               <img :src="vehiculo.urlImagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-              <p style="font-family: 'Poppins', sans-serif">Id: {{ vehiculo.id }}</p>
+              <p id="cardTitle{{vehiculo.id}}" style="font-family: 'Poppins', sans-serif">Id: {{ vehiculo.id }}</p>
               <p style="font-family: 'Poppins', sans-serif">Marca/Modelo: {{ vehiculo.marca }}/{{ vehiculo.modelo }}</p>
               <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estadoRenta }}</h1>
             </template>
@@ -101,6 +100,7 @@ export default {
   </div>
 
 </template>
+
 
 <style>
 .custom-bg {
