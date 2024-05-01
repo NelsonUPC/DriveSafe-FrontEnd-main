@@ -21,34 +21,36 @@ export default {
 </script>
 
 <template>
-  <pv-toast />
+  <pv-toast aria-live="polite" />
   <header>
-    <pv-toolbar class="custom-bg custom-toolbar">
+    <pv-toolbar class="custom-bg custom-toolbar" role="banner">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
       </template>
       <template #end>
-        <div class="flex-column">
+        <div class="flex-column" role="navigation">
           <router-link
               v-for="item in items"
               :to="item.to"
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
+              role="menuitem"
           >
             <pv-button
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="button"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant">
+          <router-link to="/profile-tenant" role="menuitem">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -59,11 +61,11 @@ export default {
       </template>
     </pv-toolbar>
   </header>
-  <body>
+  <body role="main">
   <div class="title">
-    <h1>Solicitudes</h1><br>
+    <h1 id="requestsTitle">Solicitudes</h1><br>
   </div>
-  <div class="request-container">
+  <div class="request-container" role="region" aria-labelledby="requestsTitle">
     <div class="left-info">
       <h3>Solicitud de alquiler del vehículo {{car_description.model}}</h3>
     </div>
