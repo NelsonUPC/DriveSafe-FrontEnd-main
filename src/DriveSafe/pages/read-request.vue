@@ -32,19 +32,16 @@ export default {
     async cargarInformacion() {
       try {
         const response = await AlquilerService.getAll();
-        // Filtrar alquileres por el id del vehiculo almacenado en localStorage
         this.alquileres = response.data;
         this.alquileresFiltrados = this.alquileres.filter(alquiler => alquiler.vehiculoId === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
 
         const response2 = await VehiculoService.getAll();
-        // Filtrar vehículos por el id del vehiculo almacenado en localStorage
         this.vehiculos = response2.data;
         this.vehiculosFiltrados = this.vehiculos.filter(vehiculo => vehiculo.id === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
 
         this.vehiculoId = localStorage.getItem("vehiculoAlquiladoId");
 
         if (this.vehiculoId) {
-          // Obtener información del vehículo por ID
           VehiculoService.getAll()
               .then((response) => {
                 const vehiculoEncontrado = response.data.find(
@@ -105,7 +102,6 @@ export default {
     },
   },
   created() {
-    // Cargar los vehículos al montar el componente
     this.cargarInformacion();
   },
 };
@@ -117,7 +113,7 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
             aria-label="Logo de la aplicación DriveSafe"
@@ -143,7 +139,6 @@ export default {
             </pv-button>
           </router-link>
           <router-link to="/profile-owner" aria-label="Perfil de usuario">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -164,7 +159,6 @@ export default {
         </template>
         <template #content>
           <div v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-            <!-- Contenido del card con la información del vehículo -->
             <img :src="vehiculo.urlImagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
             <h2 style="font-family: 'Poppins', sans-serif">Marca: {{ vehiculo.marca }}</h2>
             <h2 style="font-family: 'Poppins', sans-serif">Modelo: {{ vehiculo.modelo }}</h2>
@@ -277,7 +271,6 @@ export default {
   color: black
 }
 
-/* Estilo para el hover de los router-link */
 .custom-button:hover,
 .custom-button:focus {
   background-color: #1A2C63 !important;
@@ -296,18 +289,18 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap; /* Permite que los items se muevan a la siguiente línea cuando no hay suficiente espacio */
-  gap: 10px; /* Espacio entre los items */
+  flex-wrap: wrap; 
+  gap: 10px;
 }
 
 .card-item {
-  width: calc(33.33% - 10px); /* Asegura que haya espacio entre los items */
+  width: calc(33.33% - 10px); 
   margin-bottom: 10px;
 }
 
 .accept-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #FF7A00; /* Cambiado a naranja */
+  background-color: #FF7A00; 
   color: white;
   border: none;
   padding: 15px 30px;
@@ -317,7 +310,7 @@ export default {
 
 .decline-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #1A2C63; /* Cambiado a azul */
+  background-color: #1A2C63; 
   color: white;
   border: none;
   padding: 15px 30px;
@@ -325,11 +318,11 @@ export default {
 }
 
 .accept-button:hover {
-  background-color: black; /* Hover negro */
+  background-color: black; 
 }
 
 .decline-button:hover {
-  background-color: black; /* Hover negro */
+  background-color: black; 
 }
 
 @media (max-width: 50vmin) {
