@@ -23,11 +23,12 @@
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                aria-label="Botón de navegación"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-owner">
+          <router-link to="/profile-owner" aria-label="Perfil de usuario">>
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -44,7 +45,7 @@
     <div v-if="notificacionesFiltradas.length === 0" class="notification-card">
       <p class="notification">No hay notificaciones disponibles.</p>
     </div>
-    <div v-for="notification in notificacionesFiltradas" :key="notification.id" class="notification-card">
+    <div v-for="notification in notificacionesFiltradas" :key="notification.id" class="notification-card ">
       <p class="notification">{{ notification.body }}</p>
     </div>
   </div>
