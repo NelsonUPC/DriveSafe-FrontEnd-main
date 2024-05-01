@@ -56,7 +56,7 @@ export default {
 </script>
 
 <template>
-  <pv-toast />
+  <pv-toast aria-live = "polite" />
   <header aria-label="Barra de navegación">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
