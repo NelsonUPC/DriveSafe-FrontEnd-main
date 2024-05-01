@@ -1,5 +1,5 @@
 <script>
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default {
   data(){
     return {
@@ -54,18 +54,18 @@ export default {
 </script>
 
 <template>
-  <pv-toast />
-  <header>
+  <pv-toast aria-live="polite" />
+  <header role="banner">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
       </template>
       <template #end>
-        <div class="flex-column">
+        <nav class="flex-column">
           <router-link
               v-for="item in items"
               :to="item.to"
@@ -77,6 +77,7 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="link"
             >
               {{ item.label }}
             </pv-button>
@@ -88,28 +89,28 @@ export default {
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
             />
           </router-link>
-        </div>
+        </nav>
       </template>
     </pv-toolbar>
   </header>
-  <body class="center-container" style="margin-top: 100px;">
-    <h1 style="color: #FF7A00;">Actualice sus datos</h1>
+  <main class="center-container" style="margin-top: 100px;">
+    <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
     <h2>Nombres</h2><br>
-    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>Apellidos</h2><br>
-    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>Celular</h2><br>
-    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>Fecha de nacimiento</h2><br>
-    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif"></pv-input><br>
+    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>URL foto de perfil</h2><br>
-    <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif"></pv-input><br>
-    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosOwner">Actualizar</Button>
-  </body>
+    <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosOwner" role="button">Actualizar</Button>
+  </main>
 </template>
 
+
 <style scoped>
-/* No va a cambiar*/
 body{
   font-family: 'Poppins', sans-serif;
   color: black;
@@ -152,11 +153,11 @@ body{
   background-color: #14131B !important;
   color: white !important;
 }
-/*Cosas a cambiar*/
+
 .profile-container {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between; /**/
+  justify-content: space-between;
 }
 
 .left-column {
