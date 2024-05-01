@@ -72,10 +72,8 @@ export default {
           alquilerId: null
         };
 
-        // Llamar al método create del servicio VehiculoService
         await VehiculoService.create(data);
 
-        // Restablecer los campos después del registro exitoso
         this.marca = null;
         this.modelo = null;
         this.velocidad = null;
@@ -113,7 +111,7 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
