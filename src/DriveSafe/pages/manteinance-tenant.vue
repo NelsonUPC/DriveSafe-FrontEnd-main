@@ -85,8 +85,8 @@
 import Card from "primevue/card";
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
-import VehiculoService from "@/AutoYa/services/vehiculo.service";
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default{
   components: {
     Card,
@@ -140,7 +140,6 @@ export default{
 
     console.log("arrendatarioId", localStorage.getItem("arrendatarioId"));
 
-    // Consultar vehículos alquilados por el arrendatario actual
     VehiculoService.getAll()
         .then((response) => {
           const vehiculosAlquilados = response.data.filter(
@@ -149,17 +148,14 @@ export default{
 
           console.log("va: ", vehiculosAlquilados);
 
-          // Obtener la lista de propietarios de los vehículos alquilados
           const propietarioIds = [...new Set(vehiculosAlquilados.map((v) => v.propietario.id))];
 
           console.log("propietarios: ", propietarioIds);
 
-          // Consultar detalles de propietarios
           PropietarioService.getAll()
               .then((propietariosResponse) => {
                 const propietarios = propietariosResponse.data.filter((p) => propietarioIds.includes(p.id));
 
-                // Crear opciones para el Dropdown con nombres y apellidos de propietarios
                 this.userOptions = propietarios.map((propietario) => `${propietario.nombres} ${propietario.apellidos}`);
                 console.log("userop: ", this.userOptions);
               })
@@ -326,7 +322,7 @@ input {
 
 .button-container {
   display: block;
-  margin-top: 10px; /* Espacio entre el párrafo y los botones, ajusta según sea necesario */
+  margin-top: 10px; 
 }
 
 .custom-button3 {
