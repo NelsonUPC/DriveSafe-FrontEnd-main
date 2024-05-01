@@ -1,5 +1,5 @@
 <script>
-import ArrendatarioService from "@/AutoYa/services/arrendatario.service";
+import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
 export default {
   data(){
     return {
