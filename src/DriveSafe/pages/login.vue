@@ -19,21 +19,15 @@ export default {
   methods: {
     async logeo() {
       try {
-        // Llama al método login del servicio AuthService
         const response = await AuthService.login({
           email: this.email,
           password: this.password
         });
-
-        // Obtén todos los arrendatarios
         const arrendatariosResponse = await ArrendatarioService.getAll();
         const arrendatarios = arrendatariosResponse.data;
-
-        // Verifica si existe un arrendatario con el correo proporcionado
         const arrendatarioEncontrado = arrendatarios.find(arrendatario => arrendatario.correo === this.email);
 
         if (arrendatarioEncontrado) {
-          // Si la autenticación es exitosa y hay un arrendatario con el correo, redirige a la página '/home'
           console.log("Usuario autenticado correctamente", response);
           localStorage.setItem("arrendatarioId", arrendatarioEncontrado.id);
           localStorage.setItem("arrendatarioNombres", arrendatarioEncontrado.nombres);
@@ -42,12 +36,10 @@ export default {
           console.log("Arrendatario id", localStorage.getItem("arrendatarioId"));
           this.router.push('/home');
         } else {
-          // Si no hay un arrendatario con el correo, muestra un mensaje de error
           console.error("No existe un arrendatario con el correo proporcionado");
         }
 
       } catch (error) {
-        // Maneja el error, por ejemplo, muestra un mensaje de error al usuario
         console.error("Error al autenticar usuario", error);
       }
     },
