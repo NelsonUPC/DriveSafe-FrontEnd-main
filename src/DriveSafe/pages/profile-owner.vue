@@ -24,7 +24,6 @@ export default {
     async cargarInformacionPropietario() {
       try {
         const response = await PropietarioService.getAll();
-        // Filtrar la información del propietario por el id almacenado en localStorage
         const propietario = response.data.find(
             (propietario) =>
                 propietario.id === parseInt(localStorage.getItem("propietarioId"))
@@ -42,15 +41,12 @@ export default {
       }
     },
     cerrarSesion() {
-      // Redirección a /login
       this.$router.push('/login');
-      // Limpiar el localStorage
       localStorage.setItem("propietarioId", null);
       localStorage.setItem("fotoOwner", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png")
     },
   },
   created() {
-    // Cargar la información del propietario al montar el componente
     this.cargarInformacionPropietario();
   },
 };
@@ -62,7 +58,7 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -133,8 +129,9 @@ export default {
   </body>
 </template>
 
+
 <style scoped>
-/* No va a cambiar*/
+  
 body{
   font-family: 'Poppins', sans-serif;
   color: black;
@@ -177,11 +174,11 @@ body{
   background-color: #14131B !important;
   color: white !important;
 }
-/*Cosas a cambiar*/
+
 .profile-container {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between; /**/
+  justify-content: space-between;
 }
 
 .left-column {
