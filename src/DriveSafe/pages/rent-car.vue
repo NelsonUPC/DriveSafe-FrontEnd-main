@@ -161,8 +161,8 @@ export default{
             };
 
             const fechaActual = new Date();
-            const dia = fechaActual.getDate().toString().padStart(2, '0'); // Agrega un cero si el día es de un solo dígito
-            const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0'); // El mes es devuelto de 0 a 11, por lo que sumamos 1
+            const dia = fechaActual.getDate().toString().padStart(2, '0'); 
+            const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
             const anio = fechaActual.getFullYear();
 
             const fechaFormateada = `${dia}-${mes}-${anio}`;
