@@ -24,20 +24,21 @@ export default {
     subirContrato() {
       localStorage.setItem("urlContrato", this.urlContrato);
       // Puedes agregar más lógica aquí si es necesario
-      this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Contrato subido exitosamente.' });
+      this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Contrato subido exitosamente.', role: 'alert' });
       console.log(localStorage.getItem("urlContrato"));
     },
   },
 };
 </script>
 
+
 <template>
-  <pv-toast />
+  <pv-toast aria-live="polite" />
   <header>
-    <pv-toolbar class="custom-bg custom-toolbar">
+    <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -50,16 +51,18 @@ export default {
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
+              role="menuitem"
           >
             <pv-button
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="button"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-owner">
+          <router-link to="/profile-owner" role="menuitem">
             <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
@@ -71,31 +74,33 @@ export default {
       </template>
     </pv-toolbar>
   </header>
-
-  <div class="container">
+<pv-toast aria-live="polite" />
+  <div class="container" role="main">
     <div class="half-width-card">
-      <Card>
+      <Card role="region" aria-labelledby="card1Title">
         <template #title>
         </template>
         <template #content>
           <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <h1 style="font-family: 'Poppins',sans-serif; color:#FF7A00">CONTRATO DE ALQUILER</h1>
+            <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">CONTRATO DE ALQUILER</h1>
             <p style="font-family: 'Poppins',sans-serif">Cree el contrato de alquiler que mejor le parezca</p>
             <p style="font-family: 'Poppins',sans-serif"><strong>URL del contrato de alquiler</strong></p>
-            <pv-input placeholder="URL del contrato de alquiler" v-model="urlContrato" style="font-family: 'Poppins',sans-serif"></pv-input>
-            <button @click="subirContrato" class="custom-button3">Subir contrato</button>
+            <pv-input placeholder="URL del contrato de alquiler" v-model="urlContrato" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+            <button @click="subirContrato" class="custom-button3" role="button">Subir contrato</button>
             <img :src="urlImagen" alt="Toyota Prius" style="max-width: 100%; max-height: 300px;">
             <p style="font-family: 'Poppins',sans-serif">Marca/Modelo: Toyota/Prius</p>
           </div>
         </template>
       </Card>
     </div>
+  <pv-toast aria-live="polite" />
+  <div class="container" role="main">
     <div class="half-width-card">
-      <Card>
+      <Card role="region" aria-labelledby="card1Title">
         <template #title></template>
         <template #content>
           <div style="text-align: center;">
-            <h1>CONTRATO DE ALQUILER</h1>
+            <h1 id="card1Title">CONTRATO DE ALQUILER</h1>
             <p style="font-family: 'Poppins', sans-serif;">Partes del contrato:</p>
             <p style="font-family: 'Poppins', sans-serif;">El presente contrato de alquiler de automóvil (en adelante, el "Contrato") se celebra entre:</p>
             <p style="font-family: 'Poppins', sans-serif;"><strong>El Arrendador:</strong> [Nombre del Arrendador]</p>
