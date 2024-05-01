@@ -72,9 +72,10 @@ export default {
       </template>
     </pv-toolbar>
   </header>
-<pv-toast aria-live="polite" />
+  <pv-toast aria-live="polite" />
   <div class="container" role="main">
     <div class="half-width-card">
+
       <Card role="region" aria-labelledby="card1Title">
         <template #title>
         </template>
@@ -91,8 +92,8 @@ export default {
         </template>
       </Card>
     </div>
-  <pv-toast aria-live="polite" />
-  <div class="container" role="main">
+    <pv-toast aria-live="polite" />
+
     <div class="half-width-card">
       <Card role="region" aria-labelledby="card1Title">
         <template #title></template>
