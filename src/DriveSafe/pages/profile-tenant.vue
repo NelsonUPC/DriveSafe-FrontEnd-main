@@ -60,7 +60,7 @@ export default {
   <header aria-label="Barra de navegación">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
-        <img src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true" alt="Logo" style="height: 40px; margin-right: 20px;"/>
+        <img src="https://imgur.com/a/DWk9R7P" alt="Logo" style="height: 40px; margin-right: 20px;"/>
       </template>
       <template #end>
         <div class="flex-column">
@@ -128,7 +128,7 @@ export default {
 <style scoped>
 body{
   font-family: 'Poppins', sans-serif;
-  color: #000000; /* Cambiado a azul */
+  color: #000000; 
   background-color: white;
 }
 .custom-bg {
@@ -139,7 +139,7 @@ body{
 }
 .custom-button:hover,
 .custom-button:focus {
-  background-color: #1A2C63 !important; /* Cambiado a azul */
+  background-color: #1A2C63 !important; 
   color: white !important;
 }
 
