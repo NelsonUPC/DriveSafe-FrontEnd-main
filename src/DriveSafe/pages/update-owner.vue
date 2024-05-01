@@ -22,13 +22,11 @@ export default {
       const propietarioId = parseInt(localStorage.getItem("propietarioId"));
 
       if (!propietarioId) {
-        // Manejar el caso en que no haya un propietarioId en el localStorage
         return;
       }
 
       try {
         const response2 = await PropietarioService.getAll();
-        // Filtrar la información del propietario por el id almacenado en localStorage
         const propietario = response2.data.find(
             (propietario) =>
                 propietario.id === propietarioId
@@ -44,13 +42,10 @@ export default {
         });
 
         localStorage.setItem("fotoOwner", this.fotoPerfil);
-
-        // Puedes manejar la respuesta según tus necesidades
         console.log("Respuesta del servicio de propietario:", response);
         this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Información actualizada exitosamente.' });
         this.$router.push('/profile-owner');
       } catch (error) {
-        // Puedes manejar el error según tus necesidades
         console.error("Error al actualizar datos del propietario:", error);
       }
     },
@@ -224,7 +219,7 @@ h2, p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* 100% de la altura de la ventana */
+  height: 100vh;
   margin: 0;
 }
 </style>
