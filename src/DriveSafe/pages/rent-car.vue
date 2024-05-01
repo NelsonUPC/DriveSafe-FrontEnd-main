@@ -1,10 +1,10 @@
 <template>
   <pv-toast aria-live="polite" />
   <header>
-    <pv-toolbar class="custom-bg custom-toolbar">
+    <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://imgur.com/a/DWk9R7P"
+            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -17,16 +17,19 @@
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
+              role="menuitem"
           >
             <pv-button
                 class="custom-button"
                 :href="href"
                 @click="navigate"
+                role="button"
             >
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant">
+          <router-link to="/profile-tenant" role="menuitem">
+            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -37,11 +40,11 @@
       </template>
     </pv-toolbar>
   </header>
-</template>
+
 <pv-toast aria-live="polite" />
-  <div class="container">
+  <div class="container" role="main">
     <div class="half-width-card">
-       <Card role="region" aria-labelledby="card1Title">
+      <Card role="region" aria-labelledby="card1Title">
         <template #title>
           <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar vehículo</h2>
         </template>
@@ -53,17 +56,8 @@
                 style="max-width: 100%; max-height: 300px;"
             />
             <div class="card-title">{{ vehiculo.marca }} {{ vehiculo.modelo }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Velocidad Máxima: {{ vehiculo.velocidadMax }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Consumo: {{ vehiculo.consumo }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Dimensiones: {{ vehiculo.dimensiones }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Peso: {{ vehiculo.peso }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Clase: {{ vehiculo.clase }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Transmisión: {{ vehiculo.transmision }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Tipo de Alquiler: {{ vehiculo.tipoTiempo }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Costo de Alquiler: {{ vehiculo.costoAlquiler }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Lugar de Recojo: {{ vehiculo.lugarRecojo }}</div>
-            <div style="font-family: 'Poppins',sans-serif">Propietario: {{ vehiculo.propietario.nombres }} {{vehiculo.propietario.apellidos}}</div><br>
-            <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button">Ver Contrato de Alquiler</Button>
+            <!-- Agrega más campos según tus necesidades -->
+            <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">Ver Contrato de Alquiler</Button>
           </div>
           <div v-else>
             <p>Cargando información del vehículo...</p>
@@ -91,7 +85,7 @@
             <div v-if="resultadoCosto !== null" class="orange-text-body">
               S/. {{ resultadoCosto }}<br><br>
               El pago deberá realizarse en efectivo<br><br>
-              <Button @click="solicitarAlquiler" class="font-button">Solicitar Alquiler</Button>
+              <Button @click="solicitarAlquiler" class="font-button" role="button">Solicitar Alquiler</Button>
             </div>
           </div>
         </template>
