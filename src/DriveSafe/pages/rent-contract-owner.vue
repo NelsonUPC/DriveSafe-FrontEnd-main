@@ -23,7 +23,6 @@ export default {
   methods: {
     subirContrato() {
       localStorage.setItem("urlContrato", this.urlContrato);
-      // Puedes agregar más lógica aquí si es necesario
       this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Contrato subido exitosamente.', role: 'alert' });
       console.log(localStorage.getItem("urlContrato"));
     },
@@ -63,7 +62,6 @@ export default {
             </pv-button>
           </router-link>
           <router-link to="/profile-owner" role="menuitem">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
