@@ -207,12 +207,12 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap; /* Permite que los items se muevan a la siguiente línea cuando no hay suficiente espacio */
-  gap: 10px; /* Espacio entre los items */
+  flex-wrap: wrap; 
+  gap: 10px; 
 }
 
 .card-item {
-  width: calc(33.33% - 10px); /* Asegura que haya espacio entre los items */
+  width: calc(33.33% - 10px);
   margin-bottom: 10px;
 }
 
