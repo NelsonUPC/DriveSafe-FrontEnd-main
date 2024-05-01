@@ -1,5 +1,5 @@
 <script>
-import PropietarioService from "@/AutoYa/services/propietario.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default {
   data(){
     return {
