@@ -36,7 +36,6 @@ export default {
           localStorage.setItem("propietarioId", propietarioEncontrado.id);
           localStorage.setItem("fotoOwner", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png")
           console.log('Propietario ID:', localStorage.getItem("propietarioId"));
-          //this.$router.push({ name: 'init-propie', query: { propietarioId: propietarioEncontrado.id} });
           this.router.push({path:"/init-propie"});
 
         } else {
@@ -54,8 +53,8 @@ export default {
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden" aria-label="Área principal de inicio de sesión">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://github.com/AppWeb-Grupo3/DriveSafe-Project-report/blob/main/imagenes/logo.png?raw=true" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0">
-      <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;" aria-label="Contenedor del formulario de inicio de sesión"> <!-- Agregado aria-label -->
+      <img data-v-f5a3c044="" src="https://imgur.com/a/DWk9R7P" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0">
+      <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;" aria-label="Contenedor del formulario de inicio de sesión"> 
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
           <div class="text-center mb-5">
             <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;">Bienvenido a DriveSafe!</div>
@@ -73,7 +72,7 @@ export default {
               <div class="flex align-items-center">
                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
               </div>
-              <router-link to="/register" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: #1A2C63; margin-top: 15px; transition: color 0.2s;" aria-label="Enlace para registro">¿No tienes cuenta aún? Registrate aqui</router-link> <!-- Cambiado a azul y agregado transition -->
+              <router-link to="/register" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: #1A2C63; margin-top: 15px; transition: color 0.2s;" aria-label="Enlace para registro">¿No tienes cuenta aún? Registrate aqui</router-link> 
             </div>
 
             <pv-button @click="logeo" label="Iniciar Sesión" class="w-full p-3 text-xl" aria-label="Botón de inicio de sesión"></pv-button>
