@@ -1,5 +1,5 @@
 <template>
-  <pv-toast />
+  <pv-toast aria-live="polite" />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
