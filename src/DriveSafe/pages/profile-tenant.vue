@@ -60,7 +60,7 @@ export default {
   <header aria-label="Barra de navegación">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
-        <img src="https://imgur.com/a/DWk9R7P" alt="Logo" style="height: 40px; margin-right: 20px;"/>
+        <img src="https://i.imgur.com/hIAgH3Z.png" alt="Logo" style="height: 40px; margin-right: 20px;"/>
       </template>
       <template #end>
         <div class="flex-column">

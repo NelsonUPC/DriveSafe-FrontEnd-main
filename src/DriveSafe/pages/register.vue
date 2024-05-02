@@ -84,7 +84,7 @@ const registerUser = async () => {
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden" aria-label="Página de registro de usuario">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://imgur.com/a/DWk9R7P" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
+      <img data-v-f5a3c044="" src="https://i.imgur.com/hIAgH3Z.png" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
 
       <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;"  aria-label="Fondo de la página de registro">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px" aria-label="Formulario de registro">

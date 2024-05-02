@@ -26,7 +26,7 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar" role="banner">
       <template #start>
         <img
-            src="https://imgur.com/a/DWk9R7P"
+            src="https://i.imgur.com/hIAgH3Z.png"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
