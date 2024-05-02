@@ -122,7 +122,7 @@ export default{
     <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.postimg.cc/vmZh3LGv/logotransparent-26-06.png"
+            src="https://i.imgur.com/hIAgH3Z.png"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
