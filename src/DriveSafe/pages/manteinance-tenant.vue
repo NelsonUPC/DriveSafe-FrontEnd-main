@@ -148,8 +148,8 @@ export default{
         <template #content>
           <p style="font-family: 'Poppins',sans-serif">Seleccionar nombre del propietario del auto alquilado</p>
           <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" role="combobox" aria-expanded="false" />
-          <Card role="region" aria-labelledby="card3Title">
-            <template #title></template>
+           <Card role="region" aria-labelledby="card3Title">
+             <template #title></template>
             <template #content>
               <p style="font-family: 'Poppins',sans-serif">Tipo de problema</p>
               <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif" role="textbox"/>
@@ -324,7 +324,7 @@ input {
 
 .button-container {
   display: block;
-  margin-top: 10px;
+  margin-top: 10px; 
 }
 
 .custom-button3 {

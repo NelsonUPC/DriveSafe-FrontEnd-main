@@ -2,14 +2,14 @@
 import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
 import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default {
-  data() {
+  data(){
     return {
       drawer: false,
       items: [
-        {label: "Inicio", to: "/init-propie"},
-        {label: "Registro", to: "/car-registration-owner"},
-        {label: "Notificaciones", to: "/notifications"},
-        {label: "Alquiler", to: "/rent-owner"},
+        { label: "Inicio", to: "/init-propie" },
+        { label: "Registro", to: "/car-registration-owner" },
+        { label: "Notificaciones", to: "/notifications" },
+        { label: "Alquiler", to: "/rent-owner" },
       ],
       nombres: '',
       apellidos: '',
@@ -47,7 +47,7 @@ export default {
         localStorage.setItem("fotoTenant", this.fotoPerfil);
 
         console.log("Respuesta del servicio de arrendatario:", response);
-        this.$toast.add({severity: 'success', summary: 'Éxito', detail: 'Información actualizada exitosamente.'});
+        this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Información actualizada exitosamente.' });
         this.$router.push('/profile-tenant');
       } catch (error) {
         console.error("Error al actualizar datos del arrendatario:", error);
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <template>
-  <pv-toast aria-live="polite"/>
+  <pv-toast aria-live="polite" />
   <header role="banner">
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
@@ -99,54 +99,38 @@ export default {
     </pv-toolbar>
   </header>
   <main class="center-container" style="margin-top: 150px;">
-    <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
-    <h2>Nombres</h2><br>
-    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
-    <br>
-    <h2>Apellidos</h2><br>
-    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
-    <br>
-    <h2>Celular</h2><br>
-    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
-    <br>
-    <h2>Fecha de nacimiento</h2><br>
-    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
-    <br>
-    <h2>URL antecedentes penales</h2><br>
-    <pv-input placeholder="Antecedentes penales" v-model="antecedentesPenalesPdf"
-              style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
-    <br>
-    <h2>URL foto de perfil</h2><br>
-    <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
-    <br>
-    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosTenant" role="button">Actualizar
-    </Button>
+  <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
+  <h2>Nombres</h2><br>
+  <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <h2>Apellidos</h2><br>
+  <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <h2>Celular</h2><br>
+  <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <h2>Fecha de nacimiento</h2><br>
+  <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <h2>URL antecedentes penales</h2><br>
+  <pv-input placeholder="Antecedentes penales" v-model="antecedentesPenalesPdf" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <h2>URL foto de perfil</h2><br>
+  <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+  <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosTenant" role="button">Actualizar</Button>
   </main>
 </template>
 
 
 <style scoped>
 
-body {
+body{
   font-family: 'Poppins', sans-serif;
   color: black;
   background-color: white;
 }
-
 .custom-bg {
   background-color: white;
 }
-
 .custom-button, .font-button {
   background-color: white;
   color: #14131B;
 }
-
 .custom-button:hover,
 .custom-button:focus {
   background-color: #FF7A00 !important;
@@ -156,7 +140,6 @@ body {
 .custom-toolbar {
   border-bottom: 2px solid #ddd;
 }
-
 .profile-button {
   text-align: center;
   margin-top: 10px;
@@ -167,7 +150,6 @@ body {
   flex-direction: column;
   align-items: flex-start;
 }
-
 .font-button {
   margin: 2px 0;
   background-color: black !important;
@@ -175,11 +157,10 @@ body {
 }
 
 .font-button:hover,
-.font-button:focus {
+.font-button:focus{
   background-color: #14131B !important;
   color: white !important;
 }
-
 /*Cosas a cambiar*/
 .profile-container {
   display: flex;
@@ -203,16 +184,16 @@ body {
   align-items: center;
 }
 
-.title h1 {
+.title h1{
   margin-top: 0;
 }
 
-.size-photo {
+.size-photo{
   max-width: 50%;
   max-height: 50%;
 }
 
-.profile-image-container {
+.profile-image-container{
   background-color: #f5f5f5;
   border: 2px solid #ccc;
   padding: 20px;
@@ -221,17 +202,17 @@ body {
   height: 50%;
 }
 
-.profile-info {
+.profile-info{
   margin-top: 40px;
   margin-bottom: 20px;
 }
 
-.profile-info p {
+.profile-info p{
   margin: 10px;
   line-height: 2.5;
 }
 
-.profile-image {
+.profile-image{
   display: flex;
   align-items: center;
   justify-content: center;

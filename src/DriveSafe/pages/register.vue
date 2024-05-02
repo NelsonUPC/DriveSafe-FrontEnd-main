@@ -1,103 +1,90 @@
 <script setup>
-import { ref } from 'vue';
-import Swal from 'sweetalert2';
-import UserService from "@/DriveSafe/services/user.service";
-import { useRouter } from 'vue-router';
+import { useLayout } from '@/DriveSafe/composables/layout'
+import { ref, computed } from 'vue';
+import AuthService from "@/DriveSafe/services/auth.service";
+import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
+import PropietarioService from "@/DriveSafe/services/propietario.service";
 
-const router = useRouter();
-
+const { layoutConfig } = useLayout();
 const email = ref('');
-const tipoUsuario = ref('');
-const tipoUsuarioOptions = ['Arrendatario', 'Arrendador'];
+
+const checked = ref(false);
+const tipoUsuario = ref(''); 
+const tipoUsuarioOptions = ['Arrendatario', 'Propietario'];
 const nombres = ref('');
 const apellidos = ref('');
 const telefono = ref(0);
 const correo = ref('');
 const password = ref('');
-const day = ref('');
-const month = ref('');
+const day = ref(''); 
+const month = ref(''); 
 const year = ref('');
 
 const registerUser = async () => {
-  // Verificar si algún campo está vacío
   if (!nombres.value || !apellidos.value || !correo.value || !password.value || !tipoUsuario.value || !day.value || !month.value || !year.value || !telefono.value) {
-    await Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Todos los campos son obligatorios',
-    });
+    console.error("Todos los campos son obligatorios.");
+    console.log(`${nombres.value}, ${apellidos.value}, ${correo.value}, ${password.value}, ${tipoUsuario.value}, ${day.value}, ${month.value}, ${year.value}, ${telefono.value}`)
     return;
   }
 
-  // Verificar si el correo ya está registrado en la base de datos
+  const user = {
+    firstName: nombres.value,
+    lastName: apellidos.value,
+    email: correo.value,
+    password: password.value,
+  };
+
   try {
-    const response = await UserService.getUsers();
-    const usuarios = response.data;
-    const usuarioExistente = usuarios.find(usuario => usuario.correo === correo.value);
-    if (usuarioExistente) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Correo duplicado',
-        text: 'El correo electrónico ingresado ya está registrado. Por favor, ingresa otro correo.',
-      });
-      return;
+    const response = await AuthService.register(user);
+    console.log("Usuario registrado correctamente", response);
+    if (tipoUsuario.value === 'Arrendatario') {
+      const fechaNacimientoFormatted = `${day.value}-${month.value}-${year.value}`;
+
+      const arrendatarioData = {
+        nombres: nombres.value,
+        apellidos: apellidos.value,
+        fechaNacimiento: fechaNacimientoFormatted,
+        telefono: telefono.value,
+        correo: correo.value,
+        antecedentesPenalesPdf: 'misAntecedentesPenales',
+        contrasenia: password.value,
+      };
+
+      await ArrendatarioService.create(arrendatarioData);
+
+      console.log("Arrendatario creado correctamente");
+    }
+
+    if (tipoUsuario.value === 'Propietario') {
+      const fechaNacimientoFormatted = `${day.value}-${month.value}-${year.value}`;
+
+      const propietarioData = {
+        nombres: nombres.value,
+        apellidos: apellidos.value,
+        fechaNacimiento: fechaNacimientoFormatted,
+        telefono: telefono.value,
+        correo: correo.value,
+        contrasenia: password.value,
+      };
+
+      await PropietarioService.create(propietarioData);
+
+      console.log("Propietario creado correctamente");
     }
   } catch (error) {
-    console.error("Error al obtener la lista de usuarios:", error);
-    await Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un error al verificar la existencia del correo en la base de datos. Por favor, inténtalo de nuevo más tarde.',
-    });
-    return;
+    console.error("Error al registrar usuario", error);
+    if (error.response) {
+      console.error("Respuesta del servidor:", error.response.data);
+    }
   }
-
-  // Continuar con el proceso de registro si el correo no está duplicado
-  const fechaNacimientoFormatted = `${year.value}-${month.value}-${day.value}`;
-
-  if (tipoUsuario.value === 'Arrendatario') {
-    const user = {
-      id: null,
-      nombres: nombres.value,
-      apellidos: apellidos.value,
-      fechaNacimiento: fechaNacimientoFormatted,
-      telefono: telefono.value,
-      correo: correo.value,
-      contrasenia: password.value,
-      tipo: "arrendatario"
-    };
-    await UserService.create(user);
-    console.log("Arrendatario creado correctamente");
-  } else if (tipoUsuario.value === 'Arrendador') {
-    const user = {
-      id: null,
-      nombres: nombres.value,
-      apellidos: apellidos.value,
-      fechaNacimiento: fechaNacimientoFormatted,
-      telefono: telefono.value,
-      correo: correo.value,
-      contrasenia: password.value,
-      tipo: "arrendador"
-    };
-    await UserService.create(user);
-    console.log("Arrendador creado correctamente");
-  }
-
-  await Swal.fire({
-    icon: 'success',
-    title: '¡Registro exitoso!',
-    text: 'El usuario se ha registrado correctamente.'
-  });
-
-  // Redirigir a la página de inicio de sesión después de completar el registro
-  router.push('/login');
 };
+
 </script>
 
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden" aria-label="Página de registro de usuario">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://imgur.com/a/DWk9R7P" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
+      <img data-v-f5a3c044="" src="https://i.imgur.com/hIAgH3Z.png" alt="logo" class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
 
       <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;"  aria-label="Fondo de la página de registro">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px" aria-label="Formulario de registro">
@@ -136,7 +123,9 @@ const registerUser = async () => {
                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
               </div>
             </div>
-            <pv-button @click="registerUser" label="Registrarse" class="w-full md:w-30rem p-3 text-xl" aria-label="Botón de registro de usuario"></pv-button>
+            <router-link to="/login" aria-label="Enlace para ir a la página de inicio de sesión">
+              <pv-button @click="registerUser" label="Registrarse" class="w-full md:w-30rem p-3 text-xl" aria-label="Botón de registro de usuario"></pv-button>
+            </router-link>
           </div>
         </div>
       </div>
