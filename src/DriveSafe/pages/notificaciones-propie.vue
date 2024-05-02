@@ -40,6 +40,7 @@
         </div>
       </template>
     </pv-toolbar>
+
   </header>
   <div class="notifications-section" aria-label="Seccion de notificaciones">
     <h2 class="section-title" >Notificaciones</h2>

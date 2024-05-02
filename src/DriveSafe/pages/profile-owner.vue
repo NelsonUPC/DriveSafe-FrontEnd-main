@@ -84,6 +84,7 @@ export default {
           <router-link to="/profile-owner" aria-label="Enlace al perfil del propietario">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
+
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
                 aria-label="Imagen de perfil del propietario"
@@ -92,6 +93,7 @@ export default {
         </div>
       </template>
     </pv-toolbar>
+
   </header>
   <body>
   <div class="profile-container" aria-label="Contenedor del perfil del usuario">
@@ -123,7 +125,7 @@ export default {
     <div class="right-column" aria-label="Columna derecha del perfil del usuario">
       <div class="profile-image-container" aria-label="Contenedor de la imagen de perfil del usuario">
         <div class="profile-image">
-          <img :src="user.photo" alt="Profile Picture" class="size-photo" aria-label="Imagen de perfil del usuario"/>
+          <img :src="'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png' " alt="Profile Picture" class="size-photo" aria-label="Imagen de perfil del usuario"/>
         </div>
       </div>
     </div>

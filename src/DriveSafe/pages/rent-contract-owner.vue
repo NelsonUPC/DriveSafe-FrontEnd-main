@@ -86,7 +86,10 @@ export default {
             <p style="font-family: 'Poppins',sans-serif"><strong>URL del contrato de alquiler</strong></p>
             <pv-input placeholder="URL del contrato de alquiler" v-model="urlContrato" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
             <button @click="subirContrato" class="custom-button3" role="button">Subir contrato</button>
-            <img :src="urlImagen" alt="Toyota Prius" style="max-width: 100%; max-height: 300px;">
+            <img
+                :src="'public/toyota.jpg'"
+                alt="Toyota Prius"
+                style="max-width: 100%; max-height: 300px;" />
             <p style="font-family: 'Poppins',sans-serif">Marca/Modelo: Toyota/Prius</p>
           </div>
         </template>
