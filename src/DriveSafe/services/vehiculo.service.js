@@ -1,28 +1,18 @@
-import axios from 'axios';
+import http from '../../shared/services/http-common';
 
-const URL = 'http://localhost:3000/';
 class VehiculoService {
     getAll() {
-        return axios.get(URL + 'vehiculo');
+        return http.get('/vehiculos');
     }
-
-    getById(id) {
-        return axios.get(`${URL}vehiculo/${id}`);
-    }
-
-    getByUserId(userId) {
-        return axios.get(`${URL}vehiculo?propietario_id=${userId}`);
-    }
-
     create(data) {
-        return axios.post(URL + 'vehiculo', data);
+        return http.post('/vehiculos', data);
     }
     update(id, data) {
-        return axios.put(URL + 'vehiculo/{id}', data);
+        return http.put(`/vehiculos/${id}`, data);
     }
 
     delete(id) {
-        return axios.delete(`${URL}vehiculo/${id}`);
+        return http.delete(`/vehiculos/${id}`);
     }
 }
 

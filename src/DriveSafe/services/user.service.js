@@ -1,35 +1,14 @@
 import axios from 'axios';
+import authHeader from './auth-header';
+import http from "@/shared/services/http-common";
 
-const URL = 'http://localhost:3000/';
+const API_URL = 'https://autoya.azurewebsites.net/api/v1/';
 
-class AlquilerService {
-    getAll() {
-        return axios.get(URL + 'alquiler');
-    }
+class UserService {
 
-    getById(id) {
-        return axios.get(`${URL}alquiler/${id}`);
-    }
-
-    getByUserId(userId) {
-        return axios.get(`${URL}alquiler?arrendatario_id=${userId}`);
-    }
-
-    getByPropietarioId(propietarioId) {
-        return axios.get(`${URL}alquiler?propietario_id=${propietarioId}`);
-    }
-
-    create(data) {
-        return axios.post(URL + 'alquiler', data);
-    }
-
-    update(id, data) {
-        return axios.put(URL + `alquiler/${id}`, data);
-    }
-
-    delete(id) {
-        return axios.delete(URL + `alquiler/${id}`);
+    getUserBoard() {
+        return axios.get(API_URL + 'users', { headers: authHeader() });
     }
 }
 
-export default new AlquilerService();
+export default new UserService();

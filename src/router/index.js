@@ -50,7 +50,7 @@ const router = createRouter({
       component: RentContractOwner,
     },
     {
-      path: "/rent-tenant",
+      path: "/rent-tenantn",
       name: "rent-tenant",
       component: RentTenant,
     },
