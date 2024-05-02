@@ -18,6 +18,8 @@ import UpdateOwner from "@/DriveSafe/pages/update-owner.vue";
 import UpdateTenant from "@/DriveSafe/pages/update-tenant.vue";
 import RentCar from "@/DriveSafe/pages/rent-car.vue";
 import ReadRequest from "@/DriveSafe/pages/read-request.vue";
+import RentPayment from "@/DriveSafe/pages/rent-payment.vue";
+import RentPaymentConfirmation from "@/DriveSafe/pages/rent-payment-confirmation.vue";
 
 
 const router = createRouter({
@@ -95,12 +97,12 @@ const router = createRouter({
     {
       path: "/car-search-tenant",
       name: "car-search-tenant",
-      component: CarSearchTenant,
+      component: CarSearchTenant
     },
     {
       path: "/manteinance-tenant",
       name: "manteinance-tenant",
-      component: ManteinanceTenant,
+      component: ManteinanceTenant
     },
     {
       path: "/update-owner",
@@ -122,7 +124,18 @@ const router = createRouter({
       path: "/read-request",
       name: "read-request",
       component: ReadRequest,
+    },
+    {
+      path: "/rent-payment",
+      name: "rent-payment",
+      component: RentPayment,
+    },
+    {
+      path: "/rent-payment-confirmation",
+      name: "rent-payment-confirmation",
+      component: RentPaymentConfirmation
     }
+
   ]
 })
 export default router
