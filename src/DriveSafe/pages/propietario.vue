@@ -1,143 +1,221 @@
 <script>
-import { useLayout } from '@/DriveSafe/composables/layout'
-import AuthService from "@/DriveSafe/services/auth.service";
-import PropietarioService from "@/DriveSafe/services/propietario.service";
-import { useRouter } from 'vue-router';
-
 
 export default {
-  data() {
+  data(){
     return {
-      layoutConfig: useLayout().layoutConfig,
-      email: '',
-      password: '',
-      checked: false,
-      router: useRouter(),
-      propietarioId: 0,
+      user: {
+        name: '',
+        lastName: '',
+        photo: localStorage.getItem("fotoTenant"),
+        phone: '',
+        email: ''
+      },
+      drawer: false,
+      items: [
+        { label: "Inicio", to: "/home" },
+        { label: "Buscar Autos", to: "/car-search-tenant" },
+        { label: "Mantenimiento", to: "/manteinance-tenant" },
+        { label: "Alquiler", to: "/rent-tenant" },
+      ],
     };
   },
   methods: {
-    async logeo() {
+    async cargarInformacionArrendatario() {
       try {
-        const response = await AuthService.login({
-          email: this.email,
-          password: this.password
-        });
+        this.user.name = localStorage.getItem("usuarioNombres");
 
-        const propietariosResponse = await PropietarioService.getAll();
-        const propietarios = propietariosResponse.data;
+        this.user.lastName = localStorage.getItem("usuarioApellidos");
 
-        const propietarioEncontrado = propietarios.find(propietario => propietario.correo === this.email);
+        this.user.phone = localStorage.getItem("usuarioCelular");
 
-        if (propietarioEncontrado) {
-          console.log("Usuario autenticado correctamente", response);
-          localStorage.setItem("propietarioId", propietarioEncontrado.id);
-          localStorage.setItem("fotoOwner", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png")
-          console.log('Propietario ID:', localStorage.getItem("propietarioId"));
-          this.router.push({path:"/init-propie"});
-
-        } else {
-          console.error("No existe un propietario con el correo proporcionado");
-        }
+        this.user.email = localStorage.getItem("usuarioCorreo");
 
       } catch (error) {
-        console.error("Error al autenticar usuario", error);
+        console.error("Error al cargar la información del propietario:", error);
       }
     },
+    cerrarSesion() {
+
+      this.$router.push('/login');
+      localStorage.clear()
+    },
+  },
+  created() {
+    this.cargarInformacionArrendatario();
   },
 };
 </script>
 
 <template>
-  <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden" aria-label="Área principal de inicio de sesión">
-    <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://imgur.com/a/DWk9R7P" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0">
-      <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;" aria-label="Contenedor del formulario de inicio de sesión"> 
-        <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
-          <div class="text-center mb-5">
-            <div class="text-900 text-3xl font-medium mb-3" style="font-family: 'Poppins', sans-serif;">Bienvenido a DriveSafe!</div>
-            <span class="text-600 font-medium" style="font-family: 'Poppins', sans-serif;">¡Inicia sesión para ingresar!</span>
-          </div>
-
-          <div>
-            <label for="email1" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;">Tu Correo</label>
-            <pv-input-text id="email1" type="text" placeholder="Correo electrónico" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="email" aria-label="Campo de correo electrónico" />
-
-            <label for="password1" class="block text-900 font-medium text-xl mb-2" style="font-family: 'Poppins', sans-serif;">Tu Contraseña</label>
-            <pv-input-text id="password" type="password" placeholder="Contraseña" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="password" aria-label="Campo de contraseña" />
-
-            <div class="flex align-items-center justify-content-between mb-5 gap-5">
-              <div class="flex align-items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-              </div>
-              <router-link to="/register" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: #1A2C63; margin-top: 15px; transition: color 0.2s;" aria-label="Enlace para registro">¿No tienes cuenta aún? Registrate aqui</router-link> 
-            </div>
-
-            <pv-button @click="logeo" label="Iniciar Sesión" class="w-full p-3 text-xl" aria-label="Botón de inicio de sesión"></pv-button>
-
-            <div class="TipoLoginUsuario" aria-label="Selección de tipo de inicio de sesión">
-              <router-link to="/login">
-                <pv-button label="Ingresar como Arrendatario"></pv-button>
-              </router-link>
-
-              <router-link to="/propietario">
-                <pv-button label="Ingresar como Propietario"></pv-button>
-              </router-link>
-            </div>
-          </div>
+  <pv-toast />
+  <header aria-label="Barra de navegación">
+    <pv-toolbar class="custom-bg custom-toolbar">
+      <template #start>
+        <img src="https://imgur.com/a/DWk9R7P" alt="Logo" style="height: 40px; margin-right: 20px;"/>
+      </template>
+      <template #end>
+        <div class="flex-column">
+          <router-link
+              v-for="item in items"
+              :to="item.to"
+              custom
+              v-slot="{ navigate, href }"
+              :key="item.label"
+          >
+            <pv-button
+                class="custom-button"
+                :href="href"
+                @click="navigate"
+                aria-label="Botón de navegación"
+            >
+              {{ item.label }}
+            </pv-button>
+          </router-link>
+          <router-link to="/profile-tenant" aria-label="Enlace al perfil del arrendatario">
+            <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="Usuario" style="height: 30px; margin-left: 20px; cursor: pointer;" aria-label="Imagen de perfil del arrendatario"/>
+          </router-link>
         </div>
+      </template>
+    </pv-toolbar>
+  </header>
+  <body>
+  <div class="profile-container" aria-label="Contenedor del perfil del usuario">
+    <div class="left-column" aria-label="Columna izquierda del perfil del usuario">
+      <div class="title" aria-label="Título del perfil del usuario">
+        <h1>Perfil del Usuario</h1>
+        <h2>Arrendatario</h2>
+      </div>
+      <div class="profile-info" aria-label="Información del perfil del usuario">
+        <h2>Nombres: </h2>
+        <h2>{{ user.name }}</h2><br>
+        <h2>Apellidos: </h2>
+        <h2>{{user.lastName}}</h2><br>
+        <h2>Celular: </h2>
+        <h2>{{user.phone}}</h2><br>
+        <h2>Correo: </h2>
+        <h2>{{user.email}}</h2><br>
+      </div>
+      <div class="buttons" aria-label="Botones del perfil del usuario">
+        <router-link to="/update-tenant" aria-label="Enlace para actualizar datos del arrendatario">
+          <pv-button class="font-button">Actualizar Datos</pv-button><br>
+        </router-link>
+
+        <pv-button class="font-button" @click="cerrarSesion" aria-label="Botón para cerrar sesión">Cerrar Sesión</pv-button>
+      </div>
+    </div>
+    <div class="right-column" aria-label="Columna derecha del perfil del usuario">
+      <div class="profile-image-container" aria-label="Contenedor de la imagen de perfil del usuario">
+        <div class="profile-image">
+          <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="Profile Picture" class="size-photo" aria-label="Imagen de perfil del usuario"/>
+        </div>
+        <br>
       </div>
     </div>
   </div>
-  <AppConfig simple />
+  </body>
 </template>
 
+
 <style scoped>
-
-.text-medium {
+body{
   font-family: 'Poppins', sans-serif;
+  color: #000000; 
+  background-color: white;
+}
+.custom-bg {
+  background-color: white;
+}
+.custom-button, .font-button {
+  background-color: #ffffff;
+}
+.custom-button:hover,
+.custom-button:focus {
+  background-color: #1A2C63 !important; 
+  color: white !important;
 }
 
-.p-inputtext,
-.inputtext {
-  font-family: 'Poppins', sans-serif;
+.custom-toolbar {
+  border-bottom: 2px solid #ddd;
+}
+.profile-button {
+  text-align: center;
+  margin-top: 10px;
 }
 
-.pi-eye {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-
-.pi-eye-slash {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-
-.p-button {
-  color: black;
-  color: #ffffff;
-  background: #1A2C63;
-  border: 1px solid black;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-
-}
-
-.p-button:hover {
-  background-color: black;
-  transform: scale(1.05);
-}
-
-.TipoLoginUsuario{
+.buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.font-button {
+  margin: 2px 0;
+  background-color: #1A2C63;
+  color: white;
 }
 
-.TipoLoginUsuario .p-button {
+.font-button:hover{
   background-color: #FFA500;
   color: white;
 }
 
+.profile-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.left-column {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.right-column {
+  flex: 10;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title h1{
+  margin-top: 0;
+}
+
+.size-photo{
+  max-width: 50%;
+  max-height: 50%;
+}
+
+.profile-image-container{
+  background-color: #f5f5f5;
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  width: 50%;
+  height: 50%;
+}
+
+.profile-info{
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.profile-info p{
+  margin: 10px;
+  line-height: 2.5;
+}
+
+.profile-image{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2, p {
+  display: inline;
+  margin: 0;
+}
 </style>
