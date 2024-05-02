@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://autoya.azurewebsites.net/api/v1/';
+const API_URL = 'https://DriveSafe.prueva.azurewebsites.net/api/v1/';
 
 class AuthService {
     login(user) {
