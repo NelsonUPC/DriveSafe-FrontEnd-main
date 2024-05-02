@@ -2,23 +2,34 @@ import axios from 'axios';
 
 const URL = 'http://localhost:3000/';
 
-class UserService {
-
-    getUsers() {
-        return axios.get(URL + 'usuario');
+class AlquilerService {
+    getAll() {
+        return axios.get(URL + 'alquiler');
     }
 
-    getUserById(id) {
-        return axios.get(`${URL}usuario/${id}`);
+    getById(id) {
+        return axios.get(`${URL}alquiler/${id}`);
     }
 
-    create(data){
-        return axios.post(URL + 'usuario', data)
+    getByUserId(userId) {
+        return axios.get(`${URL}alquiler?arrendatario_id=${userId}`);
+    }
+
+    getByPropietarioId(propietarioId) {
+        return axios.get(`${URL}alquiler?propietario_id=${propietarioId}`);
+    }
+
+    create(data) {
+        return axios.post(URL + 'alquiler', data);
     }
 
     update(id, data) {
-        return axios.put(`${URL}usuario/${id}`, data);
+        return axios.put(URL + `alquiler/${id}`, data);
+    }
+
+    delete(id) {
+        return axios.delete(URL + `alquiler/${id}`);
     }
 }
 
-export default new UserService();
+export default new AlquilerService();
