@@ -1,10 +1,9 @@
 <script>
 import Card from 'primevue/card';
 import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import {useRouter} from "vue-router";
 import AlquilerService from "@/DriveSafe/services/alquiler.service";
-import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
-import NotificacionService from "@/DriveSafe/services/notificacion.service";
+import UserService from "@/DriveSafe/services/user.service";
+
 export default {
   components: {
     Card,
@@ -18,87 +17,137 @@ export default {
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
       ],
-      alquileres: [],
-      alquileresFiltrados: [],
+      alquiler: null,
+      arrendatario: null,
       vehiculo: null,
-      nuevoVehiculo: null,
-      vehiculos: [],
-      vehiculoId: 0,
-      vehiculosFiltrados: [],
-      router: useRouter(),
     };
   },
   methods: {
     async cargarInformacion() {
       try {
-        const response = await AlquilerService.getAll();
-        this.alquileres = response.data;
-        this.alquileresFiltrados = this.alquileres.filter(alquiler => alquiler.vehiculoId === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
+        const alquilerId = parseInt(localStorage.getItem("alquilerId"));
 
-        const response2 = await VehiculoService.getAll();
-        this.vehiculos = response2.data;
-        this.vehiculosFiltrados = this.vehiculos.filter(vehiculo => vehiculo.id === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
+        const response = await AlquilerService.getById(alquilerId);
 
-        this.vehiculoId = localStorage.getItem("vehiculoAlquiladoId");
+        this.alquiler = response.data;
 
-        if (this.vehiculoId) {
-          VehiculoService.getAll()
-              .then((response) => {
-                const vehiculoEncontrado = response.data.find(
-                    (vehiculo) => vehiculo.id === parseInt(this.vehiculoId)
-                );
+        const arrendatarioResponse = await UserService.getUserById(this.alquiler.arrendatario_id);
+        this.arrendatario = arrendatarioResponse.data;
 
-                if (vehiculoEncontrado) {
-                  this.vehiculo = vehiculoEncontrado;
-                } else {
-                  console.error("No se encontró el vehículo con ID:", this.vehiculoId);
-                }
-
-                console.log("ve", this.vehiculo);
-
-                this.nuevoVehiculo = this.vehiculo;
-                console.log("nv", this.nuevoVehiculo);
-              })
-              .catch((error) => {
-                console.error("Error al obtener la lista de vehículos:", error);
-              });
-        } else {
-          console.error("ID de vehículo no encontrado en el localStorage.");
-        }
+        const vehiculoResponse = await VehiculoService.getById(this.alquiler.vehiculo_id);
+        this.vehiculo = vehiculoResponse.data;
       } catch (error) {
-        console.error("Error al cargar los alquileres:", error);
+        console.error("Error al cargar la información del alquiler:", error);
       }
     },
     abrirAntecedentesPenales() {
-      const arrendatarioAntecedentes = this.vehiculosFiltrados[0].arrendatario.antecedentesPenalesPdf;
+      const arrendatarioAntecedentes = this.arrendatario.antecedentesPenalesPdf;
       if (arrendatarioAntecedentes) {
         window.open(arrendatarioAntecedentes, "_blank");
       }
     },
-    aceptarAlquiler() {
-      this.nuevoVehiculo.estadoRenta = "Aceptado";
-      this.nuevoVehiculo.arrendatarioId = this.vehiculo.arrendatario.id;
-      this.nuevoVehiculo.alquilerId = this.vehiculo.alquiler.id;
-      console.log("nv", this.nuevoVehiculo);
+    async aceptarAlquiler() {
+      try {
+        // Obtener el alquiler completo
+        const response = await AlquilerService.getById(this.alquiler.id);
+        const alquilerCompleto = response.data;
 
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .catch((error) => {
-            console.error('Error al actualizar el vehículo:', error);
-          });
+        let fechaFormateada = " ";
+        let fechaFormateadaF = " ";
 
-      this.router.push({path:"/rent-owner"});
+        // Actualizar solo el campo 'estado'
+        alquilerCompleto.estado = "Aceptado";
+
+        if (this.vehiculo.tipo_tiempo === "Diario") {
+          const today = new Date();
+          const dia = today.getDate().toString().padStart(2, '0');
+          const mes = (today.getMonth() + 1).toString().padStart(2, '0');
+          const anio = today.getFullYear();
+
+          fechaFormateada = `${anio}-${mes}-${dia}`;
+
+          const futureDate = new Date(today);
+          futureDate.setDate(futureDate.getDate() + 1)
+          const diaf = futureDate.getDate().toString().padStart(2, '0');
+          const mesf = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+          const aniof = futureDate.getFullYear();
+
+          fechaFormateadaF = `${aniof}-${mesf}-${diaf}`;
+
+          alquilerCompleto.fecha_inicio = fechaFormateada;
+          alquilerCompleto.fecha_fin = fechaFormateadaF
+        } else if (this.vehiculo.tipo_tiempo === "Semanal") {
+          const today = new Date();
+          const dia = today.getDate().toString().padStart(2, '0');
+          const mes = (today.getMonth() + 1).toString().padStart(2, '0');
+          const anio = today.getFullYear();
+
+          fechaFormateada = `${anio}-${mes}-${dia}`;
+
+          const futureDate = new Date(today);
+          futureDate.setDate(futureDate.getDate() + 7)
+          const diaf = futureDate.getDate().toString().padStart(2, '0');
+          const mesf = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+          const aniof = futureDate.getFullYear();
+
+          fechaFormateadaF = `${aniof}-${mesf}-${diaf}`;
+
+          alquilerCompleto.fecha_inicio = fechaFormateada;
+          alquilerCompleto.fecha_fin = fechaFormateadaF
+        } else if (this.vehiculo.tipo_tiempo === "Mensual") {
+          const today = new Date();
+          const dia = today.getDate().toString().padStart(2, '0');
+          const mes = (today.getMonth() + 1).toString().padStart(2, '0');
+          const anio = today.getFullYear();
+
+          fechaFormateada = `${anio}-${mes}-${dia}`;
+
+          const futureDate = new Date(today);
+          futureDate.setDate(futureDate.getDate() + 30)
+          const diaf = futureDate.getDate().toString().padStart(2, '0');
+          const mesf = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+          const aniof = futureDate.getFullYear();
+
+          fechaFormateadaF = `${aniof}-${mesf}-${diaf}`;
+
+          alquilerCompleto.fecha_inicio = fechaFormateada;
+          alquilerCompleto.fecha_fin = fechaFormateadaF
+        }
+
+        alquilerCompleto.fecha_inicio = fechaFormateada;
+        alquilerCompleto.fecha_fin = fechaFormateadaF;
+
+        console.log(alquilerCompleto)
+
+        // Realizar la actualización del alquiler completo
+        await AlquilerService.update(this.alquiler.id, alquilerCompleto);
+
+        // Redireccionar a la página de alquiler
+        this.$router.push("/rent-owner");
+      } catch (error) {
+        console.error("Error al aceptar el alquiler:", error);
+      }
     },
-    declinarAlquiler() {
-      this.nuevoVehiculo.estadoRenta = "Disponible";
-      this.nuevoVehiculo.arrendatarioId = null;
-      this.nuevoVehiculo.alquilerId = null;
+    async declinarAlquiler() {
+      try {
+        // Obtener el alquiler completo
+        const response = await AlquilerService.getById(this.alquiler.id);
+        const alquilerCompleto = response.data;
 
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .catch((error) => {
-            console.error('Error al actualizar el vehículo:', error);
-          });
+        // Actualizar solo el campo 'estado'
+        alquilerCompleto.estado = "Rechazado";
 
-      this.router.push({path:"/rent-owner"});
+        // Realizar la actualización del alquiler completo
+        await AlquilerService.update(this.alquiler.id, alquilerCompleto);
+
+        // Actualizar el estado del vehículo
+        await VehiculoService.update(this.vehiculo.id, { estadoRenta: "Disponible", arrendatario_id: null });
+
+        // Redireccionar a la página de alquiler
+        this.$router.push("/rent-owner");
+      } catch (error) {
+        console.error("Error al declinar el alquiler:", error);
+      }
     },
   },
   created() {
@@ -106,14 +155,13 @@ export default {
   },
 };
 </script>
-
 <template>
   <pv-toast />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
             aria-label="Logo de la aplicación DriveSafe"
@@ -132,8 +180,6 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
-                style="background-color: white; color: #14131B;"
-                :aria-label="`Ir a ${item.label}`"
             >
               {{ item.label }}
             </pv-button>
@@ -153,22 +199,19 @@ export default {
 
   <div class="container">
     <div class="half-width-card">
-      <Card>
+      <Card v-if="arrendatario">
         <template #title>
-
+          <h1 style="font-family: 'Poppins', sans-serif">Alquiler</h1>
         </template>
         <template #content>
-          <div v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-            <img :src="vehiculo.urlImagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-            <h2 style="font-family: 'Poppins', sans-serif">Marca: {{ vehiculo.marca }}</h2>
-            <h2 style="font-family: 'Poppins', sans-serif">Modelo: {{ vehiculo.modelo }}</h2>
-            <h2 style="font-family: 'Poppins', sans-serif;">Arrendatario: {{ vehiculo.arrendatario.nombres }} {{vehiculo.arrendatario.apellidos}}</h2>
-
-            <div v-for="alquiler in alquileresFiltrados" :key="alquiler.id">
-              <h2 style="font-family: 'Poppins', sans-serif;">Precio del alquiler: S/. {{ alquiler.costo_total }}</h2>
-            </div>
-
-            <h2 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estadoRenta }}</h2>
+          <div>
+            <h2>Nombres: {{ arrendatario.nombres }}</h2>
+            <h2>Apellidos: {{ arrendatario.apellidos }}</h2>
+            <h2>Celular: {{ arrendatario.telefono }}</h2>
+            <h2>Correo: {{ arrendatario.correo }}</h2>
+          </div>
+          <div>
+            <h2>Solicito alquilar {{ vehiculo.marca }} / {{ vehiculo.modelo }} </h2>
           </div>
         </template>
       </Card>
@@ -180,10 +223,18 @@ export default {
 
         </template>
         <template #content>
-          <Button @click="abrirAntecedentesPenales" style="font-family: 'Poppins',sans-serif" class="custom-button2" aria-label="Ver antecedentes penales del arrendatario">Ver antecedentes penales del arendatario</Button>
+          <Button @click="abrirAntecedentesPenales" style="font-family: 'Poppins', sans-serif" class="custom-button2" aria-label="Ver antecedentes penales del arrendatario">Ver antecedentes penales del arrendatario</Button>
           <h2 style="font-family: 'Poppins', sans-serif">Opciones de alquiler:</h2>
-          <Button @click="aceptarAlquiler" class="accept-button" aria-label="Aceptar">Aceptar</Button>
-          <Button @click="declinarAlquiler" class="decline-button" aria-label="Declinar">Declinar</Button>
+
+          <div v-if="alquiler">
+            <div v-if="alquiler.estado !== 'Pendiente'">
+              <p>La solicitud ha sido aceptada.</p>
+            </div>
+            <div v-else>
+              <Button @click="aceptarAlquiler" class="accept-button" aria-label="Aceptar">Aceptar</Button>
+              <Button @click="declinarAlquiler" class="decline-button" aria-label="Declinar">Declinar</Button>
+            </div>
+          </div>
 
         </template>
       </Card>
