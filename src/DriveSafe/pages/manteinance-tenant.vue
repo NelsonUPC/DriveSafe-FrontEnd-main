@@ -1,11 +1,13 @@
-
 <script>
 import Card from "primevue/card";
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import PropietarioService from "@/DriveSafe/services/propietario.service";
-export default{
+import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import UserService from "@/DriveSafe/services/user.service";
+import ManteinanceService from "@/DriveSafe/services/manteinance.service.js";
+import Swal from 'sweetalert2'
+
+export default {
   components: {
     Card,
     Dropdown,
@@ -13,77 +15,117 @@ export default{
   },
   data() {
     return {
-      drawer: false,
       items: [
         { label: "Inicio", to: "/home" },
         { label: "Buscar Autos", to: "/car-search-tenant" },
         { label: "Mantenimiento", to: "/manteinance-tenant" },
         { label: "Alquiler", to: "/rent-tenant" },
       ],
+      alquileres: [],
       userOptions: [],
+      userOptionsId: [],
+      value1: null,
+      value2: null,
+      value3: null,
       selectedUser: null,
     };
   },
   methods: {
-    rotateCarousel(step) {
-      const cardContainer = document.querySelector(".carousel-cards");
-      const hiddenCards = document.querySelectorAll(".hidden-card");
-      const visibleCards = cardContainer.querySelectorAll(".card:not(.hidden-card)");
+    async obtenerAlquileresUsuario() {
+      try {
+        const usuarioId = parseInt(localStorage.getItem('usuarioId'));
+        console.log("UsuarioId", usuarioId)
+        const response = await AlquilerService.getAll();
+        this.alquileres = response.data
+        console.log("Alquileres", this.alquileres)
 
-      const totalVisibleCards = visibleCards.length;
-      const totalHiddenCards = hiddenCards.length;
+        // Conjunto para almacenar los nombres únicos de los propietarios
+        const uniquePropietarios = new Set();
+        const uniqueIds = new Set();
 
-      const newCardCount = this.cardCount + step;
+        for (let alquiler of this.alquileres){
+          if (alquiler.arrendatario_id === usuarioId){
+            console.log('Alquiler ID: ', alquiler.id)
+            const usuarioResponse = await UserService.getUserById(alquiler.propietario_id);
+            console.log('Usuario: ', usuarioResponse.data)
 
-      if (newCardCount >= 1 && newCardCount <= totalVisibleCards + totalHiddenCards) {
-        this.cardCount = newCardCount;
-
-        hiddenCards.forEach((card) => {
-          card.style.display = "none";
-        });
-
-        for (let i = 0; i < this.cardCount; i++) {
-          if (visibleCards[i]) {
-            visibleCards[i].style.display = "flex";
+            // Almacena el nombre del propietario en el conjunto
+            uniquePropietarios.add(`${usuarioResponse.data.nombres} ${usuarioResponse.data.apellidos}`);
+            uniqueIds.add(`${usuarioResponse.data.id}`)
           }
         }
+
+        // Convierte el conjunto de nombres únicos a un arreglo y asígnalo a userOptions
+        this.userOptions = Array.from(uniquePropietarios);
+        console.log("User Options", this.userOptions)
+
+        this.userOptionsId = Array.from(uniqueIds);
+        console.log("User Ids", this.userOptionsId)
+
+      } catch (error) {
+        console.error("Error al obtener los alquileres del usuario:", error);
       }
     },
-    enviarSolicitud() {
-      this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Mensaje enviado al correo del propietario exitosamente.' });
-    },
+    async enviarSolicitud() {
+      // Validar que todos los campos estén llenos
+      if (!this.value1 || !this.value2 || !this.value3 || !this.selectedUser) {
+        // Mostrar alerta de error con SweetAlert
+        Swal.fire({
+          icon: 'error',
+          title: 'Campos incompletos',
+          text: 'Por favor, completa todos los campos antes de enviar la solicitud.',
+          confirmButtonText: 'Aceptar'
+        });
+        return; // Detener el flujo si hay campos incompletos
+      }
+
+      // Obtiene la posición del nombre seleccionado en el arreglo userOptions
+      const selectedUserIndex = this.userOptions.indexOf(this.selectedUser);
+
+      // Obtiene el ID correspondiente al nombre seleccionado
+      const propietarioId = this.userOptionsId[selectedUserIndex];
+
+      console.log("Propietario seleccionado:", this.selectedUser);
+      console.log("ID del propietario:", propietarioId);
+
+      const manteinance = {
+        id: null,
+        tipo_problema: this.value1,
+        titulo: this.value2,
+        descripcion: this.value3,
+        arrendatario_id: parseInt(localStorage.getItem('usuarioId')),
+        propietario_id: parseInt(propietarioId)
+      };
+
+      console.log("Manteinance", manteinance);
+
+      try {
+        const response = await ManteinanceService.create(manteinance);
+        console.log("Mantenimiento creado:", response);
+
+        // Mostrar mensaje de éxito utilizando Swal
+        Swal.fire({
+          icon: 'success',
+          title: 'Mantenimiento creado exitosamente',
+          text: 'El mantenimiento se ha creado correctamente.',
+          confirmButtonText: 'Aceptar'
+        });
+
+      } catch (error) {
+        console.error("Error al crear el mantenimiento:", error);
+        // Aquí puedes manejar el error, mostrar un mensaje de error, etc.
+        // Mostrar mensaje de error utilizando Swal
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al crear el mantenimiento. Por favor, inténtalo de nuevo.',
+          confirmButtonText: 'Aceptar'
+        });
+      }
+    }
   },
   created() {
-    const arrendatarioId = parseInt(localStorage.getItem("arrendatarioId"));
-
-    console.log("arrendatarioId", localStorage.getItem("arrendatarioId"));
-
-    VehiculoService.getAll()
-        .then((response) => {
-          const vehiculosAlquilados = response.data.filter(
-              (vehiculo) => vehiculo.arrendatario && vehiculo.arrendatario.id === arrendatarioId
-          );
-
-          console.log("va: ", vehiculosAlquilados);
-
-          const propietarioIds = [...new Set(vehiculosAlquilados.map((v) => v.propietario.id))];
-
-          console.log("propietarios: ", propietarioIds);
-
-          PropietarioService.getAll()
-              .then((propietariosResponse) => {
-                const propietarios = propietariosResponse.data.filter((p) => propietarioIds.includes(p.id));
-
-                this.userOptions = propietarios.map((propietario) => `${propietario.nombres} ${propietario.apellidos}`);
-                console.log("userop: ", this.userOptions);
-              })
-              .catch((error) => {
-                console.error("Error al obtener detalles de propietarios:", error);
-              });
-        })
-        .catch((error) => {
-          console.error("Error al obtener vehículos alquilados:", error);
-        });
+    this.obtenerAlquileresUsuario();
   }
 };
 </script>
@@ -94,7 +136,7 @@ export default{
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://imgur.com/a/DWk9R7P"
             alt="Logo"
             style="height: 40px; margin-right: 20px;"
         />
@@ -132,31 +174,49 @@ export default{
     <div class="half-width-card">
       <Card role="region" aria-labelledby="card1Title">
         <template #title>
-          <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">MANTENIMIENTO</h1>
+          <h1 id="card1Title" style="font-family: 'Poppins',sans-serif; color:#FF7A00">
+            MANTENIMIENTO
+          </h1>
         </template>
         <template #content>
-          <p style="font-family: 'Poppins',sans-serif">Cree una solicitud para su arrendador en minutos con información detallada sobre el problema y fotografías relevantes. Además, puede comunicarse con el arrendador cuando le sea necesario.</p>
-          <p style="font-family: 'Poppins',sans-serif; color:#FF7A00">Vea la respuesta del propietario en su correo electrónico.</p>
+          <p style="font-family: 'Poppins',sans-serif">
+            Cree una solicitud para su arrendador en minutos con información detallada sobre el
+            problema y fotografías relevantes. Además, puede comunicarse con el arrendador cuando le
+            sea necesario.
+          </p>
+          <p style="font-family: 'Poppins',sans-serif; color:#FF7A00">
+            Vea la respuesta del propietario en su correo electrónico.
+          </p>
         </template>
       </Card>
     </div>
     <div class="half-width-card">
       <Card role="form" aria-labelledby="card2Title">
         <template #title>
-          <h2 id="card2Title" style="font-family: 'Poppins',sans-serif">Formulario de Mantenimiento</h2>   // revicion de etiquetas
+          <h2 id="card2Title" style="font-family: 'Poppins',sans-serif">
+            Formulario de Mantenimiento
+          </h2>
         </template>
         <template #content>
-          <p style="font-family: 'Poppins',sans-serif">Seleccionar nombre del propietario del auto alquilado</p>
-          <Dropdown :options="userOptions" v-model="selectedUser" placeholder="Selecciona un propietario" role="combobox" aria-expanded="false" />
-           <Card role="region" aria-labelledby="card3Title">
-             <template #title></template>
+          <p style="font-family: 'Poppins',sans-serif">
+            Seleccionar nombre del propietario del auto alquilado
+          </p>
+          <Dropdown
+              :options="userOptions"
+              v-model="selectedUser"
+              placeholder="Selecciona un propietario"
+              role="combobox"
+              aria-expanded="false"
+          />
+          <Card role="region" aria-labelledby="card3Title">
+            <template #title></template>
             <template #content>
               <p style="font-family: 'Poppins',sans-serif">Tipo de problema</p>
               <InputText v-model="value1" placeholder="Tipo de problema" style="font-family: 'Poppins',sans-serif" role="textbox"/>
               <p style="font-family: 'Poppins',sans-serif">Titulo</p>
-              <InputText v-model="value1" placeholder="Titulo" style="font-family: 'Poppins',sans-serif" role="textbox"/>
+              <InputText v-model="value2" placeholder="Titulo" style="font-family: 'Poppins',sans-serif" role="textbox"/>
               <p style="font-family: 'Poppins',sans-serif">Descripcion</p>
-              <InputText v-model="value1" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif" role="textbox"/>
+              <InputText v-model="value3" placeholder="Descripcion" style="font-family: 'Poppins',sans-serif" role="textbox"/>
 
               <div class="button-container">
                 <Button class="custom-button3">Agregar Fotos</Button>
@@ -168,7 +228,6 @@ export default{
       </Card>
     </div>
   </div>
-
 </template>
 
 
