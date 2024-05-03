@@ -1,5 +1,4 @@
 <script>
-import PropietarioService from "@/DriveSafe/services/propietario.service";
 export default {
   data(){
     return {
@@ -23,27 +22,21 @@ export default {
   methods: {
     async cargarInformacionPropietario() {
       try {
-        const response = await PropietarioService.getAll();
-        const propietario = response.data.find(
-            (propietario) =>
-                propietario.id === parseInt(localStorage.getItem("propietarioId"))
-        );
+        this.user.name = localStorage.getItem("usuarioNombres");
 
-        if (propietario) {
-          this.user.name = propietario.nombres;
-          this.user.lastName = propietario.apellidos;
-          this.user.phone = propietario.telefono;
-          this.user.email = propietario.correo;
-          this.user.birthday = propietario.fechaNacimiento;
-        }
+        this.user.lastName = localStorage.getItem("usuarioApellidos");
+
+        this.user.phone = localStorage.getItem("usuarioCelular");
+
+        this.user.email = localStorage.getItem("usuarioCorreo");
+
       } catch (error) {
         console.error("Error al cargar la información del propietario:", error);
       }
     },
     cerrarSesion() {
       this.$router.push('/login');
-      localStorage.setItem("propietarioId", null);
-      localStorage.setItem("fotoOwner", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png")
+      localStorage.clear()
     },
   },
   created() {
