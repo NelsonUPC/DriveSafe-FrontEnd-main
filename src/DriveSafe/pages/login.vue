@@ -76,8 +76,10 @@ export default {
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png" alt="Sakai logo"
-           class="mb-5 w-6rem flex-shrink-0">
+      <img data-v-f5a3c044="" src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
+           alt="Logo"
+           style="height: 70px; margin-right: 20px;"
+           aria-label="DriveSafe Logo">
       <div
           style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #FF7A00 10%, rgba(33, 150, 243, 0) 30%)">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">

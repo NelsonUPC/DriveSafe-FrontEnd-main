@@ -98,8 +98,10 @@ const registerUser = async () => {
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
        aria-label="Página de registro de usuario">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img data-v-f5a3c044="" src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png" alt="DriveSafe logo"
-           class="mb-5 w-6rem flex-shrink-0" aria-label="Logo de la aplicación DriveSafe">
+      <img data-v-f5a3c044="" src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
+           alt="Logo"
+           style="height: 70px; margin-right: 20px;"
+           aria-label="DriveSafe Logo">
 
       <div style="border-radius: 56px; padding: 0.3rem; border: 1px solid black;"
            aria-label="Fondo de la página de registro">

@@ -26,9 +26,10 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar" role="banner">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 40px; margin-right: 20px;"
+            style="height: 70px; margin-right: 20px;"
+            aria-label="DriveSafe Logo"
         />
       </template>
       <template #end>
