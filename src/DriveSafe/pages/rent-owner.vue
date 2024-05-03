@@ -2,6 +2,7 @@
 import Card from 'primevue/card';
 import VehiculoService from "@/DriveSafe/services/vehiculo.service";
 import {useRouter} from "vue-router";
+import Swal from "sweetalert2";
 export default {
   components: {
     Card,
@@ -10,10 +11,10 @@ export default {
     return {
       drawer: false,
       items: [
-        { label: "Inicio", to: "/init-propie" },
-        { label: "Registro", to: "/car-registration-owner" },
-        { label: "Notificaciones", to: "/notifications" },
-        { label: "Alquiler", to: "/rent-owner" },
+        {label: "Inicio", to: "/init-propie"},
+        {label: "Registro", to: "/car-registration-owner"},
+        {label: "Notificaciones", to: "/notifications"},
+        {label: "Alquiler", to: "/rent-owner"},
       ],
       vehiculos: [],
       vehiculosFiltrados: [],
@@ -23,10 +24,8 @@ export default {
   methods: {
     async cargarVehiculos() {
       try {
-        const response = await VehiculoService.getAll();
-        this.vehiculos = response.data;
-        this.vehiculosFiltrados = this.vehiculos.filter(vehiculo => vehiculo.propietario.id === parseInt(localStorage.getItem("propietarioId")));
-        console.log("Vehiculos", this.vehiculos);
+        const response = await VehiculoService.getByUserId(parseInt(localStorage.getItem("usuarioId")));
+        this.vehiculosFiltrados = response.data;
         console.log("Vehiculos Filtrados", this.vehiculosFiltrados);
       } catch (error) {
         console.error("Error al cargar los vehículos:", error);
@@ -36,15 +35,23 @@ export default {
       try {
         await VehiculoService.delete(idVehiculo);
         this.cargarVehiculos();
-        this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Publicación eliminada correctamente.' });
+        await Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Publicación eliminada correctamente.'
+        });
       } catch (error) {
         console.error("Error al eliminar la publicación:", error);
-        this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la publicación.' });
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al eliminar la publicación.'
+        });
       }
     },
     verSolicitud(vehiculoId) {
       localStorage.setItem("vehiculoAlquiladoId", vehiculoId);
-      this.router.push({path:"/read-request"});
+      this.router.push({path: "/read-request"});
     }
   },
   created() {
@@ -54,14 +61,15 @@ export default {
 </script>
 
 <template>
-  <pv-toast aria-live="polite" />
+  <pv-toast aria-live="polite"/>
   <header>
     <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 40px; margin-right: 20px;"
+            style="height: 70px; margin-right: 20px;"
+            aria-label="DriveSafe Logo"
         />
       </template>
       <template #end>
@@ -100,13 +108,15 @@ export default {
       <Card role="region" aria-labelledby="cardTitle{{vehiculo.id}}">
         <template #title></template>
         <template #content>
-          <img :src="vehiculo.urlImagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+          <img :src="vehiculo.url_imagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;"/>
           <p id="cardTitle{{vehiculo.id}}" style="font-family: 'Poppins', sans-serif">Id: {{ vehiculo.id }}</p>
           <p style="font-family: 'Poppins', sans-serif">Marca/Modelo: {{ vehiculo.marca }}/{{ vehiculo.modelo }}</p>
           <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estadoRenta }}</h1>
-          <button class="custom-button3" @click="eliminarPublicacion(vehiculo.id)" role="button">Eliminar publicación</button>
-          <button v-if="vehiculo.estadoRenta === 'Solicitado'" class="custom-button3" @click="verSolicitud(vehiculo.id)" role="button">Ver solicitud</button>
-          <i class="pi pi-globe" style="font-size: 1.5em; cursor: pointer;" @click="" role="button"></i>
+          <button class="custom-button3" @click="eliminarPublicacion(vehiculo.id)" role="button">Eliminar publicación
+          </button>
+          <button v-if="vehiculo.estadoRenta === 'Solicitado'" class="custom-button3" @click="verSolicitud(vehiculo.id)"
+                  role="button">Ver solicitud
+          </button>
         </template>
       </Card>
     </div>
@@ -207,8 +217,8 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap; 
-  gap: 10px; 
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .card-item {
