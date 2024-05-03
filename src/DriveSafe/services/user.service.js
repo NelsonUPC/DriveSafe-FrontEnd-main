@@ -1,13 +1,23 @@
 import axios from 'axios';
-import authHeader from './auth-header';
-import http from "@/shared/services/http-common";
 
-const API_URL = 'https://DriveSafeprueva.azurewebsites.net/api/v1/';
+const URL = 'https://fake-api-pi-rose.vercel.app/';
 
 class UserService {
 
-    getUserBoard() {
-        return axios.get(API_URL + 'users', { headers: authHeader() });
+    getUsers() {
+        return axios.get(URL+'usuario' );
+    }
+
+    getUserById(id) {
+        return axios.get(`${URL}usuario/${id}`);
+    }
+
+    create(data){
+        return axios.post(URL + 'usuario', data)
+    }
+
+    update(id, data) {
+        return axios.put(`${URL}usuario/${id}`, data);
     }
 }
 
