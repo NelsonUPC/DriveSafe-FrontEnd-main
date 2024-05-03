@@ -1,8 +1,9 @@
 <script>
-import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
-import PropietarioService from "@/DriveSafe/services/propietario.service";
+import Swal from 'sweetalert2';
+import UserService from "@/DriveSafe/services/user.service";
+
 export default {
-  data(){
+  data() {
     return {
       drawer: false,
       items: [
@@ -11,48 +12,69 @@ export default {
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
       ],
+      arrendatarioId: parseInt(localStorage.getItem("usuarioId")),
       nombres: '',
       apellidos: '',
       celular: '',
       fechaNacimiento: '',
-      antecedentesPenalesPdf: '',
-      fotoPerfil: '',
+      contrasenia: '',
+      correo: localStorage.getItem("usuarioCorreo") // Obtener el correo del localStorage
     };
   },
   methods: {
-    async actualizarDatosTenant() {
-      const arrendatarioId = parseInt(localStorage.getItem("arrendatarioId"));
-
-      if (!arrendatarioId) {
-        return;
+    async actualizarDatosOwner() {
+      // Verificar si algún campo está vacío
+      if (!this.nombres || !this.apellidos || !this.celular || !this.fechaNacimiento || !this.contrasenia || !this.correo) {
+        // Mostrar advertencia Swal
+        Swal.fire({
+          icon: 'warning',
+          title: 'Advertencia',
+          text: 'Por favor, completa todos los campos.',
+        });
+        return; // Salir del método si algún campo está vacío
       }
 
       try {
-        const response2 = await ArrendatarioService.getAll();
-        const arrendatario = response2.data.find(
-            (arrendatario) =>
-                arrendatario.id === arrendatarioId
-        );
+        // Obtener los datos del usuario
+        const response = await UserService.getUserById(this.arrendatarioId);
+        const responseUser = response.data;
 
-        const response = await ArrendatarioService.update(arrendatarioId, {
-          nombres: this.nombres,
-          apellidos: this.apellidos,
-          fechaNacimiento: this.fechaNacimiento,
-          telefono: this.celular,
-          correo: arrendatario.correo,
-          antecedentesPenalesPdf: this.antecedentesPenalesPdf,
-          contrasenia: arrendatario.contrasenia,
-        });
+        // Actualizar los datos del usuario con los nuevos valores
+        responseUser.nombres = this.nombres;
+        responseUser.apellidos = this.apellidos;
+        responseUser.fecha_nacimiento = this.fechaNacimiento;
+        responseUser.telefono = this.celular;
+        responseUser.correo = this.correo;
+        responseUser.contrasenia = this.contrasenia;
+        responseUser.tipo = "arrendatario";
 
-        localStorage.setItem("fotoTenant", this.fotoPerfil);
+        // Actualizar los datos del usuario en el servidor
+        const responseUpdate = await UserService.update(this.arrendatarioId, responseUser);
 
-        console.log("Respuesta del servicio de arrendatario:", response);
-        this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Información actualizada exitosamente.' });
-        this.$router.push('/profile-tenant');
+        // Verificar si la actualización en el servidor fue exitosa
+        if (responseUpdate.status === 200) {
+          // Actualizar localStorage si la actualización en el servidor fue exitosa
+          localStorage.setItem("usuarioNombres", this.nombres);
+          localStorage.setItem("usuarioApellidos", this.apellidos);
+          localStorage.setItem("usuarioCelular", this.celular);
+          localStorage.setItem("usuarioCorreo", this.correo); // Actualizar el correo en el localStorage
+
+          // Redirigir al usuario a la página de perfil
+          this.$router.push('/profile-tenant');
+        } else {
+          // Mostrar mensaje de error si la actualización en el servidor falló
+          throw new Error("La actualización de datos del usuario falló.");
+        }
       } catch (error) {
-        console.error("Error al actualizar datos del arrendatario:", error);
+        console.error("Error al actualizar datos del propietario:", error);
+        // Mostrar mensaje de error
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al actualizar los datos del propietario. Por favor, inténtalo de nuevo más tarde.',
+        });
       }
-    },
+    }
   }
 };
 </script>
@@ -63,9 +85,10 @@ export default {
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 40px; margin-right: 20px;"
+            style="height: 70px; margin-right: 20px;"
+            aria-label="DriveSafe Logo"
         />
       </template>
       <template #end>
@@ -76,7 +99,6 @@ export default {
               custom
               v-slot="{ navigate, href }"
               :key="item.label"
-              role="menuitem"
           >
             <pv-button
                 class="custom-button"
@@ -87,7 +109,7 @@ export default {
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-tenant" role="menuitem">
+          <router-link to="/profile-owner">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -98,21 +120,22 @@ export default {
       </template>
     </pv-toolbar>
   </header>
-  <main class="center-container" style="margin-top: 150px;">
-  <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
-  <h2>Nombres</h2><br>
-  <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <h2>Apellidos</h2><br>
-  <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <h2>Celular</h2><br>
-  <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <h2>Fecha de nacimiento</h2><br>
-  <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <h2>URL antecedentes penales</h2><br>
-  <pv-input placeholder="Antecedentes penales" v-model="antecedentesPenalesPdf" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <h2>URL foto de perfil</h2><br>
-  <pv-input placeholder="Foto de perfil" v-model="fotoPerfil" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-  <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosTenant" role="button">Actualizar</Button>
+  <main class="center-container" style="margin-top: 100px;">
+    <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
+    <h2>Nombres</h2><br>
+    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>Apellidos</h2><br>
+    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>Celular</h2><br>
+    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>Fecha de nacimiento</h2><br>
+    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>Contraseña</h2><br>
+    <pv-input placeholder="Nueva contraseña" v-model="contrasenia" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>Correo electrónico</h2><br>
+    <pv-input placeholder="Nuevo correo electrónico" v-model="correo" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+
+    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosOwner()" role="button">Actualizar</Button>
   </main>
 </template>
 
