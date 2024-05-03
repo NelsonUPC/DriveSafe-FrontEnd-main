@@ -1,18 +1,20 @@
-import http from '../../shared/services/http-common';
+import axios from 'axios';
+
+const URL = 'https://fake-api-pi-rose.vercel.app/';
 
 class AlquilerService {
     getAll() {
-        return http.get('/alquileres');
+        return axios.get(URL + 'alquiler');
     }
     create(data) {
-        return http.post('/alquileres', data);
+        return axios.post(URL + 'alquiler', data);
     }
     update(id, data) {
-        return http.put(`/alquileres/${id}`, data);
+        return axios.put(URL + `alquiler/${id}`, data);
     }
 
     delete(id) {
-        return http.delete(`/alquileres/${id}`);
+        return axios.delete(URL + `alquiler/${id}`);
     }
 }
 
