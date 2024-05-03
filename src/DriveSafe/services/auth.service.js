@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-const API_URL = 'https://DriveSafe.prueva.azurewebsites.net/api/v1/';
+const API_URL = 'https://fake-api-pi-rose.vercel.app/';
 
 class AuthService {
-    login(user) {
+    login(user){
+
+    }
+    /*login(user) {
         return axios
             .post(API_URL + 'users/sign-in', {
                 email: user.email,
@@ -16,7 +19,7 @@ class AuthService {
 
                 return response.data;
             });
-    }
+    }*/
 
     logout() {
         localStorage.removeItem('user');
