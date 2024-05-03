@@ -1,13 +1,13 @@
 <script>
-
 import Card from "primevue/card"
 import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
 import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import NotificacionService from "@/DriveSafe/services/notificacion.service";
 import AlquilerService from "@/DriveSafe/services/alquiler.service";
 import {useRouter} from "vue-router";
-export default{
+import UserService from "@/DriveSafe/services/user.service";
+
+export default {
   components: {
     Card,
     InputText,
@@ -16,10 +16,10 @@ export default{
     return {
       drawer: false,
       items: [
-        { label: "Inicio", to: "/home" },
-        { label: "Buscar Autos", to: "/car-search-tenant" },
-        { label: "Mantenimiento", to: "/manteinance-tenant" },
-        { label: "Alquiler", to: "/rent-tenant" },
+        {label: "Inicio", to: "/home"},
+        {label: "Buscar Autos", to: "/car-search-tenant"},
+        {label: "Mantenimiento", to: "/manteinance-tenant"},
+        {label: "Alquiler", to: "/rent-tenant"},
       ],
       value1: null,
       cardCount: 4,
@@ -27,6 +27,7 @@ export default{
       tiempoAlquiler: null,
       resultadoCosto: null,
       nuevoVehiculo: null,
+      propietario: null,
       router: useRouter(),
     };
   },
@@ -36,12 +37,27 @@ export default{
         window.open(this.vehiculo.contratoAlquilerPdf, "_blank");
       }
     },
-    calcularCosto() {
-      if (this.tiempoAlquiler !== null && !isNaN(this.tiempoAlquiler) && this.vehiculo) {
-        this.resultadoCosto = this.tiempoAlquiler * this.vehiculo.costoAlquiler;
-      } else {
-        this.resultadoCosto = null;
-      }
+    crearAlquiler() {
+      // Definimos los datos del alquiler
+      const alquilerData = {
+        id: null,
+        estado: "Pendiente",
+        fecha_inicio: "por definir",
+        fecha_fin: "por definir",
+        vehiculo_id: this.vehiculo.id,
+        propietario_id: this.propietario.id,
+        arrendatario_id: parseInt(localStorage.getItem("usuarioId"))
+      };
+
+      // Llamamos al método create de AlquilerService para crear el alquiler
+      AlquilerService.create(alquilerData)
+          .then(() => {
+            localStorage.setItem("vehiculoId", null);
+            console.log("Alquiler creado con éxito.");
+          })
+          .catch((error) => {
+            console.error("Error al crear alquiler:", error);
+          });
     },
     solicitarAlquiler() {
       this.nuevoVehiculo = this.vehiculo;
@@ -55,13 +71,6 @@ export default{
               propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
               arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
             };
-
-            const fechaActual = new Date();
-            const dia = fechaActual.getDate().toString().padStart(2, '0');
-            const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
-            const anio = fechaActual.getFullYear();
-
-            const fechaFormateada = `${dia}-${mes}-${anio}`;
 
             const alquilerData = {
               estado: "Solicitado",
@@ -86,7 +95,7 @@ export default{
           .catch((error) => {
             console.error('Error al solicitar alquiler:', error);
           });
-      this.router.push({path:"/rent-tenant"});
+      this.router.push({path: "/rent-tenant"});
     },
   },
 
@@ -102,6 +111,22 @@ export default{
 
             if (vehiculoEncontrado) {
               this.vehiculo = vehiculoEncontrado;
+
+              // Ahora obtenemos la información del propietario
+              UserService.getUserById(parseInt(this.vehiculo.propietario_id))
+                  .then((response) => {
+                    this.propietario = response.data;
+                    // Ahora que tenemos la información del propietario, podemos imprimir la información del vehículo
+                    console.log("Costo Total", this.vehiculo.costo_total);
+                    console.log("Vehiculo Id", this.vehiculo.id);
+                    console.log("Propietario_id", parseInt(this.vehiculo.propietario_id));
+                    console.log("Arrendatario_id", parseInt(localStorage.getItem("usuarioId")));
+
+                  })
+                  .catch((error) => {
+                    console.error("Error al obtener la información del propietario:", error);
+                  });
+
             } else {
               console.error("No se encontró el vehículo con ID:", vehiculoId);
             }
@@ -117,14 +142,15 @@ export default{
 </script>
 
 <template>
-  <pv-toast aria-live="polite" />
+  <pv-toast aria-live="polite"/>
   <header>
     <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.imgur.com/hIAgH3Z.png"
+            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 40px; margin-right: 20px;"
+            style="height: 70px; margin-right: 20px;"
+            aria-label="DriveSafe Logo"
         />
       </template>
       <template #end>
@@ -159,23 +185,25 @@ export default{
     </pv-toolbar>
   </header>
 
-<pv-toast aria-live="polite" />
+  <pv-toast aria-live="polite"/>
   <div class="container" role="main">
     <div class="half-width-card">
       <Card role="region" aria-labelledby="card1Title">
         <template #title>
-          <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar vehículo</h2>
+          <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar
+            vehículo</h2>
         </template>
         <template #content>
           <div v-if="vehiculo" class="center-content">
             <img
-                :src="vehiculo.urlImagen"
+                :src="vehiculo.url_imagen"
                 alt="Imagen de vehículo"
                 style="max-width: 100%; max-height: 300px;"
             />
             <div class="card-title">{{ vehiculo.marca }} {{ vehiculo.modelo }}</div>
-            <!-- Agrega más campos según tus necesidades -->
-            <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">Ver Contrato de Alquiler</Button>
+            <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button"
+                    role="button">Ver Contrato de Alquiler
+            </Button>
           </div>
           <div v-else>
             <p>Cargando información del vehículo...</p>
@@ -187,25 +215,18 @@ export default{
       <Card role="form" aria-labelledby="card2Title">
         <template #title>
           <div style="text-align: center;">
-            <h1 id="card2Title" style="font-family: 'Poppins', sans-serif; color: #FF7A00;">Calcular Costo de Alquiler</h1>
+
           </div>
         </template>
         <template #content>
           <div>
-            <h2 style="text-align: center;">Ingrese el tiempo de alquiler</h2>
-            <div class="p-inputgroup input-container">
-              <InputText type="number" style="text-align: center;" v-model="tiempoAlquiler" placeholder="Ingrese el tiempo de alquiler" role="spinbutton" />
-            </div><br>
-            <div style="text-align: center;">
-              <Button @click="calcularCosto" class="font-button" role="button">Calcular</Button>
-            </div><br>
-            <h2 style="text-align: center;">Resultado del cálculo:</h2>
-            <div v-if="resultadoCosto !== null" class="orange-text-body">
-              S/. {{ resultadoCosto }}<br><br>
-              El pago deberá realizarse en efectivo<br><br>
-              <Button @click="solicitarAlquiler" class="font-button" role="button">Solicitar Alquiler</Button>
-            </div>
+            <h1>Contrato de Alquiler</h1>
+            <h1>Mi nombre es {{ propietario ? propietario.nombres + ' ' + propietario.apellidos : '...' }}, yo como
+              propietario del vehículo doy los siguientes reglamentos</h1>
           </div>
+          <Button @click="crearAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">
+            Crear Alquiler
+          </Button>
         </template>
       </Card>
     </div>
@@ -219,6 +240,7 @@ export default{
   position: relative;
   height: 500px;
 }
+
 .background-image {
   width: 100%;
   height: 100%;
@@ -229,6 +251,7 @@ export default{
   z-index: -1;
   opacity: 0.9;
 }
+
 .floating-card {
   position: absolute;
   top: 50%;
@@ -241,6 +264,7 @@ export default{
   border-radius: 15px;
 
 }
+
 .orange-text {
   color: #FF7A00;
   font-size: 50px;
@@ -249,6 +273,7 @@ export default{
   font-family: 'Poppins', sans-serif;
   white-space: nowrap;
 }
+
 .black-text {
   color: black;
   font-size: 50px;
@@ -257,21 +282,25 @@ export default{
   font-family: 'Poppins', sans-serif;
   white-space: nowrap;
 }
+
 .input-button-container {
   display: flex;
   align-items: center;
 }
+
 .input-container {
   display: flex;
   grid-gap: 40px;
   margin-top: 40px;
 }
+
 input {
   padding: 10px 40px 10px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px rgba(0, 0, 0, 0.1);
 }
+
 .search-button {
   background-color: black;
   color: white;
@@ -283,7 +312,8 @@ input {
   font-size: 18px;
   white-space: nowrap;
 }
-.black-text-body{
+
+.black-text-body {
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -293,7 +323,8 @@ input {
   text-align: center;
   padding: 10px;
 }
-.orange-text-body{
+
+.orange-text-body {
   color: #FF7A00;
   font-size: 18px;
   margin: 0;
@@ -311,24 +342,30 @@ input {
   padding-right: 50px;
   padding-left: 50px;
 }
+
 .card-carousel {
   display: flex;
   align-items: center;
   margin-top: 20px;
 }
-.hidden-card{
+
+.hidden-card {
   display: none;
 }
+
 .left-arrow {
   margin-right: 10px;
 }
+
 .right-arrow {
   margin-left: 10px;
 }
+
 .carousel-cards {
   display: flex;
   overflow-x: hidden;
 }
+
 .card {
   height: auto;
   display: flex;
@@ -341,9 +378,10 @@ input {
   background-color: #fff;
   flex: 1;
   max-width: 300px;
-  margin:10px;
+  margin: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
+
 .card img {
   max-height: 70%;
   object-fit: contain;
@@ -351,12 +389,14 @@ input {
   width: 100%;
   border-radius: 20px;
 }
+
 .card-title {
   font-size: 16px;
   margin-top: 10px;
   color: black;
 
 }
+
 .card-link {
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
@@ -384,7 +424,7 @@ input {
 }
 
 .font-button:hover,
-.font-button:focus{
+.font-button:focus {
   background-color: #14131B !important;
   color: white !important;
 }
