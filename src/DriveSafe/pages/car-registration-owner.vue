@@ -18,41 +18,40 @@ export default {
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
       ],
-      claseOptions: [
+      options_car_class: [
         "Familiar",
         "Deportivo",
         "Cargo car",
         "SUV",
         "Sedan"
       ],
-      transmisionOptions: [
+      options_transmission: [
         "Automático",
         "Manual"
       ],
-      tiempoOptions: [
+      options_time_type: [
         "Diario",
         "Semanal",
         "Mensual"
       ],
-      selectedTiempo: null,
-      selectedTransmision: null,
-      selectedClase: null,
-      marca: null,
-      modelo: null,
-      velocidad: null,
-      consumo: null,
-      dimensiones: null,
-      peso: null,
-      costoAlquiler: null,
-      lugar_recojo: null,
-      urlImagen: null,
-      mostrarInputUrlImagen: false,
+      selected_time_type: null,
+      selected_transmission: null,
+      selected_car_class: null,
+      brand: null,
+      model: null,
+      maximum_speed: null,
+      consumption: null,
+      dimensions: null,
+      weight: null,
+      rental_cost: null,
+      pick_up_place: null,
+      url_image: null,
     };
   },
   methods: {
     async registrarVehiculo() {
       // Validar campos obligatorios
-      if (!this.marca || !this.modelo || !this.velocidad || !this.consumo || !this.dimensiones || !this.peso || !this.selectedClase || !this.selectedTransmision || !this.selectedTiempo || !this.costoAlquiler || !this.lugar_recojo || !this.urlImagen) {
+      if (!this.brand || !this.model || !this.maximum_speed || !this.consumption || !this.dimensions || !this.weight || !this.selected_car_class || !this.selected_transmission || !this.selected_time_type || !this.rental_cost || !this.pick_up_place || !this.url_image) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -63,38 +62,37 @@ export default {
 
       try {
         const data = {
-          id: null,
-          marca: this.marca,
-          modelo: this.modelo,
-          velocidadMax: parseInt(this.velocidad),
-          consumo: parseInt(this.consumo),
-          dimensiones: this.dimensiones,
-          peso: parseInt(this.peso),
-          clase: this.selectedClase,
-          transmision: this.selectedTransmision,
-          tipo_tiempo: this.selectedTiempo,
-          costo_alquiler: parseInt(this.costoAlquiler),
-          lugar_recojo: this.lugar_recojo,
-          url_imagen: this.urlImagen,
-          estado_renta: "Disponible",
-          propietario_id: parseInt(localStorage.getItem("usuarioId")),
+          brand: this.brand,
+          model: this.model,
+          maximum_speed: parseInt(this.maximum_speed),
+          consumption: parseInt(this.consumption),
+          dimensions: this.dimensions,
+          weight: parseInt(this.weight),
+          car_class: this.selected_car_class,
+          transmission: this.selected_transmission,
+          time_type: this.selected_time_type,
+          rental_cost: parseInt(this.rental_cost),
+          pick_up_place: this.pick_up_place,
+          url_image: this.url_image,
+          rent_status: "Available",
+          owner_id: parseInt(localStorage.getItem("usuarioId")),
         };
 
         await VehiculoService.create(data);
 
         // Limpiar los campos después de registrar
-        this.marca = null;
-        this.modelo = null;
-        this.velocidad = null;
-        this.consumo = null;
-        this.dimensiones = null;
-        this.peso = null;
-        this.costoAlquiler = null;
-        this.lugar_recojo = null;
-        this.urlImagen = null;
-        this.selectedTiempo = null;
-        this.selectedClase = null;
-        this.selectedTransmision = null;
+        this.brand = null;
+        this.model = null;
+        this.maximum_speed = null;
+        this.consumption = null;
+        this.dimensions = null;
+        this.weight = null;
+        this.rental_cost = null;
+        this.pick_up_place = null;
+        this.url_image = null;
+        this.selected_time_type = null;
+        this.selected_car_class = null;
+        this.selected_transmission = null;
 
         Swal.fire({
           icon: 'success',
@@ -167,31 +165,31 @@ export default {
           <div class="input-grid">
             <div class="input-column">
               <p style="font-family: 'Poppins',sans-serif"><strong>Marca</strong></p>
-              <pv-input placeholder="Marca" v-model="marca" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Marca" v-model="brand" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Velocidad Max Km/Hr</strong></p>
-              <pv-input placeholder="Velocidad Max Km/Hr" v-model="velocidad" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Velocidad Max Km/Hr" v-model="maximum_speed" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Dimensiones An-Lg-At</strong></p>
-              <pv-input placeholder="Dimensiones An-Lg-At" v-model="dimensiones" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Dimensiones An-Lg-At" v-model="dimensions" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Clase</strong></p>
-              <Dropdown :options="claseOptions" placeholder="Selecciona una clase" v-model="selectedClase" style="font-family: 'Poppins',sans-serif" />
+              <Dropdown :options="options_car_class" placeholder="Selecciona una clase" v-model="selected_car_class" style="font-family: 'Poppins',sans-serif" />
               <p style="font-family: 'Poppins',sans-serif"><strong>Tipo de tiempo</strong></p>
-              <Dropdown :options="tiempoOptions" placeholder="Selecciona un tipo de tiempo" v-model="selectedTiempo" style="font-family: 'Poppins',sans-serif" />
+              <Dropdown :options="options_time_type" placeholder="Selecciona un tipo de tiempo" v-model="selected_time_type" style="font-family: 'Poppins',sans-serif" />
               <p style="font-family: 'Poppins',sans-serif"><strong>Lugar de recojo del vehículo</strong></p>
-              <pv-input placeholder="Lugar de recojo del vehículo" v-model="lugar_recojo" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Lugar de recojo del vehículo" v-model="pick_up_place" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
             <div class="input-column">
               <p style="font-family: 'Poppins',sans-serif"><strong>Modelo</strong></p>
-              <pv-input placeholder="Modelo" v-model="modelo" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Modelo" v-model="model" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Consumo</strong></p>
-              <pv-input placeholder="Consumo" v-model="consumo" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Consumo" v-model="consumption" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Peso</strong></p>
-              <pv-input placeholder="Peso" v-model="peso" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Peso" v-model="weight" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>Transmisión</strong></p>
-              <Dropdown :options="transmisionOptions" placeholder="Selecciona una transmisión" v-model="selectedTransmision" style="font-family: 'Poppins',sans-serif" />
+              <Dropdown :options="options_transmission" placeholder="Selecciona una transmisión" v-model="selected_transmission" style="font-family: 'Poppins',sans-serif" />
               <p style="font-family: 'Poppins',sans-serif"><strong>Costo de alquiler por tiempo</strong></p>
-              <pv-input placeholder="Costo de alquiler por tiempo" v-model="costoAlquiler" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="Costo de alquiler por tiempo" v-model="rental_cost" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>URL de la imagen del vehículo</strong></p>
-              <pv-input placeholder="URL de la imagen del vehículo" v-model="urlImagen" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input placeholder="URL de la imagen del vehículo" v-model="url_image" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
           </div>
           <div class="input-column">
