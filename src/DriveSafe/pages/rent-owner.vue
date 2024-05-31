@@ -16,8 +16,7 @@ export default {
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
       ],
-      vehiculos: [],
-      vehiculosFiltrados: [],
+      vehicles_filtered: [],
       router: useRouter(),
     };
   },
@@ -25,8 +24,8 @@ export default {
     async cargarVehiculos() {
       try {
         const response = await VehiculoService.getByUserId(parseInt(localStorage.getItem("usuarioId")));
-        this.vehiculosFiltrados = response.data;
-        console.log("Vehiculos Filtrados", this.vehiculosFiltrados);
+        this.vehicles_filtered = response.data;
+        console.log("Vehiculos Filtrados", this.vehicles_filtered);
       } catch (error) {
         console.error("Error al cargar los vehículos:", error);
       }
@@ -103,16 +102,16 @@ export default {
   </header>
   <h1 id="vehiclesTitle" style="font-family: 'Poppins', sans-serif; color: #FF7A00">Vehiculos registrados</h1>
   <div class="card-container" role="region" aria-labelledby="vehiclesTitle">
-    <div class="card-item" v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-      <Card role="region" aria-labelledby="cardTitle{{vehiculo.id}}">
+    <div class="card-item" v-for="vehicle in vehicles_filtered" :key="vehicle.id">
+      <Card role="region" aria-labelledby="cardTitle{{vehicle.id}}">
         <template #title></template>
         <template #content>
-          <img :src="vehiculo.url_imagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-          <p id="cardTitle{{vehiculo.id}}" style="font-family: 'Poppins', sans-serif"></p>
-          <p style="font-family: 'Poppins', sans-serif">Marca/Modelo: {{ vehiculo.marca }}/{{ vehiculo.modelo }}</p>
-          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estado_renta }}</h1>
-          <button class="custom-button3" @click="eliminarPublicacion(vehiculo.id)" role="button">Eliminar publicación</button>
-          <button v-if="vehiculo.estadoRenta === 'Solicitado'" class="custom-button3" @click="verSolicitud(vehiculo.id)" role="button">Ver solicitud</button>
+          <img :src="vehicle.url_image" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+          <p id="cardTitle{{vehicle.id}}" style="font-family: 'Poppins', sans-serif"></p>
+          <p style="font-family: 'Poppins', sans-serif">Marca/Modelo: {{ vehicle.brand }}/{{ vehicle.model }}</p>
+          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehicle.rent_status }}</h1>
+          <button class="custom-button3" @click="eliminarPublicacion(vehicle.id)" role="button">Eliminar publicación</button>
+          <button v-if="vehicle.rent_status === 'Required'" class="custom-button3" @click="verSolicitud(vehicle.id)" role="button">Ver solicitud</button>
         </template>
       </Card>
     </div>
