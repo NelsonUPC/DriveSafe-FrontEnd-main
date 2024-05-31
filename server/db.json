@@ -1,0 +1,67 @@
+{
+  "alquiler": [
+    {
+      "id": 1,
+      "estado": "Pagado",
+      "fecha_inicio": "2024-05-13",
+      "fecha_fin": "2024-05-20",
+      "vehiculo_id": 1,
+      "propietario_id": 2,
+      "arrendatario_id": 1,
+      "lugar": "Salaverry 1810, Jesus Maria"
+    }
+  ],
+  "vehiculo": [
+    {
+      "id": 1,
+      "marca": "Toyota",
+      "modelo": "Corolla",
+      "velocidad_max": 180,
+      "consumo": 10,
+      "dimensiones": "180-460-147",
+      "peso": 1200,
+      "clase": "Sedan",
+      "transmision": "Automatica",
+      "tipo_tiempo": "Semanal",
+      "costo_alquiler": 50,
+      "lugar_recojo": "Salaverry 1810, Jesus Maria",
+      "url_imagen": "https://grupopana.com.pe/hs-fs/hubfs/CorollaHybrid-rojo_0x-01.jpg?width=600&name=CorollaHybrid-rojo_0x-01.jpg",
+      "contratoAlquilerpdf": "../contrato.pdf",
+      "estado_renta": "disponible",
+      "propietario_id": 2
+    }
+  ],
+  "usuario": [
+    {
+      "id": 1,
+      "nombres": "Luis Enrique",
+      "apellidos": "Aquije Quiroga",
+      "fechaNacimiento": "2005-11-21",
+      "telefono": "945163898",
+      "correo": "luisaquijequiroga11@gmail.com",
+      "contrasenia": "password123",
+      "tipo": "arrendatario"
+    },
+    {
+      "id": 2,
+      "nombres": "Jair",
+      "apellidos": "Mohamed",
+      "fechaNacimiento": "2003-9-9",
+      "telefono": "9999999999",
+      "correo": "jvjdjned@gmail.com",
+      "contrasenia": "123",
+      "tipo": "arrendador",
+      "fecha_nacimiento": "2003-9-9"
+    }
+  ],
+  "mantenimiento": [
+    {
+      "id": 1,
+      "tipo_problema": "Auto",
+      "titulo": "Motor del Auto",
+      "descripcion": "El motor se fundio en plena via expresa",
+      "arrendatario_id": 1,
+      "propietario_id": 2
+    }
+  ]
+}
