@@ -24,32 +24,32 @@ export default {
       ],
       value1: null,
       cardCount: 4,
-      vehiculo: null,
-      tiempoAlquiler: null,
-      resultadoCosto: null,
-      nuevoVehiculo: null,
-      propietario: null,
-      lugar: null,
+      vehicle: null,
+      rent_time: null,
+      cost: null,
+      owner: null,
+      pick_up_place: null,
       router: useRouter(),
     };
   },
   methods: {
     abrirContratoAlquiler() {
-      if (this.vehiculo && this.vehiculo.contratoAlquilerPdf) {
-        window.open(this.vehiculo.contratoAlquilerPdf, "_blank");
+      if (this.vehicle && this.vehicle.contratoAlquilerPdf) {
+        window.open(this.vehicle.contratoAlquilerPdf, "_blank");
       }
     },
     crearAlquiler() {
       const alquilerData = {
-        id: null,
-        estado: "Pendiente",
-        fecha_inicio: "por definir",
-        fecha_fin: "por definir",
-        vehiculo_id: this.vehiculo.id,
-        propietario_id: this.propietario.id,
-        arrendatario_id: parseInt(localStorage.getItem("usuarioId")),
-        lugar: this.vehiculo.lugar_recojo
+        status: "Pending",
+        start_date: new Date(1,0,1).toISOString().split('T')[0],
+        end_date: new Date(1,0,1).toISOString().split('T')[0],
+        vehicle_id: this.vehicle.id,
+        owner_id: this.owner.id,
+        tenant_id: parseInt(localStorage.getItem("usuarioId")),
+        pick_up_place: this.vehicle.pick_up_place
       };
+
+      console.log(alquilerData)
 
       // Llamamos al método create de AlquilerService para crear el alquiler
       AlquilerService.create(alquilerData)
@@ -76,35 +76,34 @@ export default {
   },
 
   created() {
-    const vehiculoId = localStorage.getItem("vehiculoId");
-
-    if (vehiculoId) {
+    const vehicle_id = localStorage.getItem("vehicle_id");
+    if (vehicle_id) {
       VehiculoService.getAll()
           .then((response) => {
-            const vehiculoEncontrado = response.data.find(
-                (vehiculo) => vehiculo.id === parseInt(vehiculoId)
+            const vehicleFind = response.data.find(
+                (v) => v.id === parseInt(vehicle_id)
             );
 
-            if (vehiculoEncontrado) {
-              this.vehiculo = vehiculoEncontrado;
+            if (vehicleFind) {
+              this.vehicle = vehicleFind;
 
-              // Ahora obtenemos la información del propietario
-              UserService.getUserById(parseInt(this.vehiculo.propietario_id))
+              // Ahora obtenemos la información del owner
+              UserService.getUserById(parseInt(this.vehicle.owner_id))
                   .then((response) => {
-                    this.propietario = response.data;
-                    // Ahora que tenemos la información del propietario, podemos imprimir la información del vehículo
-                    console.log("Costo Total", this.vehiculo.costo_alquiler);
-                    console.log("Vehiculo Id", this.vehiculo.id);
-                    console.log("Propietario_id", parseInt(this.vehiculo.propietario_id));
+                    this.owner = response.data;
+                    // Ahora que tenemos la información del owner, podemos imprimir la información del vehículo
+                    console.log("Costo Total", this.vehicle.rental_cost);
+                    console.log("Vehiculo Id", this.vehicle.id);
+                    console.log("Propietario_id", parseInt(this.vehicle.owner_id));
                     console.log("Arrendatario_id", parseInt(localStorage.getItem("usuarioId")));
-                    console.log("Lugar_recojo", this.vehiculo.lugar_recojo)
+                    console.log("Lugar_recojo", this.vehicle.pick_up_place)
                   })
                   .catch((error) => {
-                    console.error("Error al obtener la información del propietario:", error);
+                    console.error("Error al obtener la información del owner:", error);
                   });
 
             } else {
-              console.error("No se encontró el vehículo con ID:", vehiculoId);
+              console.error("No se encontró el vehículo con ID:", vehicle_id);
             }
           })
           .catch((error) => {
@@ -168,13 +167,13 @@ export default {
           <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar vehículo</h2>
         </template>
         <template #content>
-          <div v-if="vehiculo" class="center-content">
+          <div v-if="vehicle" class="center-content">
             <img
-                :src="vehiculo.url_imagen"
+                :src="vehicle.url_image"
                 alt="Imagen de vehículo"
                 style="max-width: 100%; max-height: 300px;"
             />
-            <div class="card-title">{{ vehiculo.marca }} {{ vehiculo.modelo }}</div>
+            <div class="card-title">{{ vehicle.brand }} {{ vehicle.model }}</div>
             <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">Ver Contrato de Alquiler</Button>
           </div>
           <div v-else>
@@ -193,7 +192,8 @@ export default {
         <template #content>
           <div>
             <h1>Contrato de Alquiler</h1>
-            <h1>Mi nombre es {{ propietario ? propietario.nombres + ' ' + propietario.apellidos : '...' }}, yo como propietario del vehículo doy los siguientes reglamentos</h1>
+            <h1>Mi nombre es {{ owner ? owner.name + ' ' + owner.last_name : '...' }}, yo como propietario del
+              vehículo doy los siguientes reglamentos</h1>
           </div>
           <Button @click="crearAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">Crear Alquiler</Button>
         </template>

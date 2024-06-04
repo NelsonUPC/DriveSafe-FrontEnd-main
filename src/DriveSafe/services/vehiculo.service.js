@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const URL = 'http://localhost:3000/';
 const API = 'http://localhost:5014/api/';
+
 class VehiculoService {
     getAll() {
         return axios.get(API + 'Vehicle');

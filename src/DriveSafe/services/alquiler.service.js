@@ -1,34 +1,27 @@
 import axios from 'axios';
 
 const URL = 'http://localhost:3000/';
+const API = 'http://localhost:5014/api/';
 
 class AlquilerService {
     getAll() {
-        return axios.get(URL + 'alquiler');
+        return axios.get(API + 'Rent');
     }
 
     getById(id) {
-        return axios.get(`${URL}alquiler/${id}`);
+        return axios.get(API + 'Rent/' + id);
     }
 
     getByUserId(userId) {
-        return axios.get(`${URL}alquiler?arrendatario_id=${userId}`);
-    }
-
-    getByPropietarioId(propietarioId) {
-        return axios.get(`${URL}alquiler?propietario_id=${propietarioId}`);
+        return axios.get(API + 'Rent/GetByUserId/' + userId);
     }
 
     create(data) {
-        return axios.post(URL + 'alquiler', data);
+        return axios.post(API + 'Rent', data);
     }
 
     update(id, data) {
-        return axios.put(URL + `alquiler/${id}`, data);
-    }
-
-    delete(id) {
-        return axios.delete(URL + `alquiler/${id}`);
+        return axios.put(API + 'Rent/' + id, data);
     }
 }
 

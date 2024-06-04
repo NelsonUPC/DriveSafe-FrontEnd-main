@@ -1,10 +1,11 @@
 <script>
-import Card from "primevue/card"
+import Card from "primevue/card";
 import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
 import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import {useRouter} from "vue-router";
-export default{
+import { useRouter } from "vue-router";
+
+export default {
   components: {
     Card,
     Carousel,
@@ -20,56 +21,59 @@ export default{
         { label: "Alquiler", to: "/rent-tenant" },
       ],
       router: useRouter(),
-      value1: null,
       cardCount: 6,
-      vehiculos: [],
-      tiempo_alquiler: null,
-      marca: null,
-      modelo: null,
-      clase: null,
-      transmision: null,
-      precio: null
+      vehicles: [],
+      time_type: null,
+      brand: null,
+      model: null,
+      car_class: null,
+      transmission: null,
+      rental_cost: null,
     };
   },
   computed: {
     vehiculosDisponibles() {
       if (
-          !this.tiempo_alquiler &&
-          !this.marca &&
-          !this.modelo &&
-          !this.clase &&
-          !this.transmision &&
-          !this.precio
+          !this.time_type &&
+          !this.brand &&
+          !this.model &&
+          !this.car_class &&
+          !this.transmission &&
+          !this.rental_cost
       ) {
-        return this.vehiculos.filter(vehiculo => vehiculo.estado_renta.toLowerCase() === "disponible");
+        return this.vehicles.filter(
+            (v) => v.rent_status.toLowerCase() === "available"
+        );
       } else {
-        return this.vehiculos.filter(vehiculo => {
+        return this.vehicles.filter((v) => {
           return (
-              (!this.tiempo_alquiler || vehiculo.tipo_tiempo.includes(this.tiempo_alquiler)) &&
-              (!this.marca || vehiculo.marca.toLowerCase().includes(this.marca.toLowerCase())) &&
-              (!this.modelo || vehiculo.modelo.toLowerCase().includes(this.modelo.toLowerCase())) &&
-              (!this.clase || vehiculo.clase.toLowerCase().includes(this.clase.toLowerCase())) &&
-              (!this.transmision || vehiculo.transmision.toLowerCase().includes(this.transmision.toLowerCase())) &&
-              (!this.precio || vehiculo.costo_alquiler === parseFloat(this.precio))
+              (!this.time_type ||
+                  v.time_type.toLowerCase().includes(this.time_type.toLowerCase())) &&
+              (!this.brand ||
+                  v.brand.toLowerCase().includes(this.brand.toLowerCase())) &&
+              (!this.model ||
+                  v.model.toLowerCase().includes(this.model.toLowerCase())) &&
+              (!this.car_class ||
+                  v.car_class.toLowerCase().includes(this.car_class.toLowerCase())) &&
+              (!this.transmission ||
+                  v.transmission.toLowerCase().includes(this.transmission.toLowerCase())) &&
+              (!this.rental_cost || v.rental_cost === parseFloat(this.rental_cost))
           );
         });
       }
     },
   },
   methods: {
-    alquilarAuto(vehiculoId) {
-      localStorage.setItem("vehiculoId", vehiculoId);
-      this.router.push({path:"/rent-car"});
-    },
-    buscarAutos() {
-      // La función se llama automáticamente cuando se presiona el botón Buscar
-    },
+    alquilarAuto(vehicle_id) {
+      localStorage.setItem("vehicle_id", vehicle_id);
+      this.router.push({ path: "/rent-car" });
+    }
   },
   created() {
     VehiculoService.getAll()
         .then((response) => {
-          this.vehiculos = response.data;
-          console.log("Vehiculos: ", this.vehiculos);
+          this.vehicles = response.data;
+          console.log("Vehiculos: ", this.vehicles);
           console.log("Response data: ", response.data);
         })
         .catch((error) => {
@@ -121,232 +125,101 @@ export default{
   </header>
 
   <div class="container">
-    <div class="half-width-card">
+    <div class="search-card">
       <Card>
         <template #title></template>
         <template #content>
-          <h1 style="font-family: 'Poppins', sans-serif; color:#FF7A00">Busca un auto</h1>
-          <p style="font-family: 'Poppins', sans-serif">Tiempo de alquiler</p>
-          <InputText v-model="tiempo_alquiler" placeholder="Tiempo de alquiler" style="font-family: 'Poppins', sans-serif"/>
-          <p style="font-family: 'Poppins', sans-serif">Marca</p>
-          <InputText v-model="marca" placeholder="Marca" style="font-family: 'Poppins', sans-serif"/>
-          <p style="font-family: 'Poppins', sans-serif">Modelo</p>
-          <InputText v-model="modelo" placeholder="Modelo" style="font-family: 'Poppins', sans-serif"/>
-          <p style="font-family: 'Poppins', sans-serif">Clase</p>
-          <InputText v-model="clase" placeholder="Clase" style="font-family: 'Poppins', sans-serif"/>
-          <p style="font-family: 'Poppins', sans-serif">Transmisión</p>
-          <InputText v-model="transmision" placeholder="Transmisión" style="font-family: 'Poppins', sans-serif"/>
-          <p style="font-family: 'Poppins', sans-serif">Precio</p>
-          <InputText v-model="precio" placeholder="Precio (S/.)" style="font-family:  'Poppins', sans-serif"/>
-          <pv-button class="search-button" @click="buscarAutos" aria-label="search-button">Buscar</pv-button>
-        </template>
-      </Card>
-    </div>
-    <div class="half-width-card">
-      <h1 style="font-family: 'Poppins',sans-serif; color: #FF7A00; text-align: center;">Vehiculos</h1>
-
-      <div v-if="vehiculosDisponibles.length === 0" style="text-align: center; margin-top: 20px;">
-        <h2 style="font-family: 'Poppins',sans-serif">No hay vehículos disponibles para alquilar por el momento.</h2>
-      </div>
-
-      <Carousel v-else :value="vehiculosDisponibles" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions" circular :autoplayInterval="5000">
-        <template #item="slotProps">
-          <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
-            <div class="mb-3">
-              <img :src="slotProps.data.url_imagen" alt="Imagen de vehículo" class="w-6 shadow-2" />
-              <div>
-                <h1 style="font-family: 'Poppins',sans-serif">Marca: {{ slotProps.data.marca }}</h1>
-                <h2 style="font-family: 'Poppins',sans-serif">Modelo: {{ slotProps.data.modelo }}</h2>
-                <h2 style="font-family: 'Poppins',sans-serif">Clase: {{ slotProps.data.clase }}</h2>
-                <h2 style="font-family: 'Poppins',sans-serif">Transmisión: {{ slotProps.data.transmision }}</h2>
-                <h2 style="font-family: 'Poppins',sans-serif">Tiempo de alquiler: {{ slotProps.data.tipo_tiempo }}</h2>
-                <h2 style="font-family: 'Poppins',sans-serif">Costo de alquiler: S./{{ slotProps.data.costo_alquiler }}</h2>
-                <br>
-                <pv-button @click="alquilarAuto(slotProps.data.id)" class="font-button">Alquilar</pv-button><br>
-              </div>
+          <div class="search-fields">
+            <div class="field">
+              <p>Tiempo de alquiler</p>
+              <InputText v-model="time_type" placeholder="Tiempo de alquiler" />
+            </div>
+            <div class="field">
+              <p>Marca</p>
+              <InputText v-model="brand" placeholder="Marca" />
+            </div>
+            <div class="field">
+              <p>Modelo</p>
+              <InputText v-model="model" placeholder="Modelo" />
+            </div>
+            <div class="field">
+              <p>Clase</p>
+              <InputText v-model="car_class" placeholder="Clase" />
+            </div>
+            <div class="field">
+              <p>Transmisión</p>
+              <InputText v-model="transmission" placeholder="Transmisión" />
+            </div>
+            <div class="field">
+              <p>Precio</p>
+              <InputText v-model="rental_cost" placeholder="Precio (S/.)" />
             </div>
           </div>
         </template>
-      </Carousel>
+      </Card>
     </div>
+    <h1>Vehiculos</h1>
+  </div>
+
+  <div class="vehicle-list">
+    <pv-card v-for="vehicle in vehiculosDisponibles" :key="vehicle.id" class="vehicle-card">
+      <template #title>{{vehicle.brand}} {{vehicle.model}}</template>
+      <template #content>
+        <img :src="vehicle.url_image" alt="Vehicle image" class="product-image"/>
+        <div class="vehicle-details">
+          <p>Class: {{ vehicle.car_class }}</p>
+          <p>Transmission: {{ vehicle.transmission }}</p>
+          <p>Time type: {{ vehicle.time_type }}</p>
+          <p>Rental cost: S/.{{ vehicle.rental_cost }}</p>
+          <pv-button @click="alquilarAuto(vehicle.id)">Rent</pv-button>
+        </div>
+      </template>
+    </pv-card>
   </div>
 </template>
 
-
 <style scoped>
-.body-container {
-  margin: 20px;
-  position: relative;
-  height: 500px;
-}
-.background-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  opacity: 0.9;
-}
-.floating-card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  background-color: white;
-  padding: 20px 50px 20px 50px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  border-radius: 15px;
-
-}
-.orange-text {
-  color: #FF7A00;
-  font-size: 50px;
-  font-weight: bold;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  white-space: nowrap;
-}
-.black-text {
-  color: black;
-  font-size: 50px;
-  font-weight: bold;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  white-space: nowrap;
-}
-.input-button-container {
-  display: flex;
-  align-items: center;
-}
-.input-container {
-  display: flex;
-  grid-gap: 40px;
-  margin-top: 40px;
-}
-input {
-  padding: 10px 40px 10px 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px rgba(0, 0, 0, 0.1);
-}
-.search-button {
-  background-color: black;
-  color: white;
-  padding: 10px 70px 20px 70px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 18px;
-  white-space: nowrap;
-}
-.black-text-body{
-  color: black;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  white-space: nowrap;
-  text-align: center;
-  padding: 10px;
-}
-.orange-text-body{
-  color: #FF7A00;
-  font-size: 18px;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  white-space: nowrap;
-  text-align: center;
-  padding: 10px;
-}
-
-.card-carousel-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  padding-right: 50px;
-  padding-left: 50px;
-}
-.card-carousel {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-}
-.hidden-card{
-  display: none;
-}
-.left-arrow {
-  margin-right: 10px;
-}
-.right-arrow {
-  margin-left: 10px;
-}
-.carousel-cards {
-  display: flex;
-  overflow-x: hidden;
-}
-.card {
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #fff;
-  flex: 1;
-  max-width: 300px;
-  margin:10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-.card img {
-  max-height: 70%;
-  object-fit: contain;
-  margin-bottom: 10px;
-  width: 100%;
-  border-radius: 20px;
-}
-.card-title {
-  font-size: 16px;
-  margin-top: 10px;
-  color: black;
-
-}
-.card-link {
-  text-decoration: none;
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-}
-
 .container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-card {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.search-fields {
+  display: flex;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
-.half-width-card {
+.field {
   flex: 1;
-  width: calc(50% - 1rem);
-  margin: 0.5rem;
-  box-sizing: border-box;
-  max-width: 50%;
+  min-width: 200px;
 }
 
-.font-button {
-  margin: 2px 0;
-  background-color: black !important;
-  color: white !important;
+.vehicle-list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.font-button:hover,
-.font-button:focus{
-  background-color: #14131B !important;
-  color: white !important;
+.vehicle-card{
+  width: 300px;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
 }
 
+.vehicle-details{
+  margin-top: 10px;
+}
+
+.vehicle-card img {
+  max-width: 80%;
+  border-radius: 10px;
+}
 </style>
