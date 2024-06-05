@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Inicio from "@/DriveSafe/pages/inicio-arrenda.vue"
-import InitPropietario from "@/DriveSafe/pages/inicio-propie.vue"
-import NotificacionesPropie from "@/DriveSafe/pages/notificaciones-propie.vue";
+import Inicio from "@/DriveSafe/pages/home-tenant.vue"
+import InitPropietario from "@/DriveSafe/pages/home-owner.vue"
+import NotificacionesPropie from "@/DriveSafe/pages/notifications-owner.vue";
 import CarRegistrationOwner from "@/DriveSafe/pages/car-registration-owner.vue";
 import RentTenant from "@/DriveSafe/pages/rent-tenant.vue";
 import Login from "@/DriveSafe/pages/login.vue";
