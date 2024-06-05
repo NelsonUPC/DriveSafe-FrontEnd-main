@@ -3,8 +3,8 @@ import Swal from 'sweetalert2';
 import Card from "primevue/card"
 import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import VehiculoService from "@/DriveSafe/services/vehicle.service";
+import AlquilerService from "@/DriveSafe/services/rental.service";
 import {useRouter} from "vue-router";
 import UserService from "@/DriveSafe/services/user.service";
 
