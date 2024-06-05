@@ -3,7 +3,7 @@ import axios from 'axios';
 const URL = 'http://localhost:3000/';
 const API = 'http://localhost:5014/api/';
 
-class VehiculoService {
+class VehicleService {
     getAll() {
         return axios.get(API + 'Vehicle');
         //return axios.get(URL + 'vehiculo');
@@ -33,4 +33,4 @@ class VehiculoService {
     }
 }
 
-export default new VehiculoService();
+export default new VehicleService();

@@ -3,7 +3,7 @@ import axios from 'axios';
 const URL = 'http://localhost:3000/';
 const API = 'http://localhost:5014/api/';
 
-class AlquilerService {
+class RentalService {
     getAll() {
         return axios.get(API + 'Rent');
     }
@@ -25,4 +25,4 @@ class AlquilerService {
     }
 }
 
-export default new AlquilerService();
+export default new RentalService();
