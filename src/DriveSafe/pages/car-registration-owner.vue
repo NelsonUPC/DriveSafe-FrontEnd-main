@@ -1,7 +1,7 @@
 <script>
 import Card from 'primevue/card';
 import Dropdown from 'primevue/dropdown';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import VehiculoService from "@/DriveSafe/services/vehicle.service";
 import Swal from 'sweetalert2';
 
 export default {
