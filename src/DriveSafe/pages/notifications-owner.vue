@@ -1,6 +1,6 @@
 <script>
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import AlquilerService from "@/DriveSafe/services/rental.service";
+import VehiculoService from "@/DriveSafe/services/vehicle.service";
 import UserService from "@/DriveSafe/services/user.service";
 
 import {useRouter} from "vue-router";
