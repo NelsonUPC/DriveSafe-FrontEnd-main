@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import Card from 'primevue/card';
-import AlquilerService from '@/DriveSafe/services/alquiler.service';
+import AlquilerService from '@/DriveSafe/services/rental.service';
 
 const vehiculoFoto = ref(localStorage.getItem('vehiculoFoto'));
 const vehiculoPrecio = ref(localStorage.getItem('vehiculoPrecio'));

@@ -1,6 +1,6 @@
 <script>
 import Card from "primevue/card";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import AlquilerService from "@/DriveSafe/services/rental.service";
 
 export default {
   components: {

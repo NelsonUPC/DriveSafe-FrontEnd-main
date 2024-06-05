@@ -1,6 +1,6 @@
 <script>
 import Card from 'primevue/card';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import VehiculoService from "@/DriveSafe/services/vehicle.service";
 import {useRouter} from "vue-router";
 import Swal from "sweetalert2";
 export default {
