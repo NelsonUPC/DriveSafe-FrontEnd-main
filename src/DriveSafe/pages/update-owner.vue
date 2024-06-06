@@ -1,53 +1,70 @@
 <script>
 import Swal from 'sweetalert2';
 import UserService from "@/DriveSafe/services/user.service";
-
 export default {
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home-owner" },
+        { label: this.$t('Menu.register'), to: "/car-registration-owner" },
+        { label: this.$t('Menu.notifications'), to: "/notifications" },
+        { label: this.$t('Menu.rent'), to: "/rent-owner" },
+      ];
+    },
+  },
   data() {
     return {
-      drawer: false,
-      items: [
-        {label: "Inicio", to: "/init-propie"},
-        {label: "Registro", to: "/car-registration-owner"},
-        {label: "Notificaciones", to: "/notifications"},
-        {label: "Alquiler", to: "/rent-owner"},
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
-      propietarioId: parseInt(localStorage.getItem("usuarioId")),
-      nombres: '',
-      apellidos: '',
-      celular: '',
+      selectedLanguage: 'en',
+      drawer: false,
+      ownerId: parseInt(localStorage.getItem("usuarioId")),
+      name: '',
+      last_name: '',
+      cellphone: '',
+      day: '',
+      month: '',
+      year: '',
       fechaNacimiento: '',
-      contrasenia: '',
-      correo: localStorage.getItem("usuarioCorreo") // Obtener el correo del localStorage
+      password: '',
+      correo: '' // Obtener el correo del localStorage
     };
   },
   methods: {
-    async actualizarDatosOwner() {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async updateOwnerData() {
+      if (!this.name || !this.last_name || !this.cellphone || !this.day || !this.month || !this.year || !this.password || !this.gmail) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: this.$t('ProfileOwner.alerts.incomplete_fields'),
+        });
+        return;
+      }
       try {
         // Obtener los datos del usuario
-        const response = await UserService.getUserById(this.propietarioId);
+        const response = await UserService.getUserById(this.ownerId);
         const responseUser = response.data;
-
-        // Actualizar los datos del usuario con los nuevos valores
-        responseUser.nombres = this.nombres;
-        responseUser.apellidos = this.apellidos;
-        responseUser.fecha_nacimiento = this.fechaNacimiento;// Usar el correo del campo de entrada
-        responseUser.telefono = this.celular;
-        responseUser.correo = this.correo;
-        responseUser.contrasenia = this.contrasenia
-        responseUser.tipo = "arrendador"
-
-        // Actualizar los datos del usuario en el servidor
-        const responseUpdate = await UserService.update(this.propietarioId, responseUser);
-
-        // Verificar si la actualización en el servidor fue exitosa
+        const BirthdateFormatted = `${this.year}-${String(this.month).padStart(2, '0')}-${String(this.day).padStart(2, '0')}`;
+        responseUser.name = this.name;
+        responseUser.last_name = this.last_name;
+        responseUser.birthdate = BirthdateFormatted;
+        responseUser.cellphone = this.cellphone;
+        responseUser.gmail = this.gmail;
+        responseUser.password = this.password;
+        const responseUpdate = await UserService.update(this.ownerId, responseUser);
         if (responseUpdate.status === 200) {
-          // Actualizar localStorage si la actualización en el servidor fue exitosa
-          localStorage.setItem("usuarioNombres", this.nombres);
-          localStorage.setItem("usuarioApellidos", this.apellidos);
-          localStorage.setItem("usuarioCelular", this.celular);
-          localStorage.setItem("usuarioCorreo", this.correo); // Actualizar el correo en el localStorage
 
+          Swal.fire({
+            icon: 'success',
+            title: this.$t('ProfileOwner.alerts.title'),
+            text: this.$t('ProfileOwner.alerts.update_success'),
+          });
           // Redirigir al usuario a la página de perfil
           this.$router.push('/profile-owner');
         } else {
@@ -60,7 +77,7 @@ export default {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Ocurrió un error al actualizar los datos del propietario. Por favor, inténtalo de nuevo más tarde.',
+          text: this.$t('ProfileOwner.alerts.update_error'),
         });
       }
     }
@@ -76,9 +93,13 @@ export default {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <nav class="flex-column">
@@ -110,34 +131,31 @@ export default {
     </pv-toolbar>
   </header>
   <main class="center-container" style="margin-top: 100px;">
-    <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
-    <h2>Nombres</h2><br>
-    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
+    <h1 id="updateTitle" style="color: #FF7A00;">{{$t('ProfileOwner.update')}}</h1>
+    <h2>{{ $t('ProfileOwner.labels.name') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileOwner.placeholders.name')" v-model="name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
-    <h2>Apellidos</h2><br>
-    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
+    <h2>{{ $t('ProfileOwner.labels.last_name') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileOwner.placeholders.last_name')" v-model="last_name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
-    <h2>Celular</h2><br>
-    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
+    <h2>{{ $t('ProfileOwner.labels.cellphone') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileOwner.placeholders.cellphone')" v-model="cellphone" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
-    <h2>Fecha de nacimiento</h2><br>
-    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
+    <h2>{{ $t('ProfileOwner.labels.birthdate') }}</h2><br>
+    <div class="date-inputs">
+      <pv-input-text id="day" type="number" :placeholder="$t('ProfileOwner.placeholders.day')" class="date-input" v-model="day" />
+      <pv-input-text id="month" type="number" :placeholder="$t('ProfileOwner.placeholders.month')" class="date-input" v-model="month" />
+      <pv-input-text id="year" type="number" :placeholder="$t('ProfileOwner.placeholders.year')" class="date-input" v-model="year" />
+    </div>
     <br>
-    <h2>Contraseña</h2><br>
-    <pv-input placeholder="Nueva contraseña" v-model="contrasenia" type="password"
-              style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+    <h2>{{ $t('ProfileOwner.labels.password') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileOwner.placeholders.password')" v-model="password" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
-    <h2>Correo electrónico</h2><br>
-    <pv-input placeholder="Nuevo correo electrónico" v-model="correo" style="font-family: 'Poppins',sans-serif"
-              role="textbox"></pv-input>
+    <h2>{{ $t('ProfileOwner.labels.gmail') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileOwner.placeholders.gmail')" v-model="gmail" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
 
-    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosOwner()" role="button">Actualizar
-    </Button>
+    <Button label="$t('ProfileOwner.update_button')" class="custom-button2" @click="updateOwnerData()" role="button">{{$t('ProfileOwner.update_button')}}</Button>
   </main>
 </template>
 
@@ -259,5 +277,36 @@ h2, p {
   justify-content: center;
   height: 100vh;
   margin: 0;
+}
+
+.date-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.date-input:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 600px) {
+  .date-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-input {
+    margin-right: 0;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .date-input:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>

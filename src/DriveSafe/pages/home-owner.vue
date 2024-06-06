@@ -1,3 +1,36 @@
+<script>
+export default {
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home-owner" },
+        { label: this.$t('Menu.register'), to: "/car-registration-owner" },
+        { label: this.$t('Menu.notifications'), to: "/notifications" },
+        { label: this.$t('Menu.rent'), to: "/rent-owner" },
+      ];
+    }
+  },
+  name: "HomeOwner",
+  data() {
+    return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
+      drawer: false
+    };
+  },
+  methods: {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    }
+  },
+  created() {}
+};
+</script>
+
 <template>
   <pv-toast />
   <header>
@@ -6,9 +39,13 @@
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -46,15 +83,15 @@
       <img src="../../../public/cuerpo.jpg" alt="Imagen de fondo" class="background-image" aria-label="Background">
 
       <div class="floating-card">
-        <h1 class="orange-text">Convierte tu auto</h1>
-        <h1 class="black-text">en dinero extra</h1>
+        <h1 class="orange-text">{{$t('HomeOwner.title1')}}</h1>
+        <h1 class="black-text">{{$t('HomeOwner.title2')}}</h1>
 
         <div class="input-button-container">
           <div class="input-container">
             <input type="text" id="ubicacion" placeholder="Surco - Lima, Perú">
 
             <router-link to="/car-registration-owner">
-              <button class="share-button">Comparte tu auto</button>
+              <button class="share-button">{{$t('HomeOwner.share_button')}}</button>
             </router-link>
 
           </div>
@@ -62,62 +99,18 @@
       </div>
     </div>
     <div class="notifications-section">
-      <h2 class="section-title">Notificaciones</h2>
-      <div v-if="notificacionesFiltradas.length === 0">No hay notificaciones</div>
-      <div v-else>
-        <div v-for="notification in notificacionesFiltradas" :key="notification.id" class="notification-card">
-          <p class="notification">{{ notification.body }}</p>
-          <router-link :to="'/notification/' + notification.id" class="view-notification">Ver</router-link>
-        </div>
-      </div>
+      <h2 class="section-title">{{$t('HomeOwner.notifications')}}</h2>
     </div>
     <RouterView />
   </div>
 </template>
 
-<script>
-import NotificacionService from "@/DriveSafe/services/notificacion.service";
-export default{
-  name: "InicioPropie",
-  data() {
-    return {
-      drawer: false,
-      items: [
-        { label: "Inicio", to: "/init-propie" },
-        { label: "Registro", to: "/car-registration-owner" },
-        { label: "Notificaciones", to: "/notifications" },
-        { label: "Alquiler", to: "/rent-owner" },
-      ],
-      notifications: [],
-      notificacionesFiltradas: [],
-      propietarioId: null,
-    };
-  },
-  methods: {
-    async loadNotifications() {
-      try {
-        console.log('Propietario ID:', this.propietarioId);
-        const response = await NotificacionService.getAll();
-        console.log(response.data);
-        this.notifications = response.data;
-        this.notificacionesFiltradas = this.notifications.filter(notification => notification.propietarioId == this.propietarioId);
-        console.log('Notificaciones:', this.notifications);
-        console.log('Notificaciones filtradas:', this.notificacionesFiltradas);
-      } catch (error) {
-        console.error('Error al cargar las notificaciones', error);
-      }
-    },
-  },
-  created() {
-    this.propietarioId = localStorage.getItem("propietarioId");
-    console.log('Propietario ID:', localStorage.getItem("propietarioId"));
-    this.loadNotifications();
-  }
-};
-</script>
-
 
 <style scoped>
+  .language-buttons {
+    display: flex;
+    align-items: center;
+  }
   .body-container {
     margin: 20px;
     position: relative;

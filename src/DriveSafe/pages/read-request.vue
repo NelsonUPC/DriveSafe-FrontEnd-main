@@ -1,108 +1,124 @@
 <script>
 import Card from 'primevue/card';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import {useRouter} from "vue-router";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
-import ArrendatarioService from "@/DriveSafe/services/arrendatario.service";
-import NotificacionService from "@/DriveSafe/services/notificacion.service";
+import VehicleService from "@/DriveSafe/services/vehicle.service";
+import RentService from "@/DriveSafe/services/rent.service";
+import UserService from "@/DriveSafe/services/user.service";
+import { useRouter } from "vue-router";
+
 export default {
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home-owner" },
+        { label: this.$t('Menu.register'), to: "/car-registration-owner" },
+        { label: this.$t('Menu.notifications'), to: "/notifications" },
+        { label: this.$t('Menu.rent'), to: "/rent-owner" },
+      ];
+    }
+  },
   components: {
     Card,
   },
   data() {
     return {
-      drawer: false,
-      items: [
-        { label: "Inicio", to: "/init-propie" },
-        { label: "Registro", to: "/car-registration-owner" },
-        { label: "Notificaciones", to: "/notifications" },
-        { label: "Alquiler", to: "/rent-owner" },
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
-      alquileres: [],
-      alquileresFiltrados: [],
-      vehiculo: null,
-      nuevoVehiculo: null,
-      vehiculos: [],
-      vehiculoId: 0,
-      vehiculosFiltrados: [],
+      selectedLanguage: 'en',
+      drawer: false,
+      rent: null,
+      tenant: null,
+      vehicle: null,
       router: useRouter(),
     };
   },
   methods: {
-    async cargarInformacion() {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async loadInformation() {
       try {
-        const response = await AlquilerService.getAll();
-        this.alquileres = response.data;
-        this.alquileresFiltrados = this.alquileres.filter(alquiler => alquiler.vehiculoId === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
+        const rent_id = parseInt(localStorage.getItem("alquilerId"));
+        console.log("Rent ID:", rent_id)
 
-        const response2 = await VehiculoService.getAll();
-        this.vehiculos = response2.data;
-        this.vehiculosFiltrados = this.vehiculos.filter(vehiculo => vehiculo.id === parseInt(localStorage.getItem("vehiculoAlquiladoId")));
 
-        this.vehiculoId = localStorage.getItem("vehiculoAlquiladoId");
+        const response = await RentService.getById(rent_id);
+        this.rent = response.data;
 
-        if (this.vehiculoId) {
-          VehiculoService.getAll()
-              .then((response) => {
-                const vehiculoEncontrado = response.data.find(
-                    (vehiculo) => vehiculo.id === parseInt(this.vehiculoId)
-                );
+        const tenantResponse = await UserService.getUserById(this.rent.tenant_id);
+        this.tenant = tenantResponse.data;
 
-                if (vehiculoEncontrado) {
-                  this.vehiculo = vehiculoEncontrado;
-                } else {
-                  console.error("No se encontró el vehículo con ID:", this.vehiculoId);
-                }
-
-                console.log("ve", this.vehiculo);
-
-                this.nuevoVehiculo = this.vehiculo;
-                console.log("nv", this.nuevoVehiculo);
-              })
-              .catch((error) => {
-                console.error("Error al obtener la lista de vehículos:", error);
-              });
-        } else {
-          console.error("ID de vehículo no encontrado en el localStorage.");
-        }
+        const vehicleResponse = await VehicleService.getById(this.rent.vehicle_id);
+        this.vehicle = vehicleResponse.data;
       } catch (error) {
-        console.error("Error al cargar los alquileres:", error);
+        console.error("Error al cargar la información del rent:", error);
       }
     },
-    abrirAntecedentesPenales() {
-      const arrendatarioAntecedentes = this.vehiculosFiltrados[0].arrendatario.antecedentesPenalesPdf;
-      if (arrendatarioAntecedentes) {
-        window.open(arrendatarioAntecedentes, "_blank");
+    async acceptRent() {
+      try {
+        const response = await RentService.getById(this.rent.id);
+        const rentComplete = response.data;
+
+        let formattedDate = " ";
+        let formattedDateF = " ";
+        rentComplete.status = "Accepted";
+
+        const today = new Date();
+        console.log("Today:", today)
+        const day = today.getDate().toString().padStart(2, '0');
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const year = today.getFullYear();
+
+        formattedDate = `${year}-${month}-${day}`;
+
+        console.log("Date:", formattedDate)
+
+        let aditionalDays = 0;
+        if (this.vehicle.time_type === "Daily") {
+          aditionalDays = 1;
+        } else if (this.vehicle.time_type === "Weekly") {
+          aditionalDays = 7;
+        } else if (this.vehicle.time_type === "Monthly") {
+          aditionalDays = 30;
+        }
+        const futureDate = new Date(today);
+        futureDate.setDate(futureDate.getDate() + aditionalDays);
+        const dayf = futureDate.getDate().toString().padStart(2, '0');
+        const monthf = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+        const yearf = futureDate.getFullYear();
+
+        formattedDateF = `${yearf}-${monthf}-${dayf}`;
+
+        console.log("Future Date:", formattedDateF)
+
+        rentComplete.start_date = formattedDate;
+        rentComplete.end_date = formattedDateF;
+
+        console.log("Rent:", rentComplete)
+
+        await RentService.update(this.rent.id, rentComplete);
+        this.rent.status = "Accepted";
+      } catch (error) {
+        console.error("Error al aceptar el rent:", error);
       }
     },
-    aceptarAlquiler() {
-      this.nuevoVehiculo.estadoRenta = "Aceptado";
-      this.nuevoVehiculo.arrendatarioId = this.vehiculo.arrendatario.id;
-      this.nuevoVehiculo.alquilerId = this.vehiculo.alquiler.id;
-      console.log("nv", this.nuevoVehiculo);
+    async refuseRent() {
+      try {
+        const response = await RentService.getById(this.rent.id);
+        const rentComplete = response.data;
 
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .catch((error) => {
-            console.error('Error al actualizar el vehículo:', error);
-          });
-
-      this.router.push({path:"/rent-owner"});
-    },
-    declinarAlquiler() {
-      this.nuevoVehiculo.estadoRenta = "Disponible";
-      this.nuevoVehiculo.arrendatarioId = null;
-      this.nuevoVehiculo.alquilerId = null;
-
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .catch((error) => {
-            console.error('Error al actualizar el vehículo:', error);
-          });
-
-      this.router.push({path:"/rent-owner"});
+        rentComplete.status = "Refused";
+        await RentService.update(this.rent.id, rentComplete);
+        this.rent.status = "Refused";
+      } catch (error) {
+        console.error("Error al declinar el rent:", error);
+      }
     },
   },
   created() {
-    this.cargarInformacion();
+    this.loadInformation();
   },
 };
 </script>
@@ -115,9 +131,14 @@ export default {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
+            aria-label="Logo de la aplicación DriveSafe"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -132,8 +153,6 @@ export default {
                 class="custom-button"
                 :href="href"
                 @click="navigate"
-                style="background-color: white; color: #14131B;"
-                :aria-label="`Ir a ${item.label}`"
             >
               {{ item.label }}
             </pv-button>
@@ -153,25 +172,21 @@ export default {
 
   <div class="container">
     <div class="half-width-card">
-      <Card>
+      <pv-card v-if="tenant">
         <template #title>
-
+          <h1 style="font-family: 'Poppins', sans-serif">{{$t('ReadRequest.rent')}}</h1>
         </template>
         <template #content>
-          <div v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-            <img :src="vehiculo.urlImagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-            <h2 style="font-family: 'Poppins', sans-serif">Marca: {{ vehiculo.marca }}</h2>
-            <h2 style="font-family: 'Poppins', sans-serif">Modelo: {{ vehiculo.modelo }}</h2>
-            <h2 style="font-family: 'Poppins', sans-serif;">Arrendatario: {{ vehiculo.arrendatario.nombres }} {{vehiculo.arrendatario.apellidos}}</h2>
-
-            <div v-for="alquiler in alquileresFiltrados" :key="alquiler.id">
-              <h2 style="font-family: 'Poppins', sans-serif;">Precio del alquiler: S/. {{ alquiler.costo_total }}</h2>
-            </div>
-
-            <h2 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estadoRenta }}</h2>
+          <div>
+            <h2>{{$t('ReadRequest.tenant_name')}}: {{ tenant.name }}</h2>
+            <h2>{{$t('ReadRequest.tenant_lastname')}}{{ tenant.last_name }}</h2>
+            <h2> {{$t('ReadRequest.tenant_phone')}} {{ tenant.cellphone }}</h2>
+            <h2>{{$t('ReadRequest.tenant_email')}} {{ tenant.gmail }}</h2>
+          </div>
+          <div>
           </div>
         </template>
-      </Card>
+      </pv-card>
     </div>
 
     <div class="half-width-card">
@@ -180,10 +195,23 @@ export default {
 
         </template>
         <template #content>
-          <Button @click="abrirAntecedentesPenales" style="font-family: 'Poppins',sans-serif" class="custom-button2" aria-label="Ver antecedentes penales del arrendatario">Ver antecedentes penales del arendatario</Button>
-          <h2 style="font-family: 'Poppins', sans-serif">Opciones de alquiler:</h2>
-          <Button @click="aceptarAlquiler" class="accept-button" aria-label="Aceptar">Aceptar</Button>
-          <Button @click="declinarAlquiler" class="decline-button" aria-label="Declinar">Declinar</Button>
+          <h2 style="font-family: 'Poppins', sans-serif">{{$t('ReadRequest.rent_options')}}</h2>
+
+          <div v-if="rent">
+            <div v-if="rent.status === 'Accepted'">
+              <p>{{$t('ReadRequest.request_accepted')}}</p>
+            </div>
+            <div v-if="rent.status === 'Paid'">
+              <p>{{$t('ReadRequest.request_paid')}}</p>
+            </div>
+            <div v-if="rent.status === 'Pending'">
+              <Button @click="acceptRent" class="accept-button" aria-label="Aceptar">{{ $t('ReadRequest.accept_button') }}</Button>
+              <Button @click="refuseRent" class="decline-button" aria-label="Declinar">{{ $t('ReadRequest.refuse_button') }}</Button>
+            </div>
+            <div v-if="rent.status === 'Refused'">
+              <p>{{$t('ReadRequest.request_refused')}}</p>
+            </div>
+          </div>
 
         </template>
       </Card>
@@ -289,18 +317,18 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 10px;
 }
 
 .card-item {
-  width: calc(33.33% - 10px); 
+  width: calc(33.33% - 10px);
   margin-bottom: 10px;
 }
 
 .accept-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #FF7A00; 
+  background-color: #FF7A00;
   color: white;
   border: none;
   padding: 15px 30px;
@@ -310,7 +338,7 @@ export default {
 
 .decline-button {
   font-family: 'Poppins', sans-serif;
-  background-color: #1A2C63; 
+  background-color: #1A2C63;
   color: white;
   border: none;
   padding: 15px 30px;
@@ -318,11 +346,11 @@ export default {
 }
 
 .accept-button:hover {
-  background-color: black; 
+  background-color: black;
 }
 
 .decline-button:hover {
-  background-color: black; 
+  background-color: black;
 }
 
 @media (max-width: 50vmin) {

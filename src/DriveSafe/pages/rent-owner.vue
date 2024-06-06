@@ -1,40 +1,59 @@
 <script>
 import Card from 'primevue/card';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import VehicleService from "@/DriveSafe/services/vehicle.service";
 import {useRouter} from "vue-router";
 import Swal from "sweetalert2";
+import RentService from "@/DriveSafe/services/rent.service";
 export default {
   components: {
     Card,
   },
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home-owner" },
+        { label: this.$t('Menu.register'), to: "/car-registration-owner" },
+        { label: this.$t('Menu.notifications'), to: "/notifications" },
+        { label: this.$t('Menu.rent'), to: "/rent-owner" },
+      ];
+    },
+  },
   data() {
     return {
-      drawer: false,
-      items: [
-        {label: "Inicio", to: "/init-propie"},
-        {label: "Registro", to: "/car-registration-owner"},
-        {label: "Notificaciones", to: "/notifications"},
-        {label: "Alquiler", to: "/rent-owner"},
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
-      vehiculos: [],
-      vehiculosFiltrados: [],
+      selectedLanguage: 'en',
+      drawer: false,
+      vehicles_filtered: [],
       router: useRouter(),
     };
   },
   methods: {
-    async cargarVehiculos() {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async loadVehicles() {
       try {
-        const response = await VehiculoService.getByUserId(parseInt(localStorage.getItem("usuarioId")));
-        this.vehiculosFiltrados = response.data;
-        console.log("Vehiculos Filtrados", this.vehiculosFiltrados);
+        const response = await VehicleService.getByUserId(parseInt(localStorage.getItem("usuarioId")));
+        this.vehicles_filtered = response.data;
+        console.log("Vehiculos Filtrados", this.vehicles_filtered);
       } catch (error) {
         console.error("Error al cargar los vehículos:", error);
       }
     },
-    async eliminarPublicacion(idVehiculo) {
+    async deletePost(idVehiculo) {
       try {
-        await VehiculoService.delete(idVehiculo);
-        this.cargarVehiculos();
+        const response = await RentService.getAll();
+        const rents = response.data;
+        const rentsToDelete = rents.filter(r => r.vehicle_id === idVehiculo);
+        for (const rent of rentsToDelete) {
+          await RentService.delete(rent.id);
+        }
+        await VehicleService.delete(idVehiculo);
+        this.loadVehicles();
         await Swal.fire({
           icon: 'success',
           title: 'Éxito',
@@ -49,28 +68,32 @@ export default {
         });
       }
     },
-    verSolicitud(vehiculoId) {
+    seeRequest(vehiculoId) {
       localStorage.setItem("vehiculoAlquiladoId", vehiculoId);
-      this.router.push({path: "/read-request"});
+      this.router.push({path:"/read-request"});
     }
   },
   created() {
-    this.cargarVehiculos();
+    this.loadVehicles();
   },
 };
 </script>
 
 <template>
-  <pv-toast aria-live="polite"/>
+  <pv-toast aria-live="polite" />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
-            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
+            src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.pngP"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -102,23 +125,20 @@ export default {
       </template>
     </pv-toolbar>
   </header>
-  <h1 id="vehiclesTitle" style="font-family: 'Poppins', sans-serif; color: #FF7A00">Vehiculos registrados</h1>
+  <h1 id="vehiclesTitle" style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentOwner.title1') }}</h1>
   <div class="card-container" role="region" aria-labelledby="vehiclesTitle">
-    <div class="card-item" v-for="vehiculo in vehiculosFiltrados" :key="vehiculo.id">
-      <Card role="region" aria-labelledby="cardTitle{{vehiculo.id}}">
+    <div class="card-item" v-for="vehicle in vehicles_filtered" :key="vehicle.id">
+      <pv-card role="region" aria-labelledby="cardTitle{{vehicle.id}}">
         <template #title></template>
         <template #content>
-          <img :src="vehiculo.url_imagen" alt="Imagen del vehículo" style="max-width: 100%; height: auto;"/>
-          <p id="cardTitle{{vehiculo.id}}" style="font-family: 'Poppins', sans-serif">Id: {{ vehiculo.id }}</p>
-          <p style="font-family: 'Poppins', sans-serif">Marca/Modelo: {{ vehiculo.marca }}/{{ vehiculo.modelo }}</p>
-          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Estado: {{ vehiculo.estadoRenta }}</h1>
-          <button class="custom-button3" @click="eliminarPublicacion(vehiculo.id)" role="button">Eliminar publicación
-          </button>
-          <button v-if="vehiculo.estadoRenta === 'Solicitado'" class="custom-button3" @click="verSolicitud(vehiculo.id)"
-                  role="button">Ver solicitud
-          </button>
+          <img :src="vehicle.url_image" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+          <p id="cardTitle{{vehicle.id}}" style="font-family: 'Poppins', sans-serif"></p>
+          <p style="font-family: 'Poppins', sans-serif">{{ $t('RentOwner.brand_model') }} {{ vehicle.brand }}/{{ vehicle.model }}</p>
+          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentOwner.status') }} {{ vehicle.rent_status }}</h1>
+          <button class="custom-button3" @click="deletePost(vehicle.id)" role="button">{{ $t('RentOwner.delete_button') }}</button>
+          <button v-if="vehicle.rent_status === 'Required'" class="custom-button3" @click="seeRequest(vehicle.id)" role="button">{{ $t('RentOwner.see_request') }}</button>
         </template>
-      </Card>
+      </pv-card>
     </div>
   </div>
 
@@ -217,8 +237,8 @@ export default {
 
 .card-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: wrap; 
+  gap: 10px; 
 }
 
 .card-item {

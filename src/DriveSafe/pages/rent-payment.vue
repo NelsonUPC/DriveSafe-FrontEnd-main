@@ -1,57 +1,98 @@
-<script setup>
+<script>
 import { ref } from 'vue';
-import Card from 'primevue/card';
-import AlquilerService from '@/DriveSafe/services/alquiler.service';
+import Card from "primevue/card";
+import VehicleService from "@/DriveSafe/services/vehicle.service";
+import RentService from "@/DriveSafe/services/rent.service";
 
-const vehiculoFoto = ref(localStorage.getItem('vehiculoFoto'));
-const vehiculoPrecio = ref(localStorage.getItem('vehiculoPrecio'));
-const vehiculoTiempo = ref(localStorage.getItem('vehiculoTiempo'));
-const fechaInicio = ref(localStorage.getItem('vehiculoFi'));
-const fechaFin = ref(localStorage.getItem('vehiculoFf'));
-const lugarRecojo = ref(localStorage.getItem('vehiculoLugar'));
-
-const pagoProcesado = ref(false);
-
-const items = [
-  { label: "Inicio", to: "/home" },
-  { label: "Buscar Autos", to: "/car-search-tenant" },
-  { label: "Mantenimiento", to: "/manteinance-tenant" },
-  { label: "Alquiler", to: "/rent-tenant" },
-];
-
-const pagarEfectivo = async () => {
-  try {
-    // Realizar el pago
-    await pagar();
-    // Mostrar el mensaje de pago procesado
-    pagoProcesado.value = true;
-  } catch (error) {
-    console.error('Error al procesar el pago:', error);
-  }
-};
-
-const pagar = async () => {
-  try {
-    // Obtener el ID de alquiler almacenado
-    const alquilerId = parseInt(localStorage.getItem('alquilerId'));
-    // Verificar si el ID de alquiler es válido
-    if (!isNaN(alquilerId)) {
-      // Obtener el alquiler por su ID
-      const response = await AlquilerService.getById(alquilerId);
-      const alquiler = response.data;
-      // Actualizar el estado del alquiler a "Pagado"
-      alquiler.estado = 'Pagado';
-      // Actualizar el alquiler en la base de datos
-      await AlquilerService.update(alquilerId, alquiler);
-    } else {
-      console.error('El ID de alquiler almacenado no es válido.');
+export default {
+  components: {
+    Card
+  },
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home" },
+        { label: this.$t('Menu.search'), to: "/car-search-tenant" },
+        { label: this.$t('Menu.maintenance'), to: "/maintenance-tenant" },
+        { label: this.$t('Menu.rent'), to: "/rent-tenant" },
+      ];
     }
-  } catch (error) {
-    console.error('Error al procesar el pago:', error);
-    throw error; // Propagar el error para manejarlo en la función de pago en efectivo
-  }
+  },
+  data() {
+    return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
+      drawer: false,
+      rent: [],
+      vehicle: [],
+      payment_processed: false,
+      vehiculoFoto: ref(localStorage.getItem('vehiculoFoto')),
+      vehiculoPrecio: ref(localStorage.getItem('vehiculoPrecio')),
+      vehiculoTiempo: ref(localStorage.getItem('vehiculoTiempo')),
+      fechaInicio: ref(localStorage.getItem('vehiculoFi')),
+      fechaFin: ref(localStorage.getItem('vehiculoFf')),
+      lugarRecojo: ref(localStorage.getItem('vehiculoLugar')),
+    };
+  },
+  methods: {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async loadRent() {
+      try {
+        const rent_id = parseInt(localStorage.getItem("alquilerId"));
+        const vehicle_id = parseInt(localStorage.getItem("vehiculoId"));
+        const rentResponse = await RentService.getById(rent_id);
+        const vehicleResponse = await VehicleService.getById(vehicle_id);
+        this.rent = rentResponse.data;
+        this.vehicle = vehicleResponse.data;
+      } catch (error) {
+        console.error("Error al cargar los rents:", error);
+      }
+    },
+    async cashPayment () {
+      try {
+        // Realizar el pago
+        await this.pay()
+        // Mostrar el mensaje de pago procesado
+        this.payment_processed = true;
+      } catch (error) {
+        console.error('Error al procesar el pago:', error);
+      }
+    },
+    async pay() {
+      try {
+        // Obtener el ID de alquiler almacenado
+        const rentId = parseInt(localStorage.getItem('alquilerId'));
+        // Verificar si el ID de alquiler es válido
+        if (!isNaN(rentId)) {
+          // Obtener el alquiler por su ID
+          const response = await RentService.getById(rentId);
+          const rent = response.data;
+          console.log("Rent:", rent);
+          // Actualizar el rent_status del alquiler a "Pagado"
+          rent.status = 'Paid';
+          console.log("Rent:", rent);
+          // Actualizar el alquiler en la base de datos
+          RentService.update(rentId, rent);
+          this.router.push('/rent-tenant');
+        } else {
+          console.error('El ID de alquiler almacenado no es válido.');
+        }
+      } catch (error) {
+        console.error('Error al procesar el pago:', error);
+        throw error;
+      }
+    },
+  },
+  created() {
+    this.loadRent();
+  },
 };
-
 </script>
 
 <template>
@@ -62,9 +103,13 @@ const pagar = async () => {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -99,30 +144,28 @@ const pagar = async () => {
   </header>
 
   <div class="p-grid">
-    <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">Pagar alquiler</h1>
+    <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentPayment.title') }}</h1>
 
     <Card>
       <template #title>
-        <h2 class="card-title">Detalles del vehículo</h2>
+        <h2 class="card-title">{{ $t('RentPayment.vehicle_details') }}</h2>
       </template>
       <template #content>
-        <img :src="vehiculoFoto" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-        <h3 class="h3-method">Precio: {{ vehiculoPrecio }}</h3>
-        <h3 class="h3-method">Tiempo: {{ vehiculoTiempo }}</h3>
-        <h3 class="h3-method">Fecha de inicio: {{ fechaInicio }}</h3>
-        <h3 class="h3-method">Fecha de fin: {{ fechaFin }}</h3>
-        <h3 class="h3-method">Lugar de recojo: {{ lugarRecojo }}</h3>
+        <img :src="vehicle.url_image" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+        <h3 class="h3-method">{{ $t('RentPayment.price') }} {{ vehicle.rental_cost }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.time') }} {{ vehicle.time_type }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.start_date') }} {{ rent.start_date }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.end_date') }} {{ rent.end_date }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.pick_up_place') }} {{ rent.pick_up_place }}</h3>
       </template>
     </Card>
-
-    <!-- Pregunta sobre el método de pago -->
     <div>
-      <h3 class="h3-method">Seleccione método de pago:</h3>
-      <button @click="pagarEfectivo('Efectivo')" class="btn-efectivo">Efectivo</button>
-      <button><router-link to="/rent-payment-confirmation" class="btn-online">Online</router-link></button>
+      <h3 class="h3-method">{{ $t('RentPayment.select_payment_method') }}</h3>
+      <button @click="pay()" class="btn-efectivo">{{ $t('RentPayment.cash_button') }}</button>
+      <button><router-link to="/rent-payment-confirmation" class="btn-online">{{ $t('RentPayment.online_button') }}</router-link></button>
     </div>
 
-    <h1 v-if="pagoProcesado" class="msg-procesado">El pago ha sido procesado correctamente. Deberá recoger el vehículo alquilado.</h1>
+    <h1 v-if="payment_processed" class="msg-procesado">{{ $t('RentPayment.payment_processed') }}</h1>
   </div>
 </template>
 

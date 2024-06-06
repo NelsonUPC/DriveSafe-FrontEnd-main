@@ -1,6 +1,7 @@
 <script>
 import Card from "primevue/card";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import RentService from "@/DriveSafe/services/rent.service";
+import Swal from "sweetalert2";
 
 export default {
   components: {
@@ -8,53 +9,72 @@ export default {
   },
   data(){
     return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
       drawer: false,
       items: [
-        { label: "Inicio", to: "/init-propie" },
+        { label: "Inicio", to: "/home-owner" },
         { label: "Registro", to: "/car-registration-owner" },
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
       ],
-      alquiler: null,
-      arrendatario: null,
-      vehiculo: null,
+      cardNumber: '',
+      expiry: '',
+      cvv: '',
+      firstName: '',
+      lastName: '',
     };
   },
   methods:{
-    async cargar(){
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async load(){
       try{
-        const alquilerId = parseInt(localStorage.getItem("alquilerId"));
+        const rentId = parseInt(localStorage.getItem("alquilerId"));
         console.log("alquilerId:", parseInt(localStorage.getItem("alquilerId"))); // Agregado para depurar
-
         // Verificar si alquilerId es un número válido
-        if (!isNaN(alquilerId)) {
-          const response = await AlquilerService.getById(alquilerId);
+        if (!isNaN(rentId)) {
+          const response = await RentService.getById(rentId);
           this.alquiler = response.data;
-
           console.log("alquiler:", this.alquiler); // Agregado para depurar
         } else {
           console.error("El ID de alquiler almacenado no es un número válido.");
-          return; // Salir de la función si el ID no es válido
         }
-
       } catch(error){
-        console.error("Error al cargar la información del alquiler:", error);
+        console.error("Error al load la información del alquiler:", error);
       }
     },
-
-
-    async pagar(){
-      try{
+    async pay(){
+      if (!this.cardNumber || !this.expiry || !this.cvv || !this.firstName || !this.lastName || !this.email) {
+        Swal.fire({
+          icon: 'error',
+          title: this.$t('RentPaymentConfirmation.error_title'),
+          text: this.$t('RentPaymentConfirmation.error_text'),
+        });
+        return;
+      }
+      try {
         console.log("this.alquiler:", this.alquiler); // Agregado para depurar
-
         // Verificar si this.alquiler no es null antes de continuar
         if (this.alquiler !== null) {
-          const response = await AlquilerService.getById(this.alquiler.id);
-          const alquilerCompleto = response.data;
-          alquilerCompleto.estado = "Pagado";
-          console.log("alquilerCompleto:", alquilerCompleto); // Agregado para depurar
+          const response = await RentService.getById(this.alquiler.id);
+          const rent = response.data;
+          rent.status = "Paid";
+          console.log("alquilerCompleto:", rent); // Agregado para depurar
 
-          await AlquilerService.update(this.alquiler.id, alquilerCompleto);
+          await RentService.update(this.alquiler.id, rent);
+
+          Swal.fire(
+              this.$t('RentPaymentConfirmation.success_title'),
+              this.$t('RentPaymentConfirmation.success_text'),
+              'success'
+          );
+          this.router.push('/rent-tenant');
         } else {
           console.error("No se puede realizar el pago porque no se ha cargado correctamente la información del alquiler.");
         }
@@ -65,7 +85,7 @@ export default {
     }
   },
   created(){
-    this.cargar();
+    this.load();
   }
 }
 </script>
@@ -73,34 +93,34 @@ export default {
 <template>
   <div class="credit-card-form">
     <div class="form-group">
-      <label for="cardNumber" class="label">Número de tarjeta:</label>
-      <input type="text" id="cardNumber" v-model="cardNumber" placeholder="Ingrese el número de tarjeta" class="input">
+      <label for="cardNumber" class="label">{{ $t('RentPaymentConfirmation.card_number') }}</label>
+      <input type="text" id="cardNumber" v-model="cardNumber" :placeholder="$t('RentPaymentConfirmation.card_number')" class="input">
     </div>
     <div class="form-group">
-      <label for="expiry" class="label">Fecha de expiración (MM/AA):</label>
+      <label for="expiry" class="label">{{ $t('RentPaymentConfirmation.expiry_date') }}</label>
       <input type="text" id="expiry" v-model="expiry" placeholder="MM/AA" class="input">
     </div>
     <div class="form-group">
-      <label for="cvv" class="label">CVV:</label>
+      <label for="cvv" class="label">{{ $t('RentPaymentConfirmation.cvv') }}</label>
       <input type="text" id="cvv" v-model="cvv" placeholder="CVV" class="input">
     </div>
     <div class="form-group">
-      <label for="firstName" class="label">Nombres:</label>
-      <input type="text" id="firstName" v-model="firstName" placeholder="Nombres" class="input">
+      <label for="firstName" class="label">{{ $t('RentPaymentConfirmation.first_name') }}</label>
+      <input type="text" id="firstName" v-model="firstName" :placeholder="$t('RentPaymentConfirmation.first_name')" class="input">
     </div>
     <div class="form-group">
-      <label for="lastName" class="label">Apellidos:</label>
-      <input type="text" id="lastName" v-model="lastName" placeholder="Apellidos" class="input">
+      <label for="lastName" class="label">{{ $t('RentPaymentConfirmation.last_name') }}</label>
+      <input type="text" id="lastName" v-model="lastName" :placeholder="$t('RentPaymentConfirmation.last_name')" class="input">
     </div>
     <div class="form-group">
-      <label for="email" class="label">Email:</label>
+      <label for="email" class="label">{{ $t('RentPaymentConfirmation.email') }}</label>
       <input type="email" id="email" v-model="email" placeholder="Email" class="input">
     </div>
     <div class="extra-commission">
-      <p>Comisión extra de uso: 5 soles</p>
+      <p>{{ $t('RentPaymentConfirmation.extra_commission') }}</p>
     </div>
     <div class="form-group">
-      <button @click="pagar" class="btn-pagar">Pagar</button>
+      <button @click="pay" class="btn-pagar">{{ $t('RentPaymentConfirmation.pay_button') }}</button>
     </div>
   </div>
 </template>

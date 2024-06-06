@@ -1,77 +1,77 @@
 <script>
 import Swal from 'sweetalert2';
 import UserService from "@/DriveSafe/services/user.service";
-
 export default {
+  computed:{
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home" },
+        { label: this.$t('Menu.search'), to: "/car-search-tenant" },
+        { label: this.$t('Menu.maintenance'), to: "/maintenance-tenant" },
+        { label: this.$t('Menu.rent'), to: "/rent-tenant" },
+      ];
+    },
+  },
   data() {
     return {
-      drawer: false,
-      items: [
-        { label: "Inicio", to: "/init-propie" },
-        { label: "Registro", to: "/car-registration-owner" },
-        { label: "Notificaciones", to: "/notifications" },
-        { label: "Alquiler", to: "/rent-owner" },
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
-      arrendatarioId: parseInt(localStorage.getItem("usuarioId")),
-      nombres: '',
-      apellidos: '',
-      celular: '',
-      fechaNacimiento: '',
-      contrasenia: '',
-      correo: localStorage.getItem("usuarioCorreo") // Obtener el correo del localStorage
+      selectedLanguage: 'en',
+      drawer: false,
+      tenantId: parseInt(localStorage.getItem("usuarioId")),
+      name: '',
+      last_name: '',
+      cellphone: '',
+      day: '',
+      month: '',
+      year: '',
+      password: '',
+      gmail: ''
     };
   },
   methods: {
-    async actualizarDatosOwner() {
-      // Verificar si algún campo está vacío
-      if (!this.nombres || !this.apellidos || !this.celular || !this.fechaNacimiento || !this.contrasenia || !this.correo) {
-        // Mostrar advertencia Swal
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async updateTenantData() {
+      if (!this.name || !this.last_name || !this.cellphone || !this.password || !this.gmail || !this.day || !this.month || !this.year) {
         Swal.fire({
           icon: 'warning',
-          title: 'Advertencia',
-          text: 'Por favor, completa todos los campos.',
+          title: this.$t('ProfileTenant.alerts.title2'),
+          text: this.$t('ProfileTenant.alerts.incomplete_fields'),
         });
-        return; // Salir del método si algún campo está vacío
+        return;
       }
-
       try {
-        // Obtener los datos del usuario
-        const response = await UserService.getUserById(this.arrendatarioId);
+        const response = await UserService.getUserById(this.tenantId);
         const responseUser = response.data;
-
-        // Actualizar los datos del usuario con los nuevos valores
-        responseUser.nombres = this.nombres;
-        responseUser.apellidos = this.apellidos;
-        responseUser.fecha_nacimiento = this.fechaNacimiento;
-        responseUser.telefono = this.celular;
-        responseUser.correo = this.correo;
-        responseUser.contrasenia = this.contrasenia;
-        responseUser.tipo = "arrendatario";
-
-        // Actualizar los datos del usuario en el servidor
-        const responseUpdate = await UserService.update(this.arrendatarioId, responseUser);
-
-        // Verificar si la actualización en el servidor fue exitosa
+        const BirthdateFormatted = `${this.year}-${String(this.month).padStart(2, '0')}-${String(this.day).padStart(2, '0')}`;
+        responseUser.name = this.name;
+        responseUser.last_name = this.last_name;
+        responseUser.birthdate = BirthdateFormatted;
+        responseUser.cellphone = this.cellphone;
+        responseUser.gmail = this.gmail;
+        responseUser.password = this.password;
+        const responseUpdate = await UserService.update(this.tenantId, responseUser);
         if (responseUpdate.status === 200) {
-          // Actualizar localStorage si la actualización en el servidor fue exitosa
-          localStorage.setItem("usuarioNombres", this.nombres);
-          localStorage.setItem("usuarioApellidos", this.apellidos);
-          localStorage.setItem("usuarioCelular", this.celular);
-          localStorage.setItem("usuarioCorreo", this.correo); // Actualizar el correo en el localStorage
-
-          // Redirigir al usuario a la página de perfil
+          Swal.fire({
+            icon: 'success',
+            title: this.$t('ProfileTenant.alerts.title'),
+            text: this.$t('ProfileTenant.alerts.update_success'),
+          });
           this.$router.push('/profile-tenant');
         } else {
-          // Mostrar mensaje de error si la actualización en el servidor falló
           throw new Error("La actualización de datos del usuario falló.");
         }
       } catch (error) {
         console.error("Error al actualizar datos del propietario:", error);
-        // Mostrar mensaje de error
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Ocurrió un error al actualizar los datos del propietario. Por favor, inténtalo de nuevo más tarde.',
+          text: this.$t('ProfileTenant.alerts.update_error'),
         });
       }
     }
@@ -87,9 +87,13 @@ export default {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <nav class="flex-column">
@@ -109,7 +113,7 @@ export default {
               {{ item.label }}
             </pv-button>
           </router-link>
-          <router-link to="/profile-owner">
+          <router-link to="/profile-tenant">
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -121,21 +125,27 @@ export default {
     </pv-toolbar>
   </header>
   <main class="center-container" style="margin-top: 100px;">
-    <h1 id="updateTitle" style="color: #FF7A00;">Actualice sus datos</h1>
-    <h2>Nombres</h2><br>
-    <pv-input placeholder="Nombres" v-model="nombres" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-    <h2>Apellidos</h2><br>
-    <pv-input placeholder="Apellidos" v-model="apellidos" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-    <h2>Celular</h2><br>
-    <pv-input placeholder="Celular" v-model="celular" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-    <h2>Fecha de nacimiento</h2><br>
-    <pv-input placeholder="Fecha de nacimiento" v-model="fechaNacimiento" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-    <h2>Contraseña</h2><br>
-    <pv-input placeholder="Nueva contraseña" v-model="contrasenia" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
-    <h2>Correo electrónico</h2><br>
-    <pv-input placeholder="Nuevo correo electrónico" v-model="correo" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h1 id="updateTitle" style="color: #FF7A00;">{{$t('ProfileTenant.update')}}</h1>
+    <h2>{{ $t('ProfileTenant.labels.name') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.name')" v-model="name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>{{ $t('ProfileTenant.labels.last_name') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.last_name')" v-model="last_name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>{{ $t('ProfileTenant.labels.cellphone') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.cellphone')" v-model="cellphone" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <h2>{{ $t('ProfileTenant.labels.birthdate') }}</h2><br>
+    <div class="date-inputs">
+      <pv-input-text id="day" type="number" :placeholder="$t('ProfileTenant.placeholders.day')" class="date-input" v-model="day" />
+      <pv-input-text id="month" type="number" :placeholder="$t('ProfileTenant.placeholders.month')" class="date-input" v-model="month" />
+      <pv-input-text id="year" type="number" :placeholder="$t('ProfileTenant.placeholders.year')" class="date-input" v-model="year" />
+    </div>
+    <h2>{{ $t('ProfileTenant.labels.password') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileTenant.placeholders.password')" v-model="password" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+    <br>
+    <h2>{{ $t('ProfileTenant.labels.gmail') }}</h2><br>
+    <pv-input :placeholder="$t('ProfileTenant.placeholders.gmail')" v-model="gmail" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+    <br>
 
-    <Button label="Actualizar datos" class="custom-button2" @click="actualizarDatosOwner()" role="button">Actualizar</Button>
+    <Button label="$t('ProfileTenant.update_button')" class="custom-button2" @click="updateTenantData()" role="button">{{$t('ProfileTenant.update_button')}}</Button>
   </main>
 </template>
 
@@ -150,7 +160,7 @@ body{
 .custom-bg {
   background-color: white;
 }
-.custom-button, .font-button {
+.custom-button{
   background-color: white;
   color: #14131B;
 }
@@ -163,82 +173,14 @@ body{
 .custom-toolbar {
   border-bottom: 2px solid #ddd;
 }
-.profile-button {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.font-button {
-  margin: 2px 0;
-  background-color: black !important;
-  color: white !important;
-}
-
-.font-button:hover,
-.font-button:focus{
-  background-color: #14131B !important;
-  color: white !important;
-}
-/*Cosas a cambiar*/
-.profile-container {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.left-column {
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.right-column {
-  flex: 10;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
 .title h1{
   margin-top: 0;
 }
 
-.size-photo{
-  max-width: 50%;
-  max-height: 50%;
-}
-
-.profile-image-container{
-  background-color: #f5f5f5;
-  border: 2px solid #ccc;
-  padding: 20px;
-  border-radius: 10px;
-  width: 50%;
-  height: 50%;
-}
-
-.profile-info{
-  margin-top: 40px;
-  margin-bottom: 20px;
-}
-
 .profile-info p{
   margin: 10px;
   line-height: 2.5;
-}
-
-.profile-image{
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 h2, p {
@@ -253,5 +195,36 @@ h2, p {
   justify-content: center;
   height: 100vh;
   margin: 0;
+}
+
+.date-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.date-input:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 600px) {
+  .date-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-input {
+    margin-right: 0;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .date-input:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>

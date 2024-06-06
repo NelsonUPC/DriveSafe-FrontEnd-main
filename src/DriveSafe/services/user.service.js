@@ -1,23 +1,19 @@
 import axios from 'axios';
 
-const URL = 'https://fake-api-pi-rose.vercel.app/';
+const API = 'http://localhost:5014/api/';
 
 class UserService {
-
     getUsers() {
-        return axios.get(URL+'usuario' );
+        return axios.get(API + 'User');
     }
-
     getUserById(id) {
-        return axios.get(`${URL}usuario/${id}`);
+        return axios.get(API + 'User/' + id);
     }
-
     create(data){
-        return axios.post(URL + 'usuario', data)
+        return axios.post(API + 'User', data);
     }
-
     update(id, data) {
-        return axios.put(`${URL}usuario/${id}`, data);
+        return axios.put(API + 'User/' + id, data);
     }
 }
 

@@ -6,9 +6,14 @@ export default {
   },
   data() {
     return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
       drawer: false,
       items: [
-        { label: "Inicio", to: "/init-propie" },
+        { label: "Inicio", to: "/home-owner" },
         { label: "Registro", to: "/car-registration-owner" },
         { label: "Notificaciones", to: "/notifications" },
         { label: "Alquiler", to: "/rent-owner" },
@@ -21,6 +26,10 @@ export default {
     this.urlImagen = localStorage.getItem("urlVehiculo");
   },
   methods: {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
     subirContrato() {
       localStorage.setItem("urlContrato", this.urlContrato);
       this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Contrato subido exitosamente.', role: 'alert' });
@@ -39,9 +48,13 @@ export default {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -87,10 +100,7 @@ export default {
             <p style="font-family: 'Poppins',sans-serif"><strong>URL del contrato de alquiler</strong></p>
             <pv-input placeholder="URL del contrato de alquiler" v-model="urlContrato" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
             <button @click="subirContrato" class="custom-button3" role="button">Subir contrato</button>
-            <img
-                :src="'public/toyota.jpg'"
-                alt="Toyota Prius"
-                style="max-width: 100%; max-height: 300px;" />
+            <img :src="urlImagen" alt="Toyota Prius" style="max-width: 100%; max-height: 300px;">
             <p style="font-family: 'Poppins',sans-serif">Marca/Modelo: Toyota/Prius</p>
           </div>
         </template>

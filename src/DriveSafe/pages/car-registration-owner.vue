@@ -1,121 +1,149 @@
 <script>
-import Card from 'primevue/card';
-import Dropdown from 'primevue/dropdown';
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
+import VehicleService from "@/DriveSafe/services/vehicle.service";
+import Swal from 'sweetalert2';
+
 export default {
-  components: {
-    Card,
-    Dropdown,
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home-owner" },
+        { label: this.$t('Menu.register'), to: "/car-registration-owner" },
+        { label: this.$t('Menu.notifications'), to: "/notifications" },
+        { label: this.$t('Menu.rent'), to: "/rent-owner" },
+      ];
+    },
+    options_car_class() {
+      return this.$i18n.messages[this.$i18n.locale].CarRegistrationOwner.options.car_class;
+    },
+    options_transmission() {
+      return this.$i18n.messages[this.$i18n.locale].CarRegistrationOwner.options.transmission;
+    },
+    options_time_type() {
+      return this.$i18n.messages[this.$i18n.locale].CarRegistrationOwner.options.time_type;
+    },
   },
   data() {
     return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
       drawer: false,
-      items: [
-        { label: "Inicio", to: "/init-propie" },
-        { label: "Registro", to: "/car-registration-owner" },
-        { label: "Notificaciones", to: "/notifications" },
-        { label: "Alquiler", to: "/rent-owner" },
-      ],
-      claseOptions: [
-        "Familiar",
-        "Deportivo",
-        "Cargo car",
-        "SUV",
-        "Sedan"
-      ],
-      transmisionOptions: [
-        "Automático",
-        "Manual"
-      ],
-      tiempoOptions: [
-          "Diario",
-          "Semanal",
-          "Mensual"
-      ],
-      selectedTiempo: null,
-      selectedTransmision: null,
-      selectedClase: null,
-      marca: null,
-      modelo: null,
-      velocidad: null,
-      consumo: null,
-      dimensiones: null,
-      peso: null,
-      tiempo: 0,
-      costoAlquiler: null,
-      lugarRecojo: null,
-      urlImagen: null,
-      mostrarInputUrlImagen: false,
+      selected_time_type: null,
+      selected_transmission: null,
+      selected_car_class: null,
+      brand: null,
+      model: null,
+      maximum_speed: null,
+      consumption: null,
+      dimensions: null,
+      weight: null,
+      rental_cost: null,
+      pick_up_place: null,
+      url_image: null,
     };
   },
   methods: {
-    async registrarVehiculo() {
+    getEnglishValue(key, value) {
+      const mapping = {
+        car_class: {
+          "Familiar": "Family",
+          "Deportivo": "Sport",
+          "Cargo car": "Cargo car",
+          "SUV": "SUV",
+          "Sedan": "Sedan"
+        },
+        transmission: {
+          "Automático": "Automatic",
+          "Manual": "Manual"
+        },
+        time_type: {
+          "Diario": "Daily",
+          "Semanal": "Weekly",
+          "Mensual": "Monthly"
+        }
+      };
+
+      return this.$i18n.locale === 'en' ? value : mapping[key][value];
+    },
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+    async registerVehicle() {
+      if (!this.brand || !this.model || !this.maximum_speed || !this.consumption || !this.dimensions || !this.weight || !this.selected_car_class || !this.selected_transmission || !this.selected_time_type || !this.rental_cost || !this.pick_up_place || !this.url_image) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: this.$t('CarRegistrationOwner.alerts.incomplete_fields'),
+        });
+        return;
+      }
       try {
         const data = {
-          marca: this.marca,
-          modelo: this.modelo,
-          velocidadMax: parseInt(this.velocidad),
-          consumo: parseInt(this.consumo),
-          dimensiones: this.dimensiones,
-          peso: parseInt(this.peso),
-          clase: this.selectedClase,
-          transmision: this.selectedTransmision,
-          tiempo: parseInt(this.tiempo),
-          tipoTiempo: this.selectedTiempo,
-          costoAlquiler: parseInt(this.costoAlquiler),
-          lugarRecojo: this.lugarRecojo,
-          urlImagen: this.urlImagen,
-          contratoAlquilerPdf: localStorage.getItem("urlContrato"),
-          estadoRenta: "AVAILABLE",
-          propietarioId: parseInt(localStorage.getItem("propietarioId")),
-          arrendatarioId: null,
-          alquilerId: null
+          brand: this.brand,
+          model: this.model,
+          maximum_speed: parseInt(this.maximum_speed),
+          consumption: parseInt(this.consumption),
+          dimensions: this.dimensions,
+          weight: parseInt(this.weight),
+          car_class: this.getEnglishValue('car_class', this.selected_car_class),
+          transmission: this.getEnglishValue('transmission', this.selected_transmission),
+          time_type: this.getEnglishValue('time_type', this.selected_time_type),
+          rental_cost: parseInt(this.rental_cost),
+          pick_up_place: this.pick_up_place,
+          url_image: this.url_image,
+          rent_status: "Available",
+          owner_id: parseInt(localStorage.getItem("usuarioId")),
         };
+        await VehicleService.create(data);
+        this.brand = null;
+        this.model = null;
+        this.maximum_speed = null;
+        this.consumption = null;
+        this.dimensions = null;
+        this.weight = null;
+        this.rental_cost = null;
+        this.pick_up_place = null;
+        this.url_image = null;
+        this.selected_time_type = null;
+        this.selected_car_class = null;
+        this.selected_transmission = null;
 
-        await VehiculoService.create(data);
+        Swal.fire({
+          icon: 'success',
+          title: this.$t('CarRegistrationOwner.alerts.title'),
+          text: this.$t('CarRegistrationOwner.alerts.registration_success'),
+        });
 
-        this.marca = null;
-        this.modelo = null;
-        this.velocidad = null;
-        this.consumo = null;
-        this.dimensiones = null;
-        this.peso = null;
-        this.tiempo = 0;
-        this.costoAlquiler = null;
-        this.lugarRecojo = null;
-        this.urlImagen = null;
-        localStorage.setItem("urlVehiculo", null);
-        localStorage.setItem("urlContrato", null);
-        this.selectedTiempo = null;
-        this.selectedClase = null;
-        this.selectedTransmision = null;
-
-        console.log('Vehículo registrado exitosamente.');
-        this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Vehículo registrado exitosamente.' });
       } catch (error) {
-        this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Hubo un problema al registrar el vehículo.' });
-        console.error('Error al registrar el vehículo', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: this.$t('CarRegistrationOwner.alerts.registration_error'),
+        });
       }
-    },
-    subirImagen() {
-      this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Imagen subida exitosamente.' });
-      localStorage.setItem("urlVehiculo", this.urlImagen);
-    },
+    }
   }
 };
 </script>
 
 <template>
-  <pv-toast />
+  <pv-toast/>
   <header>
     <pv-toolbar class="custom-bg custom-toolbar">
       <template #start>
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -136,14 +164,12 @@ export default {
             </pv-button>
           </router-link>
           <router-link to="/profile-owner">
-
-              <img
+            <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
                 style="height: 30px; margin-left: 20px; cursor: pointer;"
-              />
+            />
           </router-link>
-
         </div>
       </template>
     </pv-toolbar>
@@ -151,63 +177,66 @@ export default {
 
   <div class="container">
     <div class="half-width-card">
-      <Card>
+      <pv-card>
         <template #title>
         </template>
         <template #content>
-          <h1 style="font-family: 'Poppins',sans-serif; color:#FF7A00">REGISTRO DE VEHÍCULO</h1>
+          <h1 style="font-family: 'Poppins',sans-serif; color:#FF7A00">{{ $t('CarRegistrationOwner.title')}}</h1>
           <div class="input-grid">
             <div class="input-column">
-              <p style="font-family: 'Poppins',sans-serif"><strong>Marca</strong></p>
-              <pv-input placeholder="Marca" v-model="marca" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Velocidad Max Km/Hr</strong></p>
-              <pv-input placeholder="Velocidad Max Km/Hr" v-model="velocidad" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Dimensiones An-Lg-At</strong></p>
-              <pv-input placeholder="Dimensiones An-Lg-At" v-model="dimensiones" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Clase</strong></p>
-              <Dropdown :options="claseOptions" placeholder="Selecciona una clase" v-model="selectedClase" style="font-family: 'Poppins',sans-serif" />
-              <p style="font-family: 'Poppins',sans-serif"><strong>Tipo de tiempo</strong></p>
-              <Dropdown :options="tiempoOptions" placeholder="Selecciona un tipo de tiempo" v-model="selectedTiempo" style="font-family: 'Poppins',sans-serif" />
-              <p style="font-family: 'Poppins',sans-serif"><strong>Lugar de recojo del vehículo</strong></p>
-              <pv-input placeholder="Lugar de recojo del vehículo" v-model="lugarRecojo" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{ $t('CarRegistrationOwner.brand') }}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.brand')" v-model="brand" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{ $t('CarRegistrationOwner.max_speed') }}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.max_speed')" v-model="maximum_speed" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.dimensions')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.dimensions')" v-model="dimensions" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.car_class')}}</strong></p>
+              <pv-dropdown :options="options_car_class" :placeholder="$t('CarRegistrationOwner.placeholders.car_class')" v-model="selected_car_class" style="font-family: 'Poppins',sans-serif" />
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.time_type')}}</strong></p>
+              <pv-dropdown :options="options_time_type" :placeholder="$t('CarRegistrationOwner.placeholders.time_type')" v-model="selected_time_type"
+                           style="font-family: 'Poppins',sans-serif"/>
+              <p style="font-family: 'Poppins',sans-serif">
+                <strong>{{ $t('CarRegistrationOwner.pick_up_place') }}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.pick_up_place')" v-model="pick_up_place" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
             <div class="input-column">
-              <p style="font-family: 'Poppins',sans-serif"><strong>Modelo</strong></p>
-              <pv-input placeholder="Modelo" v-model="modelo" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Consumo</strong></p>
-              <pv-input placeholder="Consumo" v-model="consumo" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Peso</strong></p>
-              <pv-input placeholder="Peso" v-model="peso" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>Transmisión</strong></p>
-              <Dropdown :options="transmisionOptions" placeholder="Selecciona una transmisión" v-model="selectedTransmision" style="font-family: 'Poppins',sans-serif" />
-              <p style="font-family: 'Poppins',sans-serif"><strong>Costo de alquiler por tiempo</strong></p>
-              <pv-input placeholder="Costo de alquiler por tiempo" v-model="costoAlquiler" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <p style="font-family: 'Poppins',sans-serif"><strong>URL de la imagen del vehículo</strong></p>
-              <pv-input placeholder="URL de la imagen del vehículo" v-model="urlImagen" style="font-family: 'Poppins',sans-serif"></pv-input>
-              <pv-button style="width: auto;" class="custom-button2" @click="subirImagen">SUBIR IMAGEN</pv-button>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.model')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.model')" v-model="model" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.consumption')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.consumption')" v-model="consumption" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.weight')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.weight')" v-model="weight" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.transmission')}}</strong></p>
+              <pv-dropdown :options="options_transmission"
+                           :placeholder="$t('CarRegistrationOwner.placeholders.transmission')"
+                           v-model="selected_transmission" style="font-family: 'Poppins',sans-serif"/>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.rental_cost')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.rental_cost')" v-model="rental_cost" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.url_image')}}</strong></p>
+              <pv-input :placeholder="$t('CarRegistrationOwner.url_image')" v-model="url_image" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
           </div>
           <div class="input-column">
-            <Button label="REGISTRAR" class="custom-button2" @click="registrarVehiculo">REGISTRAR</Button>
+            <pv-button label="REGISTRAR" class="custom-button2" @click="registerVehicle">{{$t('CarRegistrationOwner.register_button')}}</pv-button>
           </div>
         </template>
-      </Card>
+      </pv-card>
     </div>
     <div class="half-width-card">
-      <Card>
+      <pv-card>
         <template #title></template>
         <template #content>
           <div class="button-container">
             <router-link to="/rent-contract-owner">
-              <Button label="CREAR CONTRATO DE ALQUILER" class="custom-button3">CREAR CONTRATO DE ALQUILER</Button>
+              <pv-button label="CREAR CONTRATO DE ALQUILER" class="custom-button3">CREAR CONTRATO DE ALQUILER</pv-button>
             </router-link>
           </div>
         </template>
-      </Card>
+      </pv-card>
     </div>
   </div>
-
 </template>
+
 
 <style>
 .custom-bg {
@@ -295,8 +324,23 @@ export default {
   align-items: center;
 }
 
-.button-space {
-  height: 20px;
+.language-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.language-button {
+  background-color: white;
+  color: #14131B;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.language-button:hover,
+.language-button:focus {
+  background-color: #FF7A00 !important;
+  color: white !important;
 }
 
 @media (max-width: 50vmin) {

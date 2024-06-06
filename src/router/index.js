@@ -1,23 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Inicio from "@/DriveSafe/pages/inicio-arrenda.vue"
-import InitPropietario from "@/DriveSafe/pages/inicio-propie.vue"
-import NotificacionesPropie from "@/DriveSafe/pages/notificaciones-propie.vue";
+import HomeTenant from "@/DriveSafe/pages/home-tenant.vue"
+import HomeOwner from "@/DriveSafe/pages/home-owner.vue"
+import NotificationsOwner from "@/DriveSafe/pages/notifications-owner.vue";
 import CarRegistrationOwner from "@/DriveSafe/pages/car-registration-owner.vue";
 import RentTenant from "@/DriveSafe/pages/rent-tenant.vue";
 import Login from "@/DriveSafe/pages/login.vue";
 import Register from "@/DriveSafe/pages/register.vue";
-import Propietario from "@/DriveSafe/pages/propietario.vue";
 import RequestsTenant from "@/DriveSafe/pages/requests-tenant.vue";
 import ProfileTenant from "@/DriveSafe/pages/profile-tenant.vue";
 import ProfileOwner from "@/DriveSafe/pages/profile-owner.vue";
 import RentOwner from "@/DriveSafe/pages/rent-owner.vue";
 import RentContractOwner from "@/DriveSafe/pages/rent-contract-owner.vue";
 import CarSearchTenant from "@/DriveSafe/pages/car-search-tenant.vue";
-import ManteinanceTenant from "@/DriveSafe/pages/manteinance-tenant.vue";
+import MaintenanceTenant from "@/DriveSafe/pages/maintenance-tenant.vue";
 import UpdateOwner from "@/DriveSafe/pages/update-owner.vue";
 import UpdateTenant from "@/DriveSafe/pages/update-tenant.vue";
 import RentCar from "@/DriveSafe/pages/rent-car.vue";
 import ReadRequest from "@/DriveSafe/pages/read-request.vue";
+import RentPayment from "@/DriveSafe/pages/rent-payment.vue";
+import RentPaymentConfirmation from "@/DriveSafe/pages/rent-payment-confirmation.vue";
 
 
 const router = createRouter({
@@ -30,12 +31,12 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: Inicio,
+      component: HomeTenant,
     },
     {
       path: "/notifications",
-      name: "Notificaciones",
-      component: NotificacionesPropie,
+      name: "Notifications",
+      component: NotificationsOwner,
     },
     {
       path: "/car-registration-owner",
@@ -68,14 +69,9 @@ const router = createRouter({
       component: Register,
     },
     {
-      path: "/propietario",
-      name: "propietario",
-      component: Propietario,
-    },
-    {
-      path: "/init-propie",
-      name: "init-propie",
-      component: InitPropietario,
+      path: "/home-owner",
+      name: "home-owner",
+      component: HomeOwner,
     },
     {
       path: "/requests-tenant",
@@ -95,12 +91,12 @@ const router = createRouter({
     {
       path: "/car-search-tenant",
       name: "car-search-tenant",
-      component: CarSearchTenant,
+      component: CarSearchTenant
     },
     {
-      path: "/manteinance-tenant",
+      path: "/maintenance-tenant",
       name: "manteinance-tenant",
-      component: ManteinanceTenant,
+      component: MaintenanceTenant
     },
     {
       path: "/update-owner",
@@ -122,7 +118,18 @@ const router = createRouter({
       path: "/read-request",
       name: "read-request",
       component: ReadRequest,
+    },
+    {
+      path: "/rent-payment",
+      name: "rent-payment",
+      component: RentPayment,
+    },
+    {
+      path: "/rent-payment-confirmation",
+      name: "rent-payment-confirmation",
+      component: RentPaymentConfirmation
     }
+
   ]
 })
 export default router

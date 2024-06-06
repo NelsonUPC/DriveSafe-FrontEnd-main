@@ -6,9 +6,13 @@
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -45,15 +49,15 @@
       <img src="../../../public/cuerpo.jpg" alt="Imagen de fondo" class="background-image">
 
       <div class="floating-card">
-        <h1 class="orange-text">Alquila autos</h1>
-        <h1 class="black-text">cercanos fácilmente</h1>
+        <h1 class="orange-text">{{$t('HomeTenant.title1')}}</h1>
+        <h1 class="black-text">{{$t('HomeTenant.title2')}}</h1>
 
         <div class="input-button-container">
           <div class="input-container">
             <input type="text" id="ubicacion" placeholder="Surco - Lima, Perú">
 
             <router-link to="/car-search-tenant">
-              <button class="search-button" aria-label="Search-vehicle">Buscar un auto</button>
+              <button class="search-button" aria-label="Search-vehicle">{{$t('HomeTenant.search_button')}}</button>
             </router-link>
 
           </div>
@@ -61,8 +65,8 @@
       </div>
     </div>
     <div class="centered-text">
-      <p class="black-text-body">El auto perfecto para ti está más cerca que nunca</p>
-      <p class="orange-text-body">Marcas de autos disponibles</p>
+      <p class="black-text-body">{{$t('HomeTenant.description1')}}</p>
+      <p class="orange-text-body">{{$t('HomeTenant.description2')}}</p>
     </div>
     <div class="card-carousel-container">
       <div class="card-carousel">
@@ -131,20 +135,33 @@
 
 <script>
 export default{
-  name: "InicioArrenda",
+  name: "HomeTenant",
+  computed: {
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home" },
+        { label: this.$t('Menu.search'), to: "/car-search-tenant" },
+        { label: this.$t('Menu.maintenance'), to: "/maintenance-tenant" },
+        { label: this.$t('Menu.rent'), to: "/rent-tenant" },
+      ];
+    },
+  },
   data() {
     return {
-      drawer: false,
-      items: [
-        { label: "Inicio", to: "/home" },
-        { label: "Buscar Autos", to: "/car-search-tenant" },
-        { label: "Mantenimiento", to: "/manteinance-tenant" },
-        { label: "Alquiler", to: "/rent-tenant" },
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
+      selectedLanguage: 'en',
+      drawer: false,
       cardCount: 4,
     };
   },
   methods: {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
     rotateCarousel(step) {
       const cardContainer = document.querySelector(".carousel-cards");
       const hiddenCards = document.querySelectorAll(".hidden-card");

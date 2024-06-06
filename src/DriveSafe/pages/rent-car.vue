@@ -1,9 +1,9 @@
 <script>
+import Swal from 'sweetalert2';
 import Card from "primevue/card"
-import Carousel from "primevue/carousel";
 import InputText from "primevue/inputtext";
-import VehiculoService from "@/DriveSafe/services/vehiculo.service";
-import AlquilerService from "@/DriveSafe/services/alquiler.service";
+import VehicleService from "@/DriveSafe/services/vehicle.service";
+import RentService from "@/DriveSafe/services/rent.service";
 import {useRouter} from "vue-router";
 import UserService from "@/DriveSafe/services/user.service";
 
@@ -12,123 +12,106 @@ export default {
     Card,
     InputText,
   },
+  computed:{
+    items() {
+      return [
+        { label: this.$t('Menu.home'), to: "/home" },
+        { label: this.$t('Menu.search'), to: "/car-search-tenant" },
+        { label: this.$t('Menu.maintenance'), to: "/maintenance-tenant" },
+        { label: this.$t('Menu.rent'), to: "/rent-tenant" },
+      ];
+    }
+  },
   data() {
     return {
-      drawer: false,
-      items: [
-        {label: "Inicio", to: "/home"},
-        {label: "Buscar Autos", to: "/car-search-tenant"},
-        {label: "Mantenimiento", to: "/manteinance-tenant"},
-        {label: "Alquiler", to: "/rent-tenant"},
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
       ],
+      selectedLanguage: 'en',
+      drawer: false,
       value1: null,
       cardCount: 4,
-      vehiculo: null,
-      tiempoAlquiler: null,
-      resultadoCosto: null,
-      nuevoVehiculo: null,
-      propietario: null,
+      vehicle: null,
+      rent_time: null,
+      cost: null,
+      owner: null,
+      pick_up_place: null,
       router: useRouter(),
     };
   },
   methods: {
-    abrirContratoAlquiler() {
-      if (this.vehiculo && this.vehiculo.contratoAlquilerPdf) {
-        window.open(this.vehiculo.contratoAlquilerPdf, "_blank");
-      }
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
     },
     crearAlquiler() {
-      // Definimos los datos del alquiler
       const alquilerData = {
-        id: null,
-        estado: "Pendiente",
-        fecha_inicio: "por definir",
-        fecha_fin: "por definir",
-        vehiculo_id: this.vehiculo.id,
-        propietario_id: this.propietario.id,
-        arrendatario_id: parseInt(localStorage.getItem("usuarioId"))
+        status: "Pending",
+        start_date: new Date(1,0,1).toISOString().split('T')[0],
+        end_date: new Date(1,0,1).toISOString().split('T')[0],
+        vehicle_id: this.vehicle.id,
+        owner_id: this.owner.id,
+        tenant_id: parseInt(localStorage.getItem("usuarioId")),
+        pick_up_place: this.vehicle.pick_up_place
       };
 
-      // Llamamos al método create de AlquilerService para crear el alquiler
-      AlquilerService.create(alquilerData)
+      console.log(alquilerData)
+
+      // Llamamos al método create de RentService para crear el alquiler
+      RentService.create(alquilerData)
           .then(() => {
             localStorage.setItem("vehiculoId", null);
             console.log("Alquiler creado con éxito.");
+            // Mostrar alerta de éxito
+            Swal.fire({
+              title: this.$t('RentCar.alerts.title'),
+              text: this.$t('RentCar.alerts.rent_success'),
+              icon: 'success',
+              confirmButtonText: 'OK'
+            })
           })
           .catch((error) => {
             console.error("Error al crear alquiler:", error);
+            // Mostrar alerta de error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: this.$t('RentCar.alerts.rent_error'),
+            });
           });
-    },
-    solicitarAlquiler() {
-      this.nuevoVehiculo = this.vehiculo;
-      this.nuevoVehiculo.estadoRenta = "Solicitado";
-      this.nuevoVehiculo.arrendatarioId = localStorage.getItem("arrendatarioId");
-      this.nuevoVehiculo.tiempo = parseInt(this.tiempoAlquiler);
-      VehiculoService.update(this.vehiculo.id, this.nuevoVehiculo)
-          .then(() => {
-            const notificacionData = {
-              body: `${localStorage.getItem("arrendatarioNombres")} ${localStorage.getItem("arrendatarioApellidos")} ha solicitado alquilar el vehículo ${this.nuevoVehiculo.marca} ${this.nuevoVehiculo.modelo}, el pago total será de S/. ${this.resultadoCosto}.`,
-              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
-              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
-            };
-
-            const alquilerData = {
-              estado: "Solicitado",
-              fecha_inicio: fechaFormateada,
-              fecha_fin: "fechaFin",
-              costo_total: this.resultadoCosto,
-              vehiculoId: this.nuevoVehiculo.id,
-              propietarioId: parseInt(this.nuevoVehiculo.propietario.id),
-              arrendatarioId: parseInt(localStorage.getItem("arrendatarioId")),
-            };
-
-            AlquilerService.create(alquilerData)
-
-            NotificacionService.create(notificacionData)
-                .then(() => {
-                  console.log("Notificación creada con éxito.");
-                })
-                .catch((error) => {
-                  console.error("Error al crear notificación:", error);
-                });
-          })
-          .catch((error) => {
-            console.error('Error al solicitar alquiler:', error);
-          });
-      this.router.push({path: "/rent-tenant"});
     },
   },
 
   created() {
-    const vehiculoId = localStorage.getItem("vehiculoId");
-
-    if (vehiculoId) {
-      VehiculoService.getAll()
+    const vehicle_id = localStorage.getItem("vehicle_id");
+    if (vehicle_id) {
+      VehicleService.getAll()
           .then((response) => {
-            const vehiculoEncontrado = response.data.find(
-                (vehiculo) => vehiculo.id === parseInt(vehiculoId)
+            const vehicleFind = response.data.find(
+                (v) => v.id === parseInt(vehicle_id)
             );
 
-            if (vehiculoEncontrado) {
-              this.vehiculo = vehiculoEncontrado;
+            if (vehicleFind) {
+              this.vehicle = vehicleFind;
 
-              // Ahora obtenemos la información del propietario
-              UserService.getUserById(parseInt(this.vehiculo.propietario_id))
+              // Ahora obtenemos la información del owner
+              UserService.getUserById(parseInt(this.vehicle.owner_id))
                   .then((response) => {
-                    this.propietario = response.data;
-                    // Ahora que tenemos la información del propietario, podemos imprimir la información del vehículo
-                    console.log("Costo Total", this.vehiculo.costo_total);
-                    console.log("Vehiculo Id", this.vehiculo.id);
-                    console.log("Propietario_id", parseInt(this.vehiculo.propietario_id));
+                    this.owner = response.data;
+                    // Ahora que tenemos la información del owner, podemos imprimir la información del vehículo
+                    console.log("Costo Total", this.vehicle.rental_cost);
+                    console.log("Vehiculo Id", this.vehicle.id);
+                    console.log("Propietario_id", parseInt(this.vehicle.owner_id));
                     console.log("Arrendatario_id", parseInt(localStorage.getItem("usuarioId")));
-
+                    console.log("Lugar_recojo", this.vehicle.pick_up_place)
                   })
                   .catch((error) => {
-                    console.error("Error al obtener la información del propietario:", error);
+                    console.error("Error al obtener la información del owner:", error);
                   });
 
             } else {
-              console.error("No se encontró el vehículo con ID:", vehiculoId);
+              console.error("No se encontró el vehículo con ID:", vehicle_id);
             }
           })
           .catch((error) => {
@@ -142,16 +125,20 @@ export default {
 </script>
 
 <template>
-  <pv-toast aria-live="polite"/>
+  <pv-toast aria-live="polite" />
   <header>
     <pv-toolbar class="custom-bg custom-toolbar" role="navigation">
       <template #start>
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column">
@@ -173,7 +160,6 @@ export default {
             </pv-button>
           </router-link>
           <router-link to="/profile-tenant" role="menuitem">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"
@@ -185,25 +171,21 @@ export default {
     </pv-toolbar>
   </header>
 
-  <pv-toast aria-live="polite"/>
+  <pv-toast aria-live="polite" />
   <div class="container" role="main">
     <div class="half-width-card">
       <Card role="region" aria-labelledby="card1Title">
         <template #title>
-          <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">Alquilar
-            vehículo</h2>
+          <h2 id="card1Title" style="font-family: 'Poppins',sans-serif; text-align: center; color: #FF7A00;">{{ $t('RentCar.title') }}</h2>
         </template>
         <template #content>
-          <div v-if="vehiculo" class="center-content">
+          <div v-if="vehicle" class="center-content">
             <img
-                :src="vehiculo.url_imagen"
+                :src="vehicle.url_image"
                 alt="Imagen de vehículo"
                 style="max-width: 100%; max-height: 300px;"
             />
-            <div class="card-title">{{ vehiculo.marca }} {{ vehiculo.modelo }}</div>
-            <Button @click="abrirContratoAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button"
-                    role="button">Ver Contrato de Alquiler
-            </Button>
+            <div class="card-title">{{ vehicle.brand }} {{ vehicle.model }}</div>
           </div>
           <div v-else>
             <p>Cargando información del vehículo...</p>
@@ -220,18 +202,16 @@ export default {
         </template>
         <template #content>
           <div>
-            <h1>Contrato de Alquiler</h1>
-            <h1>Mi nombre es {{ propietario ? propietario.nombres + ' ' + propietario.apellidos : '...' }}, yo como
-              propietario del vehículo doy los siguientes reglamentos</h1>
+            <h1>{{$t('RentCar.title_contract')}}</h1>
+            <h1>{{$t('RentCar.description1')}} {{ owner ? owner.name + ' ' + owner.last_name : '...' }}, {{$t('RentCar.description2')}}</h1>
           </div>
-          <Button @click="crearAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">
-            Crear Alquiler
-          </Button>
+          <Button @click="crearAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">{{$t('RentCar.button_rent')}}</Button>
         </template>
       </Card>
     </div>
   </div>
 </template>
+
 
 
 <style scoped>
@@ -240,7 +220,6 @@ export default {
   position: relative;
   height: 500px;
 }
-
 .background-image {
   width: 100%;
   height: 100%;
@@ -251,7 +230,6 @@ export default {
   z-index: -1;
   opacity: 0.9;
 }
-
 .floating-card {
   position: absolute;
   top: 50%;
@@ -264,7 +242,6 @@ export default {
   border-radius: 15px;
 
 }
-
 .orange-text {
   color: #FF7A00;
   font-size: 50px;
@@ -273,7 +250,6 @@ export default {
   font-family: 'Poppins', sans-serif;
   white-space: nowrap;
 }
-
 .black-text {
   color: black;
   font-size: 50px;
@@ -282,25 +258,21 @@ export default {
   font-family: 'Poppins', sans-serif;
   white-space: nowrap;
 }
-
 .input-button-container {
   display: flex;
   align-items: center;
 }
-
 .input-container {
   display: flex;
   grid-gap: 40px;
   margin-top: 40px;
 }
-
 input {
   padding: 10px 40px 10px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px rgba(0, 0, 0, 0.1);
 }
-
 .search-button {
   background-color: black;
   color: white;
@@ -312,8 +284,7 @@ input {
   font-size: 18px;
   white-space: nowrap;
 }
-
-.black-text-body {
+.black-text-body{
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -323,8 +294,7 @@ input {
   text-align: center;
   padding: 10px;
 }
-
-.orange-text-body {
+.orange-text-body{
   color: #FF7A00;
   font-size: 18px;
   margin: 0;
@@ -342,30 +312,24 @@ input {
   padding-right: 50px;
   padding-left: 50px;
 }
-
 .card-carousel {
   display: flex;
   align-items: center;
   margin-top: 20px;
 }
-
-.hidden-card {
+.hidden-card{
   display: none;
 }
-
 .left-arrow {
   margin-right: 10px;
 }
-
 .right-arrow {
   margin-left: 10px;
 }
-
 .carousel-cards {
   display: flex;
   overflow-x: hidden;
 }
-
 .card {
   height: auto;
   display: flex;
@@ -378,10 +342,9 @@ input {
   background-color: #fff;
   flex: 1;
   max-width: 300px;
-  margin: 10px;
+  margin:10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
-
 .card img {
   max-height: 70%;
   object-fit: contain;
@@ -389,14 +352,12 @@ input {
   width: 100%;
   border-radius: 20px;
 }
-
 .card-title {
   font-size: 16px;
   margin-top: 10px;
   color: black;
 
 }
-
 .card-link {
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
@@ -424,7 +385,7 @@ input {
 }
 
 .font-button:hover,
-.font-button:focus {
+.font-button:focus{
   background-color: #14131B !important;
   color: white !important;
 }

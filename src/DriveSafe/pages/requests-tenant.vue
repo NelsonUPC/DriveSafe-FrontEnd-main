@@ -2,6 +2,11 @@
 export default {
   data(){
     return {
+      languageOptions: [
+        { label: 'EN', value: 'en' },
+        { label: 'ES', value: 'es' }
+      ],
+      selectedLanguage: 'en',
       drawer: false,
       car_description: {
         model: 'Model of the car',
@@ -11,12 +16,18 @@ export default {
       items: [
         { label: "Inicio", to: "/home" },
         { label: "Buscar Autos", to: "/car-search-tenant" },
-        { label: "Mantenimiento", to: "/manteinance-tenant" },
+        { label: "Mantenimiento", to: "/maintenance-tenant" },
         { label: "Alquiler", to: "/rent-tenant" },
         { label: 'Solicitudes', to: '/requests-tenant'},
       ],
     };
   },
+  methods: {
+    switchLanguage() {
+      this.selectedLanguage = this.selectedLanguage === 'en' ? 'es' : 'en';
+      this.$i18n.locale = this.selectedLanguage;
+    },
+  }
 };
 </script>
 
@@ -28,9 +39,13 @@ export default {
         <img
             src="https://i.postimg.cc/2jd7PRtj/Drive-Safe-Logo.png"
             alt="Logo"
-            style="height: 70px; margin-right: 20px;"
-            aria-label="DriveSafe Logo"
+            style="height: 40px; margin-right: 20px;"
         />
+        <div class="language-buttons">
+          <button class="language-button" @click="switchLanguage" aria-label="Switch Language">
+            {{ selectedLanguage === 'en' ? 'ES' : 'EN' }}
+          </button>
+        </div>
       </template>
       <template #end>
         <div class="flex-column" role="navigation">
