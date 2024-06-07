@@ -54,7 +54,7 @@ export default {
         console.error("Error al obtener la lista de usuarios:", error);
         await Swal.fire({
           icon: 'error',
-          title: this.$t('Register.error'),
+          title: this.$t('Register.registration_error'),
         });
         return;
       }
