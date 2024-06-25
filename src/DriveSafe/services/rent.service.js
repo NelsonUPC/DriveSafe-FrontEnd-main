@@ -18,7 +18,6 @@ class RentService {
 
     getByUserId(userId) {
         const token = localStorage.getItem('userToken');
-        console.log(token)
         return axios.get(API + 'Rent/Tenant/' + userId, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -26,7 +25,6 @@ class RentService {
 
     create(data) {
         const token = localStorage.getItem('userToken');
-        console.log(token)
         return axios.post(API + 'Rent', data, { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
