@@ -62,12 +62,12 @@ export default {
         console.log("this.alquiler:", this.alquiler); // Agregado para depurar
         // Verificar si this.alquiler no es null antes de continuar
         if (this.alquiler !== null) {
-          const response = await RentService.getById(this.alquiler.id);
+          const response = await RentService.getById(this.alquiler.Id);
           const rent = response.data;
-          rent.status = "Paid";
+          rent.Status = "Paid";
           console.log("alquilerCompleto:", rent); // Agregado para depurar
 
-          await RentService.update(this.alquiler.id, rent);
+          await RentService.update(this.alquiler.Id, rent);
 
           Swal.fire(
               this.$t('RentPaymentConfirmation.success_title'),

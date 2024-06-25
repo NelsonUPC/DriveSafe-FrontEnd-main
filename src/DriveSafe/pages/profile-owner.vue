@@ -1,5 +1,6 @@
 <script>
 import UserService from "@/DriveSafe/services/user.service";
+import {jwtDecode} from "jwt-decode";
 export default {
   computed: {
     items() {
@@ -19,11 +20,11 @@ export default {
       ],
       selectedLanguage: 'en',
       user: {
-        name: '',
-        last_name: '',
+        Name: '',
+        LastName: '',
         photo: localStorage.getItem("fotoOwner"),
-        cellphone: '',
-        gmail: '',
+        Cellphone: '',
+        Gmail: '',
       },
       drawer: false,
     };
@@ -35,7 +36,14 @@ export default {
     },
     async loadOwnerInfo() {
       try {
-        const response = await UserService.getUserById(parseInt(localStorage.getItem("usuarioId")));
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+        console.log("User ID", userId)
+
+        const response = await UserService.getUserById(parseInt(userId));
         this.user = response.data;
 
       } catch (error) {
@@ -105,14 +113,14 @@ export default {
         <h2>{{$t('ProfileOwner.type')}}</h2>
       </div>
       <div class="profile-info">
-        <h2>{{$t('ProfileOwner.name')}}: </h2>
-        <h2>{{ user.name }}</h2><br>
-        <h2>{{$t('ProfileOwner.last_name')}}</h2>
-        <h2>{{user.last_name}}</h2><br>
-        <h2>{{$t('ProfileOwner.phone')}}</h2>
-        <h2>{{user.cellphone}}</h2><br>
-        <h2>{{$t('ProfileOwner.gmail')}} </h2>
-        <h2>{{user.gmail}}</h2><br>
+        <h2>{{$t('ProfileOwner.Name')}}: </h2>
+        <h2>{{ user.Name }}</h2><br>
+        <h2>{{$t('ProfileOwner.LastName')}}</h2>
+        <h2>{{ user.LastName }}</h2><br>
+        <h2>{{$t('ProfileOwner.Cellphone')}}</h2>
+        <h2>{{ user.Cellphone }}</h2><br>
+        <h2>{{$t('ProfileOwner.Gmail')}} </h2>
+        <h2>{{ user.Gmail }}</h2><br>
       </div>
       <div class="buttons">
         <router-link to="/update-owner">

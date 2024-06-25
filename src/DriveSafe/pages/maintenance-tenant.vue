@@ -6,6 +6,7 @@ import RentService from "@/DriveSafe/services/rent.service";
 import UserService from "@/DriveSafe/services/user.service";
 import MaintenanceService from "@/DriveSafe/services/maintenance.service.js";
 import Swal from 'sweetalert2'
+import {jwtDecode} from "jwt-decode";
 
 export default {
   components: {
@@ -46,7 +47,12 @@ export default {
     },
     async obtainOwnerByRent() {
       try {
-        const userId = parseInt(localStorage.getItem('usuarioId'));
+
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
         console.log("UsuarioId", userId)
         const response = await RentService.getAll();
         this.rents = response.data
@@ -57,12 +63,12 @@ export default {
         const uniqueIds = new Set();
 
         for (let rent of this.rents){
-          if (rent.tenant_id === userId && rent.status === 'Paid') {
-            console.log('Alquiler ID: ', rent.id)
-            const userResponse = await UserService.getUserById(rent.owner_id);
+          if (rent.TenantId === parseInt(userId) && rent.Status === 'Paid') {
+            console.log('Alquiler ID: ', rent.Id)
+            const userResponse = await UserService.getUserById(rent.OwnerId);
             console.log('Usuario: ', userResponse.data)
-            uniqueOwners.add(`${userResponse.data.name} ${userResponse.data.last_name}`);
-            uniqueIds.add(`${userResponse.data.id}`)
+            uniqueOwners.add(`${userResponse.data.Name} ${userResponse.data.LastName}`);
+            uniqueIds.add(`${userResponse.data.Id}`)
           }
         }
         this.userOptions = Array.from(uniqueOwners);
@@ -76,6 +82,11 @@ export default {
       }
     },
     async sendRequest() {
+      const token = localStorage.getItem("userToken");
+      const decodedToken = jwtDecode(token);
+
+      const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
       if (!this.value1 || !this.value2 || !this.value3 || !this.selectedUser) {
         Swal.fire({
           icon: 'error',
@@ -94,11 +105,11 @@ export default {
       console.log("ID del propietario:", ownerId);
 
       const maintenance = {
-        type_problem: this.value1,
-        title: this.value2,
-        description: this.value3,
-        tenant_id: parseInt(localStorage.getItem('usuarioId')),
-        owner_id: parseInt(ownerId)
+        TypeProblem: this.value1,
+        Title: this.value2,
+        Description: this.value3,
+        TenantId: parseInt(userId),
+        OwnerId: parseInt(ownerId)
       };
 
       console.log("Manteinance", maintenance);

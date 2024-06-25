@@ -50,6 +50,9 @@ export default {
         const vehicleResponse = await VehicleService.getById(vehicle_id);
         this.rent = rentResponse.data;
         this.vehicle = vehicleResponse.data;
+
+        console.log("Rent:", this.rent);
+        console.log("Vehicle:", this.vehicle);
       } catch (error) {
         console.error("Error al cargar los rents:", error);
       }
@@ -66,18 +69,13 @@ export default {
     },
     async pay() {
       try {
-        // Obtener el ID de alquiler almacenado
         const rentId = parseInt(localStorage.getItem('alquilerId'));
-        // Verificar si el ID de alquiler es válido
         if (!isNaN(rentId)) {
-          // Obtener el alquiler por su ID
           const response = await RentService.getById(rentId);
           const rent = response.data;
           console.log("Rent:", rent);
-          // Actualizar el rent_status del alquiler a "Pagado"
-          rent.status = 'Paid';
+          rent.Status = 'Paid';
           console.log("Rent:", rent);
-          // Actualizar el alquiler en la base de datos
           RentService.update(rentId, rent);
           this.router.push('/rent-tenant');
         } else {
@@ -151,12 +149,12 @@ export default {
         <h2 class="card-title">{{ $t('RentPayment.vehicle_details') }}</h2>
       </template>
       <template #content>
-        <img :src="vehicle.url_image" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-        <h3 class="h3-method">{{ $t('RentPayment.price') }} {{ vehicle.rental_cost }}</h3>
-        <h3 class="h3-method">{{ $t('RentPayment.time') }} {{ vehicle.time_type }}</h3>
-        <h3 class="h3-method">{{ $t('RentPayment.start_date') }} {{ rent.start_date }}</h3>
-        <h3 class="h3-method">{{ $t('RentPayment.end_date') }} {{ rent.end_date }}</h3>
-        <h3 class="h3-method">{{ $t('RentPayment.pick_up_place') }} {{ rent.pick_up_place }}</h3>
+        <img :src="vehicle.UrlImage" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+        <h3 class="h3-method">{{ $t('RentPayment.price') }} {{ vehicle.RentalCost }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.time') }} {{ vehicle.TimeType }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.start_date') }} {{ rent.StartDate }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.end_date') }} {{ rent.EndDate }}</h3>
+        <h3 class="h3-method">{{ $t('RentPayment.pick_up_place') }} {{ rent.PickUpPlace }}</h3>
       </template>
     </Card>
     <div>

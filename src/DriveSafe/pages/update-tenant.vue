@@ -1,6 +1,7 @@
 <script>
 import Swal from 'sweetalert2';
 import UserService from "@/DriveSafe/services/user.service";
+import {jwtDecode} from "jwt-decode";
 export default {
   computed:{
     items() {
@@ -20,15 +21,14 @@ export default {
       ],
       selectedLanguage: 'en',
       drawer: false,
-      tenantId: parseInt(localStorage.getItem("usuarioId")),
-      name: '',
-      last_name: '',
-      cellphone: '',
+      Name: '',
+      LastName: '',
+      Cellphone: '',
       day: '',
       month: '',
       year: '',
-      password: '',
-      gmail: ''
+      Password: '',
+      Gmail: ''
     };
   },
   methods: {
@@ -37,7 +37,7 @@ export default {
       this.$i18n.locale = this.selectedLanguage;
     },
     async updateTenantData() {
-      if (!this.name || !this.last_name || !this.cellphone || !this.password || !this.gmail || !this.day || !this.month || !this.year) {
+      if (!this.Name || !this.LastName || !this.Cellphone || !this.Password || !this.Gmail || !this.day || !this.month || !this.year) {
         Swal.fire({
           icon: 'warning',
           title: this.$t('ProfileTenant.alerts.title2'),
@@ -46,16 +46,21 @@ export default {
         return;
       }
       try {
-        const response = await UserService.getUserById(this.tenantId);
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+        const response = await UserService.getUserById(parseInt(userId));
+
         const responseUser = response.data;
         const BirthdateFormatted = `${this.year}-${String(this.month).padStart(2, '0')}-${String(this.day).padStart(2, '0')}`;
-        responseUser.name = this.name;
-        responseUser.last_name = this.last_name;
-        responseUser.birthdate = BirthdateFormatted;
-        responseUser.cellphone = this.cellphone;
-        responseUser.gmail = this.gmail;
-        responseUser.password = this.password;
-        const responseUpdate = await UserService.update(this.tenantId, responseUser);
+        responseUser.Name = this.Name;
+        responseUser.LastName = this.LastName;
+        responseUser.Birthdate = BirthdateFormatted;
+        responseUser.Cellphone = this.Cellphone;
+        responseUser.Gmail = this.Gmail;
+        responseUser.Password = this.Password;
+        const responseUpdate = await UserService.update(parseInt(userId), responseUser);
         if (responseUpdate.status === 200) {
           Swal.fire({
             icon: 'success',
@@ -127,11 +132,11 @@ export default {
   <main class="center-container" style="margin-top: 100px;">
     <h1 id="updateTitle" style="color: #FF7A00;">{{$t('ProfileTenant.update')}}</h1>
     <h2>{{ $t('ProfileTenant.labels.name') }}</h2><br>
-    <pv-input :placeholder="$t('ProfileTenant.labels.name')" v-model="name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.name')" v-model="Name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>{{ $t('ProfileTenant.labels.last_name') }}</h2><br>
-    <pv-input :placeholder="$t('ProfileTenant.labels.last_name')" v-model="last_name" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.last_name')" v-model="LastName" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>{{ $t('ProfileTenant.labels.cellphone') }}</h2><br>
-    <pv-input :placeholder="$t('ProfileTenant.labels.cellphone')" v-model="cellphone" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
+    <pv-input :placeholder="$t('ProfileTenant.labels.cellphone')" v-model="Cellphone" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input><br>
     <h2>{{ $t('ProfileTenant.labels.birthdate') }}</h2><br>
     <div class="date-inputs">
       <pv-input-text id="day" type="number" :placeholder="$t('ProfileTenant.placeholders.day')" class="date-input" v-model="day" />
@@ -139,10 +144,10 @@ export default {
       <pv-input-text id="year" type="number" :placeholder="$t('ProfileTenant.placeholders.year')" class="date-input" v-model="year" />
     </div>
     <h2>{{ $t('ProfileTenant.labels.password') }}</h2><br>
-    <pv-input :placeholder="$t('ProfileTenant.placeholders.password')" v-model="password" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+    <pv-input :placeholder="$t('ProfileTenant.placeholders.password')" v-model="Password" type="password" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
     <h2>{{ $t('ProfileTenant.labels.gmail') }}</h2><br>
-    <pv-input :placeholder="$t('ProfileTenant.placeholders.gmail')" v-model="gmail" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
+    <pv-input :placeholder="$t('ProfileTenant.placeholders.gmail')" v-model="Gmail" style="font-family: 'Poppins',sans-serif" role="textbox"></pv-input>
     <br>
 
     <Button label="$t('ProfileTenant.update_button')" class="custom-button2" @click="updateTenantData()" role="button">{{$t('ProfileTenant.update_button')}}</Button>

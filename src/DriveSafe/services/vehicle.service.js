@@ -1,26 +1,38 @@
 import axios from 'axios';
 
-const API = 'http://localhost:5014/api/';
+const API = 'http://localhost:5232/api/';
+
 
 class VehicleService {
     getAll() {
-        return axios.get(API + 'Vehicle');
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Vehicle', { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
     getById(id) {
-        return axios.get(API + 'Vehicle/' + id);
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Vehicle/' + id, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 
     getByUserId(userId) {
-        return axios.get(API + 'Vehicle/GetByUserId/' + userId);
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Vehicle/Owner/' + userId, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 
     create(data) {
-        return axios.post(API + 'Vehicle', data);
+        const token = localStorage.getItem('userToken');
+        return axios.post(API + 'Vehicle', data, { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
     delete(id) {
-        return axios.delete(API + 'Vehicle/' + id);
+        const token = localStorage.getItem('userToken');
+        return axios.delete(API + 'Vehicle/' + id, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 }
 

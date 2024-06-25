@@ -2,8 +2,10 @@
 import { useLayout } from '@/DriveSafe/composables/layout'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import UserService from "@/DriveSafe/services/user.service";
+import { jwtDecode } from "jwt-decode";
+import AuthApiService from "@/DriveSafe/services/auth-api.service";
 import Swal from 'sweetalert2';
+import UserService from "@/DriveSafe/services/user.service";
 export default {
   data() {
     return {
@@ -13,8 +15,8 @@ export default {
       ],
       selectedLanguage: 'en',
       layoutConfig: useLayout().layoutConfig,
-      gmail: ref(''),
-      password: ref(''),
+      Gmail: ref(''),
+      Password: ref(''),
       checked: ref(false),
       router: useRouter(),
     };
@@ -26,25 +28,48 @@ export default {
     },
     async login() {
       try {
-        const userResponse = await UserService.getUsers();
-        console.log("GetUsers()", userResponse)
-        const users = userResponse.data;
-        console.log("Usuarios", users)
-        const userFind = users.find(user => user.gmail === this.gmail)
+        const body = {
+          Gmail: this.Gmail,
+          Password: this.Password
+        };
+        const token = await AuthApiService.login(body);
+        if (token) {
+          localStorage.setItem("userToken", token);
+          console.log("Token", localStorage.getItem("userToken"));
 
+          const token2 = localStorage.getItem("userToken");
 
-        if (userFind && userFind.password === this.password) {
-          console.log("Usuario autenticado correctamente", userFind);
+          /*const decodedToken = jwtDecode(token2);
 
-          localStorage.setItem("usuarioId", userFind.id);
+          const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
 
-          localStorage.setItem("fotoTenant", "https://i.postimg.cc/Fs9Z3g3V/usuario-1.png");
+          console.log("Decoded Token", decodedToken);
 
-          if (userFind.type === "owner"){
-            this.router.push('/home-owner');
-          }
-          else {
+          console.log("User ID", userId);*/
+
+          const decodedToken = jwtDecode(token2);
+
+          const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+          console.log("User ID", userId)
+
+          const response = await UserService.getUserById(parseInt(userId));
+
+          console.log("Response", response.data)
+          console.log("Type", response.data.Type)
+
+          if (response.data.Type === 'tenant') {
             this.router.push('/home');
+          } else if (response.data.Type === 'owner') {
+            this.router.push('/home-owner');
+          } else {
+            console.error("No existe un arrendatario con el correo proporcionado");
+            await Swal.fire({
+              icon: 'error',
+              title: '¡Error!',
+              text: 'El correo electrónico o la contraseña son incorrectos',
+              confirmButtonColor: '#FFA500',
+            });
           }
         } else {
           console.error("No existe un arrendatario con el correo proporcionado");
@@ -76,10 +101,10 @@ export default {
 
                     <div>
                         <label for="email1" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;">Correo</label>
-                        <pv-input-text id="email1" type="text" placeholder="Correo electrónico" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="gmail" />
+                        <pv-input-text id="email1" type="text" placeholder="Correo electrónico" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Gmail" />
 
                         <label for="password1" class="block text-900 font-medium text-xl mb-2" style="font-family: 'Poppins', sans-serif;">Contraseña</label>
-                        <pv-input-text id="email1" type="password" placeholder="Contraseña" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="password" />
+                        <pv-input-text id="email1" type="password" placeholder="Contraseña" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Password" />
                 
                         <div class="flex align-items-center justify-content-between mb-5 gap-5">
                             <div class="flex align-items-center">

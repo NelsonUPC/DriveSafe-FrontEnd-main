@@ -47,10 +47,10 @@ export default {
         const response = await RentService.getById(rent_id);
         this.rent = response.data;
 
-        const tenantResponse = await UserService.getUserById(this.rent.tenant_id);
+        const tenantResponse = await UserService.getUserById(this.rent.TenantId);
         this.tenant = tenantResponse.data;
 
-        const vehicleResponse = await VehicleService.getById(this.rent.vehicle_id);
+        const vehicleResponse = await VehicleService.getById(this.rent.VehicleId);
         this.vehicle = vehicleResponse.data;
       } catch (error) {
         console.error("Error al cargar la información del rent:", error);
@@ -58,29 +58,26 @@ export default {
     },
     async acceptRent() {
       try {
-        const response = await RentService.getById(this.rent.id);
+        const response = await RentService.getById(this.rent.Id);
         const rentComplete = response.data;
 
         let formattedDate = " ";
         let formattedDateF = " ";
-        rentComplete.status = "Accepted";
+        rentComplete.Status = "Accepted";
 
         const today = new Date();
-        console.log("Today:", today)
         const day = today.getDate().toString().padStart(2, '0');
         const month = (today.getMonth() + 1).toString().padStart(2, '0');
         const year = today.getFullYear();
 
         formattedDate = `${year}-${month}-${day}`;
 
-        console.log("Date:", formattedDate)
-
         let aditionalDays = 0;
-        if (this.vehicle.time_type === "Daily") {
+        if (this.vehicle.TimeType === "Daily") {
           aditionalDays = 1;
-        } else if (this.vehicle.time_type === "Weekly") {
+        } else if (this.vehicle.TimeType === "Weekly") {
           aditionalDays = 7;
-        } else if (this.vehicle.time_type === "Monthly") {
+        } else if (this.vehicle.TimeType === "Monthly") {
           aditionalDays = 30;
         }
         const futureDate = new Date(today);
@@ -91,27 +88,25 @@ export default {
 
         formattedDateF = `${yearf}-${monthf}-${dayf}`;
 
-        console.log("Future Date:", formattedDateF)
-
-        rentComplete.start_date = formattedDate;
-        rentComplete.end_date = formattedDateF;
+        rentComplete.StartDate = formattedDate;
+        rentComplete.EndDate = formattedDateF;
 
         console.log("Rent:", rentComplete)
 
-        await RentService.update(this.rent.id, rentComplete);
-        this.rent.status = "Accepted";
+        await RentService.update(this.rent.Id, rentComplete);
+        this.rent.Status = "Accepted";
       } catch (error) {
         console.error("Error al aceptar el rent:", error);
       }
     },
     async refuseRent() {
       try {
-        const response = await RentService.getById(this.rent.id);
+        const response = await RentService.getById(this.rent.Id);
         const rentComplete = response.data;
 
-        rentComplete.status = "Refused";
-        await RentService.update(this.rent.id, rentComplete);
-        this.rent.status = "Refused";
+        rentComplete.Status = "Refused";
+        await RentService.update(this.rent.Id, rentComplete);
+        this.rent.Status = "Refused";
       } catch (error) {
         console.error("Error al declinar el rent:", error);
       }
@@ -178,10 +173,10 @@ export default {
         </template>
         <template #content>
           <div>
-            <h2>{{$t('ReadRequest.tenant_name')}}: {{ tenant.name }}</h2>
-            <h2>{{$t('ReadRequest.tenant_lastname')}}{{ tenant.last_name }}</h2>
-            <h2> {{$t('ReadRequest.tenant_phone')}} {{ tenant.cellphone }}</h2>
-            <h2>{{$t('ReadRequest.tenant_email')}} {{ tenant.gmail }}</h2>
+            <h2>{{$t('ReadRequest.tenant_name')}} {{ tenant.Name }}</h2>
+            <h2>{{$t('ReadRequest.tenant_lastname')}}{{ tenant.LastName }}</h2>
+            <h2> {{$t('ReadRequest.tenant_phone')}} {{ tenant.Cellphone }}</h2>
+            <h2>{{$t('ReadRequest.tenant_email')}} {{ tenant.Gmail }}</h2>
           </div>
           <div>
           </div>
@@ -198,17 +193,17 @@ export default {
           <h2 style="font-family: 'Poppins', sans-serif">{{$t('ReadRequest.rent_options')}}</h2>
 
           <div v-if="rent">
-            <div v-if="rent.status === 'Accepted'">
+            <div v-if="rent.Status === 'Accepted'">
               <p>{{$t('ReadRequest.request_accepted')}}</p>
             </div>
-            <div v-if="rent.status === 'Paid'">
+            <div v-if="rent.Status === 'Paid'">
               <p>{{$t('ReadRequest.request_paid')}}</p>
             </div>
-            <div v-if="rent.status === 'Pending'">
+            <div v-if="rent.Status === 'Pending'">
               <Button @click="acceptRent" class="accept-button" aria-label="Aceptar">{{ $t('ReadRequest.accept_button') }}</Button>
               <Button @click="refuseRent" class="decline-button" aria-label="Declinar">{{ $t('ReadRequest.refuse_button') }}</Button>
             </div>
-            <div v-if="rent.status === 'Refused'">
+            <div v-if="rent.Status === 'Refused'">
               <p>{{$t('ReadRequest.request_refused')}}</p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import VehicleService from "@/DriveSafe/services/vehicle.service";
 import {useRouter} from "vue-router";
 import Swal from "sweetalert2";
 import RentService from "@/DriveSafe/services/rent.service";
+import {jwtDecode} from "jwt-decode";
 export default {
   components: {
     Card,
@@ -37,8 +38,15 @@ export default {
     },
     async loadVehicles() {
       try {
-        const response = await VehicleService.getByUserId(parseInt(localStorage.getItem("usuarioId")));
+
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+        const response = await VehicleService.getByUserId(parseInt(userId));
         this.vehicles_filtered = response.data;
+
         console.log("Vehiculos Filtrados", this.vehicles_filtered);
       } catch (error) {
         console.error("Error al cargar los vehículos:", error);
@@ -48,9 +56,9 @@ export default {
       try {
         const response = await RentService.getAll();
         const rents = response.data;
-        const rentsToDelete = rents.filter(r => r.vehicle_id === idVehiculo);
+        const rentsToDelete = rents.filter(r => r.VehicleId === idVehiculo);
         for (const rent of rentsToDelete) {
-          await RentService.delete(rent.id);
+          await RentService.delete(rent.Id);
         }
         await VehicleService.delete(idVehiculo);
         this.loadVehicles();
@@ -127,16 +135,16 @@ export default {
   </header>
   <h1 id="vehiclesTitle" style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentOwner.title1') }}</h1>
   <div class="card-container" role="region" aria-labelledby="vehiclesTitle">
-    <div class="card-item" v-for="vehicle in vehicles_filtered" :key="vehicle.id">
-      <pv-card role="region" aria-labelledby="cardTitle{{vehicle.id}}">
+    <div class="card-item" v-for="vehicle in vehicles_filtered" :key="vehicle.Id">
+      <pv-card role="region" aria-labelledby="cardTitle{{vehicle.Id}}">
         <template #title></template>
         <template #content>
-          <img :src="vehicle.url_image" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
-          <p id="cardTitle{{vehicle.id}}" style="font-family: 'Poppins', sans-serif"></p>
-          <p style="font-family: 'Poppins', sans-serif">{{ $t('RentOwner.brand_model') }} {{ vehicle.brand }}/{{ vehicle.model }}</p>
-          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentOwner.status') }} {{ vehicle.rent_status }}</h1>
-          <button class="custom-button3" @click="deletePost(vehicle.id)" role="button">{{ $t('RentOwner.delete_button') }}</button>
-          <button v-if="vehicle.rent_status === 'Required'" class="custom-button3" @click="seeRequest(vehicle.id)" role="button">{{ $t('RentOwner.see_request') }}</button>
+          <img :src="vehicle.UrlImage" alt="Imagen del vehículo" style="max-width: 100%; height: auto;" />
+          <p id="cardTitle{{vehicle.Id}}" style="font-family: 'Poppins', sans-serif"></p>
+          <p style="font-family: 'Poppins', sans-serif">{{ $t('RentOwner.brand_model') }} {{ vehicle.Brand }}/{{ vehicle.Model }}</p>
+          <h1 style="font-family: 'Poppins', sans-serif; color: #FF7A00">{{ $t('RentOwner.status') }} {{ vehicle.RentStatus }}</h1>
+          <button class="custom-button3" @click="deletePost(vehicle.Id)" role="button">{{ $t('RentOwner.delete_button') }}</button>
+          <button v-if="vehicle.RentStatus === 'Required'" class="custom-button3" @click="seeRequest(vehicle.Id)" role="button">{{ $t('RentOwner.see_request') }}</button>
         </template>
       </pv-card>
     </div>

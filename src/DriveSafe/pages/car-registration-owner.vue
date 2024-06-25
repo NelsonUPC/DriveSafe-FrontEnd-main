@@ -1,6 +1,7 @@
 <script>
 import VehicleService from "@/DriveSafe/services/vehicle.service";
 import Swal from 'sweetalert2';
+import {jwtDecode} from "jwt-decode";
 
 export default {
   computed: {
@@ -33,15 +34,15 @@ export default {
       selected_time_type: null,
       selected_transmission: null,
       selected_car_class: null,
-      brand: null,
-      model: null,
-      maximum_speed: null,
-      consumption: null,
-      dimensions: null,
-      weight: null,
-      rental_cost: null,
-      pick_up_place: null,
-      url_image: null,
+      Brand: null,
+      Model: null,
+      MaximumSpeed: null,
+      Consumption: null,
+      Dimensions: null,
+      Weight: null,
+      RentalCost: null,
+      PickUpPlace: null,
+      UrlImage: null,
     };
   },
   methods: {
@@ -72,7 +73,7 @@ export default {
       this.$i18n.locale = this.selectedLanguage;
     },
     async registerVehicle() {
-      if (!this.brand || !this.model || !this.maximum_speed || !this.consumption || !this.dimensions || !this.weight || !this.selected_car_class || !this.selected_transmission || !this.selected_time_type || !this.rental_cost || !this.pick_up_place || !this.url_image) {
+      if (!this.Brand || !this.Model || !this.MaximumSpeed || !this.Consumption || !this.Dimensions || !this.Weight || !this.selected_car_class || !this.selected_transmission || !this.selected_time_type || !this.RentalCost || !this.PickUpPlace || !this.UrlImage) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -81,32 +82,36 @@ export default {
         return;
       }
       try {
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
         const data = {
-          brand: this.brand,
-          model: this.model,
-          maximum_speed: parseInt(this.maximum_speed),
-          consumption: parseInt(this.consumption),
-          dimensions: this.dimensions,
-          weight: parseInt(this.weight),
-          car_class: this.getEnglishValue('car_class', this.selected_car_class),
-          transmission: this.getEnglishValue('transmission', this.selected_transmission),
-          time_type: this.getEnglishValue('time_type', this.selected_time_type),
-          rental_cost: parseInt(this.rental_cost),
-          pick_up_place: this.pick_up_place,
-          url_image: this.url_image,
-          rent_status: "Available",
-          owner_id: parseInt(localStorage.getItem("usuarioId")),
+          Brand: this.Brand,
+          Model: this.Model,
+          MaximumSpeed: parseInt(this.MaximumSpeed),
+          Consumption: parseInt(this.Consumption),
+          Dimensions: this.Dimensions,
+          Weight: parseInt(this.Weight),
+          CarClass: this.getEnglishValue('car_class', this.selected_car_class),
+          Transmission: this.getEnglishValue('transmission', this.selected_transmission),
+          TimeType: this.getEnglishValue('time_type', this.selected_time_type),
+          RentalCost: parseInt(this.RentalCost),
+          PickUpPlace: this.PickUpPlace,
+          UrlImage: this.UrlImage,
+          RentStatus: "Available",
+          OwnerId: parseInt(userId),
         };
         await VehicleService.create(data);
-        this.brand = null;
-        this.model = null;
-        this.maximum_speed = null;
-        this.consumption = null;
-        this.dimensions = null;
-        this.weight = null;
-        this.rental_cost = null;
-        this.pick_up_place = null;
-        this.url_image = null;
+        this.Brand = null;
+        this.Model = null;
+        this.MaximumSpeed = null;
+        this.Consumption = null;
+        this.Dimensions = null;
+        this.Weight = null;
+        this.RentalCost = null;
+        this.PickUpPlace = null;
+        this.UrlImage = null;
         this.selected_time_type = null;
         this.selected_car_class = null;
         this.selected_transmission = null;
@@ -185,11 +190,11 @@ export default {
           <div class="input-grid">
             <div class="input-column">
               <p style="font-family: 'Poppins',sans-serif"><strong>{{ $t('CarRegistrationOwner.brand') }}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.brand')" v-model="brand" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.brand')" v-model="Brand" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{ $t('CarRegistrationOwner.max_speed') }}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.max_speed')" v-model="maximum_speed" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.max_speed')" v-model="MaximumSpeed" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.dimensions')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.dimensions')" v-model="dimensions" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.dimensions')" v-model="Dimensions" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.car_class')}}</strong></p>
               <pv-dropdown :options="options_car_class" :placeholder="$t('CarRegistrationOwner.placeholders.car_class')" v-model="selected_car_class" style="font-family: 'Poppins',sans-serif" />
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.time_type')}}</strong></p>
@@ -197,23 +202,23 @@ export default {
                            style="font-family: 'Poppins',sans-serif"/>
               <p style="font-family: 'Poppins',sans-serif">
                 <strong>{{ $t('CarRegistrationOwner.pick_up_place') }}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.pick_up_place')" v-model="pick_up_place" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.pick_up_place')" v-model="PickUpPlace" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
             <div class="input-column">
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.model')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.model')" v-model="model" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.model')" v-model="Model" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.consumption')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.consumption')" v-model="consumption" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.consumption')" v-model="Consumption" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.weight')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.weight')" v-model="weight" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.weight')" v-model="Weight" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.transmission')}}</strong></p>
               <pv-dropdown :options="options_transmission"
                            :placeholder="$t('CarRegistrationOwner.placeholders.transmission')"
                            v-model="selected_transmission" style="font-family: 'Poppins',sans-serif"/>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.rental_cost')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.rental_cost')" v-model="rental_cost" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.rental_cost')" v-model="RentalCost" type="number" style="font-family: 'Poppins',sans-serif"></pv-input>
               <p style="font-family: 'Poppins',sans-serif"><strong>{{$t('CarRegistrationOwner.url_image')}}</strong></p>
-              <pv-input :placeholder="$t('CarRegistrationOwner.url_image')" v-model="url_image" style="font-family: 'Poppins',sans-serif"></pv-input>
+              <pv-input :placeholder="$t('CarRegistrationOwner.url_image')" v-model="UrlImage" style="font-family: 'Poppins',sans-serif"></pv-input>
             </div>
           </div>
           <div class="input-column">

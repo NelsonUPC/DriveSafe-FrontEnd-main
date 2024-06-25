@@ -22,12 +22,12 @@ export default {
       router: useRouter(),
       cardCount: 6,
       vehicles: [],
-      time_type: null,
-      brand: null,
-      model: null,
-      car_class: null,
-      transmission: null,
-      rental_cost: null,
+      TimeType: null,
+      Brand: null,
+      Model: null,
+      CarClass: null,
+      Transmission: null,
+      RentalCost: null,
     };
   },
   computed: {
@@ -41,30 +41,30 @@ export default {
     },
     availableVehicles() {
       if (
-          !this.time_type &&
-          !this.brand &&
-          !this.model &&
-          !this.car_class &&
-          !this.transmission &&
-          !this.rental_cost
+          !this.TimeType &&
+          !this.Brand &&
+          !this.Model &&
+          !this.CarClass &&
+          !this.Transmission &&
+          !this.RentalCost
       ) {
         return this.vehicles.filter(
-            (v) => v.rent_status.toLowerCase() === "available"
+            (v) => v.RentStatus.toLowerCase() === "available"
         );
       } else {
         return this.vehicles.filter((v) => {
           return (
-              (!this.time_type ||
-                  v.time_type.toLowerCase().includes(this.time_type.toLowerCase())) &&
-              (!this.brand ||
-                  v.brand.toLowerCase().includes(this.brand.toLowerCase())) &&
-              (!this.model ||
-                  v.model.toLowerCase().includes(this.model.toLowerCase())) &&
-              (!this.car_class ||
-                  v.car_class.toLowerCase().includes(this.car_class.toLowerCase())) &&
-              (!this.transmission ||
-                  v.transmission.toLowerCase().includes(this.transmission.toLowerCase())) &&
-              (!this.rental_cost || v.rental_cost === parseFloat(this.rental_cost))
+              (!this.TimeType ||
+                  v.TimeType.toLowerCase().includes(this.TimeType.toLowerCase())) &&
+              (!this.Brand ||
+                  v.Brand.toLowerCase().includes(this.Brand.toLowerCase())) &&
+              (!this.Model ||
+                  v.Model.toLowerCase().includes(this.Model.toLowerCase())) &&
+              (!this.CarClass ||
+                  v.CarClass.toLowerCase().includes(this.CarClass.toLowerCase())) &&
+              (!this.Transmission ||
+                  v.Transmission.toLowerCase().includes(this.Transmission.toLowerCase())) &&
+              (!this.RentalCost || v.RentalCost === parseFloat(this.RentalCost))
           );
         });
       }
@@ -149,27 +149,27 @@ export default {
           <div class="search-fields">
             <div class="field">
               <p>{{ $t('CarSearchTenant.time_type') }}</p>
-              <InputText v-model="time_type" :placeholder="$t('CarSearchTenant.time_type')" />
+              <InputText v-model="TimeType" :placeholder="$t('CarSearchTenant.time_type')" />
             </div>
             <div class="field">
               <p>{{ $t('CarSearchTenant.brand') }}</p>
-              <InputText v-model="brand" :placeholder="$t('CarSearchTenant.brand')" />
+              <InputText v-model="Brand" :placeholder="$t('CarSearchTenant.brand')" />
             </div>
             <div class="field">
               <p>{{ $t('CarSearchTenant.model') }}</p>
-              <InputText v-model="model" :placeholder="$t('CarSearchTenant.model')" />
+              <InputText v-model="Model" :placeholder="$t('CarSearchTenant.model')" />
             </div>
             <div class="field">
               <p>{{ $t('CarSearchTenant.car_class') }}</p>
-              <InputText v-model="car_class" :placeholder="$t('CarSearchTenant.car_class')" />
+              <InputText v-model="CarClass" :placeholder="$t('CarSearchTenant.car_class')" />
             </div>
             <div class="field">
               <p>{{ $t('CarSearchTenant.transmission') }}</p>
-              <InputText v-model="transmission" :placeholder="$t('CarSearchTenant.transmission')" />
+              <InputText v-model="Transmission" :placeholder="$t('CarSearchTenant.transmission')" />
             </div>
             <div class="field">
               <p>{{ $t('CarSearchTenant.rental_cost') }}</p>
-              <InputText v-model="rental_cost" :placeholder="$t('CarSearchTenant.rental_cost')" />
+              <InputText v-model="RentalCost" :placeholder="$t('CarSearchTenant.rental_cost')" />
             </div>
           </div>
         </template>
@@ -179,16 +179,16 @@ export default {
   </div>
 
   <div class="vehicle-list">
-    <pv-card v-for="vehicle in availableVehicles" :key="vehicle.id" class="vehicle-card">
-      <template #title>{{vehicle.brand}} {{vehicle.model}}</template>
+    <pv-card v-for="vehicle in availableVehicles" :key="vehicle.Id" class="vehicle-card">
+      <template #title>{{vehicle.Brand}} {{vehicle.Model}}</template>
       <template #content>
-        <img :src="vehicle.url_image" alt="Vehicle image" class="product-image"/>
+        <img :src="vehicle.UrlImage" alt="Vehicle image" class="product-image"/>
         <div class="vehicle-details">
-          <p>{{ $t('CarSearchTenant.car_class') }}: {{ vehicle.car_class }}</p>
-          <p>{{ $t('CarSearchTenant.transmission') }}: {{ vehicle.transmission }}</p>
-          <p>{{ $t('CarSearchTenant.time_type') }}: {{ $t('TimeType.' + vehicle.time_type) }}</p>
-          <p>{{ $t('CarSearchTenant.rental_cost') }}: S/.{{ vehicle.rental_cost }}</p>
-          <pv-button @click="rentVehicle(vehicle.id)">{{ $t('ReadRequest.rent') }}</pv-button>
+          <p>{{ $t('CarSearchTenant.car_class') }}: {{ vehicle.CarClass }}</p>
+          <p>{{ $t('CarSearchTenant.transmission') }}: {{ vehicle.Transmission }}</p>
+          <p>{{ $t('CarSearchTenant.time_type') }}: {{ $t('TimeType.' + vehicle.TimeType) }}</p>
+          <p>{{ $t('CarSearchTenant.rental_cost') }}: S/.{{ vehicle.RentalCost }}</p>
+          <pv-button @click="rentVehicle(vehicle.Id)">{{ $t('ReadRequest.rent') }}</pv-button>
         </div>
       </template>
     </pv-card>

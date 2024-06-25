@@ -6,6 +6,7 @@ import VehicleService from "@/DriveSafe/services/vehicle.service";
 import RentService from "@/DriveSafe/services/rent.service";
 import {useRouter} from "vue-router";
 import UserService from "@/DriveSafe/services/user.service";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   components: {
@@ -33,10 +34,10 @@ export default {
       value1: null,
       cardCount: 4,
       vehicle: null,
-      rent_time: null,
+      RentTime: null,
       cost: null,
       owner: null,
-      pick_up_place: null,
+      PickUpPlace: null,
       router: useRouter(),
     };
   },
@@ -46,14 +47,19 @@ export default {
       this.$i18n.locale = this.selectedLanguage;
     },
     crearAlquiler() {
+      const token = localStorage.getItem("userToken");
+      const decodedToken = jwtDecode(token);
+
+      const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
       const alquilerData = {
-        status: "Pending",
-        start_date: new Date(1,0,1).toISOString().split('T')[0],
-        end_date: new Date(1,0,1).toISOString().split('T')[0],
-        vehicle_id: this.vehicle.id,
-        owner_id: this.owner.id,
-        tenant_id: parseInt(localStorage.getItem("usuarioId")),
-        pick_up_place: this.vehicle.pick_up_place
+        Status: "Pending",
+        StartDate: new Date(1,0,1).toISOString().split('T')[0],
+        EndDate: new Date(1,0,1).toISOString().split('T')[0],
+        VehicleId: this.vehicle.Id,
+        OwnerId: this.owner.Id,
+        TenantId: parseInt(userId),
+        PickUpPlace: this.vehicle.PickUpPlace
       };
 
       console.log(alquilerData)
@@ -84,19 +90,19 @@ export default {
   },
 
   created() {
-    const vehicle_id = localStorage.getItem("vehicle_id");
-    if (vehicle_id) {
+    const vehicleId = localStorage.getItem("vehicle_id");
+    if (vehicleId) {
       VehicleService.getAll()
           .then((response) => {
             const vehicleFind = response.data.find(
-                (v) => v.id === parseInt(vehicle_id)
+                (v) => v.Id === parseInt(vehicleId)
             );
 
             if (vehicleFind) {
               this.vehicle = vehicleFind;
 
               // Ahora obtenemos la información del owner
-              UserService.getUserById(parseInt(this.vehicle.owner_id))
+              UserService.getUserById(parseInt(this.vehicle.OwnerId))
                   .then((response) => {
                     this.owner = response.data;
                     // Ahora que tenemos la información del owner, podemos imprimir la información del vehículo
@@ -181,11 +187,11 @@ export default {
         <template #content>
           <div v-if="vehicle" class="center-content">
             <img
-                :src="vehicle.url_image"
+                :src="vehicle.UrlImage"
                 alt="Imagen de vehículo"
                 style="max-width: 100%; max-height: 300px;"
             />
-            <div class="card-title">{{ vehicle.brand }} {{ vehicle.model }}</div>
+            <div class="card-title">{{ vehicle.Brand }} {{ vehicle.Model }}</div>
           </div>
           <div v-else>
             <p>Cargando información del vehículo...</p>
@@ -203,7 +209,7 @@ export default {
         <template #content>
           <div>
             <h1>{{$t('RentCar.title_contract')}}</h1>
-            <h1>{{$t('RentCar.description1')}} {{ owner ? owner.name + ' ' + owner.last_name : '...' }}, {{$t('RentCar.description2')}}</h1>
+            <h1>{{$t('RentCar.description1')}} {{ owner ? owner.Name + ' ' + owner.LastName : '...' }}, {{$t('RentCar.description2')}}</h1>
           </div>
           <Button @click="crearAlquiler" style="font-family: 'Poppins',sans-serif" class="font-button" role="button">{{$t('RentCar.button_rent')}}</Button>
         </template>
