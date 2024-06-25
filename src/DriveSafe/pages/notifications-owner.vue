@@ -4,6 +4,7 @@ import UserService from "@/DriveSafe/services/user.service";
 import {useRouter} from "vue-router";
 import MaintenanceService from "@/DriveSafe/services/maintenance.service";
 import RentService from "@/DriveSafe/services/rent.service";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   computed: {
@@ -42,37 +43,32 @@ export default {
     },
     async loadMaintenances() {
       try {
-        const ownerId = parseInt(localStorage.getItem("usuarioId"));
-        const response = await MaintenanceService.getAll();
-        const maintenancesFiltered = response.data.filter(m => m.owner_id === ownerId);
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
 
-        // Crear un arreglo para almacenar todos los maintenances
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+        const response = await MaintenanceService.getAll();
+        const maintenancesFiltered = response.data.filter(m => m.OwnerId === parseInt(userId));
+
         const maintenances = [];
 
         for (let maintenance of maintenancesFiltered) {
-          // Obtener los datos del arrendatario
-          const maintenanceId = maintenance.id;
-          const userResponse = await UserService.getUserById(maintenance.tenant_id);
-          const name = userResponse.data.name;
-          const last_name = userResponse.data.last_name;
-
-          // Obtener los datos del mantenimiento
-          const description = maintenance.description;
-          const title = maintenance.title;
-          const type_problem = maintenance.type_problem;
-
-          // Agregar los datos del mantenimiento al arreglo
+          const maintenanceId = maintenance.Id;
+          const userResponse = await UserService.getUserById(maintenance.TenantId);
+          const name = userResponse.data.Name;
+          const last_name = userResponse.data.LastName;
+          const description = maintenance.Description;
+          const title = maintenance.Title;
+          const type_problem = maintenance.TypeProblem;
           maintenances.push({
-            id: maintenanceId,
-            name: name,
-            last_name: last_name,
-            type_problem: type_problem,
-            title: title,
-            description: description
+            Id: maintenanceId,
+            Name: name,
+            LastName: last_name,
+            TypeProblem: type_problem,
+            Title: title,
+            Description: description
           });
         }
-
-        // Asignar el arreglo de maintenances a la variable de datos maintenances
         this.maintenances = maintenances;
       } catch(error){
         console.error('Error al cargar los maintenances', error);
@@ -80,20 +76,25 @@ export default {
     },
     async loadRents() {
       try {
-        const ownerId = parseInt(localStorage.getItem("usuarioId"));
-        const response = await RentService.getAll();
-        const rentsFiltered = response.data.filter(r => r.owner_id === ownerId);
-        for (let rent of rentsFiltered) {
-          const rentId = rent.id;
-          const userResponse = await UserService.getUserById(rent.tenant_id);
-          console.log("Usuario", userResponse);
-          const vehicleResponse = await VehicleService.getById(rent.vehicle_id);
-          console.log("Vehiculo", vehicleResponse);
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
 
-          rent.tenant_name = `${userResponse.data.name} ${userResponse.data.last_name}`;
-          rent.vehicle_brand = vehicleResponse.data.brand;
-          rent.vehicle_model = vehicleResponse.data.model;
-          rent.vehicle_image = vehicleResponse.data.url_image;
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+        const response = await RentService.getAll();
+        console.log(response.data)
+        console.log(userId)
+        const rentsFiltered = response.data.filter(r => r.OwnerId === parseInt(userId));
+        console.log(rentsFiltered)
+        for (let rent of rentsFiltered) {
+          const userResponse = await UserService.getUserById(rent.TenantId);
+          console.log("Usuario", userResponse);
+          const vehicleResponse = await VehicleService.getById(rent.VehicleId);
+          console.log("Vehiculo", vehicleResponse);
+          rent.tenant_name = `${userResponse.data.Name} ${userResponse.data.LastName}`;
+          rent.vehicle_brand = vehicleResponse.data.Brand;
+          rent.vehicle_model = vehicleResponse.data.Model;
+          rent.vehicle_image = vehicleResponse.data.UrlImage;
         }
         this.rents = rentsFiltered;
 
@@ -104,19 +105,14 @@ export default {
     },
   },
   created() {
-    // Obtener el ID del propietario del localStorage y convertirlo a un número entero
-    const ownerId = parseInt(localStorage.getItem("usuarioId"));
+    const token = localStorage.getItem("userToken");
+    const decodedToken = jwtDecode(token);
 
-    // Verificar si el ID del propietario es válido antes de cargar los rents y los maintenances
-    if (!isNaN(ownerId)) {
-      console.log('Propietario ID:', ownerId);
-      // Cargar los rents asociados al propietario
-      this.loadRents(ownerId);
-      // Cargar los maintenances asociados al propietario
-      this.loadMaintenances(ownerId);
-    } else {
-      console.error('El ID del propietario no es válido.');
-    }
+    const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+    console.log('Propietario ID:', userId);
+    this.loadRents();
+    this.loadMaintenances();
   }
 };
 </script>
@@ -171,11 +167,11 @@ export default {
     <div v-if="rents.length === 0" class="notification-card">
       <p class="notification">{{ $t('NotificationsOwner.no_rentals') }}</p>
     </div>
-    <div v-for="rent in rents" :key="rent.id" class="notification-card">
+    <div v-for="rent in rents" :key="rent.Id" class="notification-card">
       <div class="notification-content">
         <div class="notification-text">
           <p>{{ rent.tenant_name }} {{ $t('NotificationsOwner.rental_request') }} {{ rent.vehicle_brand }} {{ rent.vehicle_model }}</p>
-          <pv-button @click="seeRequest(rent.id)" class="font-button">{{ $t('NotificationsOwner.see_rental') }}</pv-button><br>
+          <pv-button @click="seeRequest(rent.Id)" class="font-button">{{ $t('NotificationsOwner.see_rental') }}</pv-button><br>
         </div>
         <div class="notification-actions">
           <img :src="rent.vehicle_image" alt="Imagen del vehículo" class="vehiculo-image" />
@@ -188,10 +184,10 @@ export default {
     <div v-for="maintenance in maintenances" :key="maintenance.id" class="notification-card">
       <div class="notification-content">
         <div class="notification-text">
-          <h1>{{ maintenance.name }} {{ maintenance.last_name }}</h1>
-          <h1>{{ $t('NotificationsOwner.type_problem') }}: {{ maintenance.type_problem }}</h1>
-          <h1>{{ $t('NotificationsOwner.title2') }}: {{ maintenance.title }}</h1>
-          <h1>{{ $t('NotificationsOwner.description') }}: {{ maintenance.description }}</h1>
+          <h1>{{ maintenance.Name }} {{ maintenance.LastName }}</h1>
+          <h1>{{ $t('NotificationsOwner.type_problem') }}: {{ maintenance.TypeProblem }}</h1>
+          <h1>{{ $t('NotificationsOwner.title2') }}: {{ maintenance.Title }}</h1>
+          <h1>{{ $t('NotificationsOwner.description') }}: {{ maintenance.Description }}</h1>
         </div>
       </div>
     </div>
@@ -232,16 +228,16 @@ export default {
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 130px); /* Ajusta el ancho máximo del texto y la imagen */
+  max-width: calc(100% - 130px);
   font-weight: bold;
   padding-left: 30px;
-  font-size: 18px; /* Ajusta el tamaño del texto */
+  font-size: 18px;
 }
 
 .vehiculo-image {
-  max-width: 100px; /* Ajusta el tamaño máximo de la imagen */
-  height: auto; /* Hace que la altura de la imagen se ajuste automáticamente */
-  margin-right: 20px; /* Espaciado derecho para separar la imagen del texto */
+  max-width: 100px;
+  height: auto;
+  margin-right: 20px;
 }
 
 .view-request-button {
@@ -250,19 +246,19 @@ export default {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 18px; /* Ajusta el tamaño del texto */
+  font-size: 18px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Agrega una transición suave al cambio de color de fondo */
+  transition: background-color 0.3s ease;
 }
 
 .view-request-button:hover {
-  background-color: #FF6000; /* Cambia el color de fondo al pasar el mouse */
+  background-color: #FF6000;
 }
 
 .notification-content {
   display: flex;
   align-items: center;
-  flex-grow: 1; /* Permite que el texto ocupe todo el espacio restante */
-  flex-wrap: wrap; /* Permite que los elementos se ajusten automáticamente en varias líneas */
+  flex-grow: 1;
+  flex-wrap: wrap;
 }
 </style>

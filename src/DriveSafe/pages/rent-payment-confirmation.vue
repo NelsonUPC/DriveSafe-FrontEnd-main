@@ -36,12 +36,11 @@ export default {
     async load(){
       try{
         const rentId = parseInt(localStorage.getItem("alquilerId"));
-        console.log("alquilerId:", parseInt(localStorage.getItem("alquilerId"))); // Agregado para depurar
-        // Verificar si alquilerId es un número válido
+        console.log("alquilerId:", parseInt(localStorage.getItem("alquilerId")));
         if (!isNaN(rentId)) {
           const response = await RentService.getById(rentId);
           this.alquiler = response.data;
-          console.log("alquiler:", this.alquiler); // Agregado para depurar
+          console.log("alquiler:", this.alquiler);
         } else {
           console.error("El ID de alquiler almacenado no es un número válido.");
         }
@@ -59,15 +58,12 @@ export default {
         return;
       }
       try {
-        console.log("this.alquiler:", this.alquiler); // Agregado para depurar
-        // Verificar si this.alquiler no es null antes de continuar
         if (this.alquiler !== null) {
-          const response = await RentService.getById(this.alquiler.id);
+          const response = await RentService.getById(this.alquiler.Id);
           const rent = response.data;
-          rent.status = "Paid";
-          console.log("alquilerCompleto:", rent); // Agregado para depurar
+          rent.Status = "Paid";
 
-          await RentService.update(this.alquiler.id, rent);
+          await RentService.update(this.alquiler.Id, rent);
 
           Swal.fire(
               this.$t('RentPaymentConfirmation.success_title'),

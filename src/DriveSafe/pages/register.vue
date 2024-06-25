@@ -11,11 +11,11 @@ export default {
       ],
       selectedLanguage: 'en',
       type: '',
-      name: '',
-      last_name: '',
-      cellphone: 0,
-      gmail: '',
-      password: '',
+      Name: '',
+      LastName: '',
+      Cellphone: 0,
+      Gmail: '',
+      Password: '',
       day: '',
       month: '',
       year: '',
@@ -29,8 +29,7 @@ export default {
       this.$i18n.locale = this.selectedLanguage;
     },
     async registerUser() {
-      // Verificar si algún campo está vacío
-      if (!this.name || !this.last_name || !this.gmail || !this.password || !this.type || !this.day || !this.month || !this.year || !this.cellphone) {
+      if (!this.Name || !this.LastName || !this.Gmail || !this.Password || !this.type || !this.day || !this.month || !this.year || !this.Cellphone) {
         await Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -42,7 +41,7 @@ export default {
       try {
         const response = await UserService.getUsers();
         const users = response.data;
-        const existingUser = users.find(u => u.gmail === this.gmail);
+        const existingUser = users.find(u => u.Gmail === this.Gmail);
         if (existingUser) {
           await Swal.fire({
             icon: 'error',
@@ -63,25 +62,25 @@ export default {
 
       if (this.type === 'tenant') {
         const user = {
-          name: this.name,
-          last_name: this.last_name,
-          birthdate: BirthdateFormatted,
-          cellphone: this.cellphone,
-          gmail: this.gmail,
-          password: this.password,
-          type: 'tenant',
+          Name: this.Name,
+          LastName: this.LastName,
+          Birthdate: BirthdateFormatted,
+          Cellphone: this.Cellphone,
+          Gmail: this.Gmail,
+          Password: this.Password,
+          Type: 'tenant',
         };
         await UserService.create(user);
         console.log("Arrendatario creado correctamente");
       } else if (this.type === 'owner') {
         const user = {
-          name: this.name,
-          last_name: this.last_name,
-          birthdate: BirthdateFormatted,
-          cellphone: this.cellphone,
-          gmail: this.gmail,
-          password: this.password,
-          type: "owner"
+          Name: this.Name,
+          LastName: this.LastName,
+          Birthdate: BirthdateFormatted,
+          Cellphone: this.Cellphone,
+          Gmail: this.Gmail,
+          Password: this.Password,
+          Type: "owner"
         };
         await UserService.create(user);
         console.log("Arrendador creado correctamente");
@@ -126,10 +125,10 @@ export default {
             </div>
 
             <label for="name" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese su nombre">{{ $t('Register.name') }}</label>
-            <pv-input-text id="nombres" type="text" :placeholder="$t('Register.name')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="name" />
+            <pv-input-text id="nombres" type="text" :placeholder="$t('Register.name')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Name" />
 
             <label for="last_name" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese sus apellidos">{{ $t('Register.last_name') }}</label>
-            <pv-input-text id="last_name" type="text" :placeholder="$t('Register.last_name')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="last_name" />
+            <pv-input-text id="last_name" type="text" :placeholder="$t('Register.last_name')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="LastName" />
 
             <label for="fechaNacimiento" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese su fecha de nacimiento">{{ $t('Register.birthdate') }}</label>
             <div class="flex justify-between" aria-label="Seleccione su fecha de nacimiento">
@@ -139,13 +138,13 @@ export default {
             </div>
 
             <label for="teléfono" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese su número de teléfono">{{ $t('Register.phone') }}</label>
-            <pv-input-text id="teléfono" type="number" :placeholder="$t('Register.phone')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="cellphone" />
+            <pv-input-text id="teléfono" type="number" :placeholder="$t('Register.phone')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Cellphone" />
 
             <label for="correo" class="block text-900 text-xl font-medium mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese su dirección de correo electrónico">{{ $t('Register.email') }}</label>
-            <pv-input-text id="correo" type="text" :placeholder="$t('Register.email')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="gmail" />
+            <pv-input-text id="correo" type="text" :placeholder="$t('Register.email')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Gmail" />
 
             <label for="password1" class="block text-900 font-medium text-xl mb-2" style="font-family: 'Poppins', sans-serif;" aria-label="Ingrese su contraseña">{{ $t('Register.password') }}</label>
-            <pv-input-text id="password" type="password" :placeholder="$t('Register.password')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="password" />
+            <pv-input-text id="password" type="password" :placeholder="$t('Register.password')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="Password" />
             <div class="flex align-items-center justify-content-between mb-5 gap-5" aria-label="Recuérdame">
               <div class="flex align-items-center">
                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>

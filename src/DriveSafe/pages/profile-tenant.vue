@@ -1,5 +1,6 @@
 <script>
 import UserService from "@/DriveSafe/services/user.service";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   computed: {
@@ -20,11 +21,11 @@ export default {
           { label: 'ES', value: 'es' }
         ],
         selectedLanguage: 'en',
-        name: '',
-        last_name: '',
+        Name: '',
+        LastName: '',
         photo: localStorage.getItem("fotoTenant"),
-        cellphone: '',
-        gmail: ''
+        Cellphone: '',
+        Gmail: ''
       },
       drawer: false,
     };
@@ -36,10 +37,15 @@ export default {
     },
     async loadTenantInfo() {
       try {
-        const response = await UserService.getUserById(parseInt(localStorage.getItem("usuarioId")));
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+        const response = await UserService.getUserById(parseInt(userId));
         this.user = response.data;
       } catch (error) {
-        console.error("Error al cargar la información del propietario:", error);
+        console.error("Error loading data of owner:", error);
       }
     },
     logout() {
@@ -99,13 +105,13 @@ export default {
       </div>
       <div class="profile-info" aria-label="Información del perfil del usuario">
         <h2>{{$t('ProfileTenant.name')}}</h2>
-        <h2>{{ user.name }}</h2><br>
+        <h2>{{ user.Name }}</h2><br>
         <h2>{{$t('ProfileTenant.last_name')}}</h2>
-        <h2>{{user.last_name}}</h2><br>
+        <h2>{{ user.LastName }}</h2><br>
         <h2>{{$t('ProfileTenant.phone')}}</h2>
-        <h2>{{user.cellphone}}</h2><br>
+        <h2>{{ user.Cellphone }}</h2><br>
         <h2>{{$t('ProfileTenant.gmail')}} </h2>
-        <h2>{{user.gmail}}</h2><br>
+        <h2>{{ user.Gmail }}</h2><br>
       </div>
       <div class="buttons" aria-label="Botones del perfil del usuario">
         <router-link to="/update-tenant" aria-label="Enlace para actualizar datos del arrendatario">

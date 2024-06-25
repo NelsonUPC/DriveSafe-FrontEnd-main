@@ -4,6 +4,7 @@ import VehicleService from "@/DriveSafe/services/vehicle.service";
 import RentService from "@/DriveSafe/services/rent.service";
 import UserService from "@/DriveSafe/services/user.service";
 import router from "@/router";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   components: {
@@ -37,37 +38,42 @@ export default {
     },
     async loadRents() {
       try {
-        const user_id = parseInt(localStorage.getItem("usuarioId"));
-        console.log("Usuario ID:", user_id);
-        const response = await RentService.getByUserId(user_id);
-        console.log("Response:", response);
+        const token = localStorage.getItem("userToken");
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
+
+        const response = await RentService.getByUserId(userId);
         this.rents = response.data;
 
-        for (const rent of this.rents) {
-          const vehicleResponse = await VehicleService.getById(rent.vehicle_id);
-          console.log("Vehículo Response:", vehicleResponse);
-          rent.vehicle = vehicleResponse.data;
-          const ownerResponse = await UserService.getUserById(rent.owner_id);
-          console.log("Propietario Response:", ownerResponse);
-          rent.owner = ownerResponse.data;
-        }
 
-        console.log("Alquileres:", this.rents);
+        for (const rent of this.rents) {
+          const response = await VehicleService.getById(rent.VehicleId);
+
+          console.log("Vehiculo:", response.data);
+
+          rent.Vehicle = response.data;
+
+          const response2 = await UserService.getUserById(rent.OwnerId);
+
+          rent.Owner = response2.data;
+        }
       } catch (error) {
         console.error("Error al cargar los rents:", error);
       }
     },
-    irAPagar(rent) {
-      localStorage.setItem("alquilerId", rent.id)
-      localStorage.setItem("vehiculoId", rent.vehicle.id)
-      localStorage.setItem("vehiculoPrecio", rent.vehicle.rental_cost)
-      localStorage.setItem("vehiculoTiempo", rent.vehicle.time_type)
-      localStorage.setItem("vehiculoFi", rent.start_date)
-      localStorage.setItem("vehiculoFf", rent.end_date)
-      localStorage.setItem("vehiculoLugar", rent.vehicle.pick_up_place)
-      localStorage.setItem("vehiculoFoto", rent.vehicle.url_image)
-      console.log("Ir a pagar por el alquiler:", rent);
-      router.push({path: "/rent-payment"});
+    pay(rent) {
+      console.log("Rent:", rent);
+      localStorage.setItem("alquilerId", rent.Id)
+      localStorage.setItem("vehiculoId", rent.VehicleId)
+      localStorage.setItem("vehiculoPrecio", rent.Vehicle.RentalCost)
+      localStorage.setItem("vehiculoTiempo", rent.Vehicle.TimeType)
+      localStorage.setItem("vehiculoFi", rent.StartDate)
+      localStorage.setItem("vehiculoFf", rent.EndDate)
+      localStorage.setItem("vehiculoLugar", rent.Vehicle.PickUpPlace)
+      localStorage.setItem("vehiculoLugar", rent.Vehicle.PickUpPlace)
+      localStorage.setItem("vehiculoLugar", rent.Vehicle.PickUpPlace)
+      localStorage.setItem("vehiculoFoto", rent.Vehicle.UrlImage)
+      this.$router.push('/rent-payment');
     }
   },
   created() {
@@ -113,23 +119,22 @@ export default {
         <p>{{ $t('RentTenant.no_rents') }}</p>
       </div>
       <div v-else>
-        <pv-card v-for="rent in rents" :key="rent.id" class="vehicle-card">
+        <pv-card v-for="rent in rents" :key="rent.Id" class="vehicle-card">
           <template #title>
             <h2>{{ $t('RentTenant.rent_details') }}</h2>
           </template>
           <template #content>
-            <p>{{ $t('RentTenant.brand') }}  {{ rent.vehicle ? rent.vehicle.brand : 'No disponible' }}</p>
-            <p>{{ $t('RentTenant.model') }}  {{ rent.vehicle ? rent.vehicle.model : 'No disponible' }}</p>
-            <p>{{ $t('RentTenant.owner') }} {{ rent.owner ? rent.owner.name + " " + rent.owner.last_name : 'No disponible' }}</p>
-            <p>{{ $t('RentTenant.phone') }} {{ rent.owner ? rent.owner.cellphone : 'No disponible' }}</p>
-            <p>{{ $t('RentTenant.start_date') }} {{ rent.start_date }}</p>
-            <p>{{ $t('RentTenant.end_date') }} {{ rent.end_date }}</p>
-            <p>{{ $t('RentTenant.pick_up_place') }} {{ rent.vehicle ? rent.vehicle.pick_up_place : 'No disponible'}}</p>
-            <div v-if="rent.status.toLowerCase() === 'accepted'"> <h3>{{ $t('RentTenant.status_accepted') }}</h3></div>
-            <div v-if="rent.status === 'Pending'"> <h3>{{ $t('RentTenant.status_pending') }}</h3></div>
-            <button v-if="rent.status === 'Accepted'" @click="irAPagar(rent)" class="pay-button">{{ $t('RentTenant.pay_button') }}</button>
-            <div v-if="rent.status === 'Refused'"> <h3>{{ $t('RentTenant.status_refused') }}</h3></div>
-            <div v-if="rent.status === 'Paid'"><h3>{{ $t('RentTenant.status_paid') }}</h3></div>
+            <p>{{ $t('RentTenant.brand') }}  {{ rent.Vehicle ? rent.Vehicle.Brand : 'No disponible' }}</p>
+            <p>{{ $t('RentTenant.model') }}  {{ rent.Vehicle ? rent.Vehicle.Model : 'No disponible' }}</p>
+            <p>{{ $t('RentTenant.owner') }} {{ rent.Owner ? rent.Owner.Name + " " + rent.Owner.LastName : 'No disponible' }}</p>
+            <p>{{ $t('RentTenant.phone') }} {{ rent.Owner ? rent.Owner.Cellphone : 'No disponible' }}</p>
+            <p>{{ $t('RentTenant.start_date') }} {{ rent.StartDate }}</p>
+            <p>{{ $t('RentTenant.end_date') }} {{ rent.EndDate }}</p>
+            <p>{{ $t('RentTenant.pick_up_place') }} {{ rent.Vehicle ? rent.Vehicle.PickUpPlace : 'No disponible'}}</p>
+            <div v-if="rent.Status.toLowerCase() === 'accepted'"> <h3>{{ $t('RentTenant.status_accepted') }}</h3></div>
+            <div v-if="rent.Status === 'Pending'"> <h3>{{ $t('RentTenant.status_pending') }}</h3></div>
+            <pv-button v-if="rent.Status === 'Accepted'" @click="pay(rent)" class="pay-button">{{ $t('RentTenant.pay_button') }}</pv-button>            <div v-if="rent.Status === 'Refused'"> <h3>{{ $t('RentTenant.status_refused') }}</h3></div>
+            <div v-if="rent.Status === 'Paid'"><h3>{{ $t('RentTenant.status_paid') }}</h3></div>
           </template>
         </pv-card>
       </div>

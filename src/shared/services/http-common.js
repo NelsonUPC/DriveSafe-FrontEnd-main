@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-export default axios.create({
-    baseURL: 'https://DriveSafeprueva.azurewebsites.net/api/v1',
+const instance = axios.create({
+    baseURL: 'http://localhost:5232/api/',
     headers: { 'Content-type': 'application/json' }
 });
+
+
+
+export default instance;

@@ -1,30 +1,43 @@
 import axios from 'axios';
+import http from '@/shared/services/http-common.js';
 
-const API = 'http://localhost:5014/api/';
+const API = 'http://localhost:5232/api/';
 
 class RentService {
     getAll() {
-        return axios.get(API + 'Rent');
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Rent', { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
     getById(id) {
-        return axios.get(API + 'Rent/' + id);
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Rent/' + id, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 
     getByUserId(userId) {
-        return axios.get(API + 'Rent/GetByUserId/' + userId);
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'Rent/Tenant/' + userId, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 
     create(data) {
-        return axios.post(API + 'Rent', data);
+        const token = localStorage.getItem('userToken');
+        return axios.post(API + 'Rent', data, { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
     update(id, data) {
-        return axios.put(API + 'Rent/' + id, data);
+        const token = localStorage.getItem('userToken');
+        return axios.put(API + 'Rent/' + id, data, { headers: { 'Authorization': `Bearer ${token}` } });
     }
 
     delete(id) {
-        return axios.delete(API + 'Rent/' + id);
+        const token = localStorage.getItem('userToken');
+        return axios.delete(API + 'Rent/' + id, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
 }
 

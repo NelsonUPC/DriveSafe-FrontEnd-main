@@ -1,19 +1,24 @@
 import axios from 'axios';
 
-const API = 'http://localhost:5014/api/';
+const API = 'http://localhost:5232/api/';
 
 class UserService {
     getUsers() {
-        return axios.get(API + 'User');
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'User', { headers: { 'Authorization': `Bearer ${token}` } });
     }
     getUserById(id) {
-        return axios.get(API + 'User/' + id);
+        const token = localStorage.getItem('userToken');
+        return axios.get(API + 'User/' + id, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
     }
     create(data){
-        return axios.post(API + 'User', data);
+        return axios.post(API + 'User/Register', data);
     }
     update(id, data) {
-        return axios.put(API + 'User/' + id, data);
+        const token = localStorage.getItem('userToken');
+        return axios.put(API + 'User/' + id, data, { headers: { 'Authorization': `Bearer ${token}` } });
     }
 }
 
