@@ -29,7 +29,7 @@ export default {
       month: '',
       year: '',
       Password: '',
-      Gmail: '' // Obtener el correo del localStorage
+      Gmail: ''
     };
   },
   methods: {
@@ -68,15 +68,12 @@ export default {
             title: this.$t('ProfileOwner.alerts.title'),
             text: this.$t('ProfileOwner.alerts.update_success'),
           });
-          // Redirigir al usuario a la página de perfil
           this.$router.push('/profile-owner');
         } else {
-          // Mostrar mensaje de error si la actualización en el servidor falló
           throw new Error("La actualización de datos del usuario falló.");
         }
       } catch (error) {
         console.error("Error al actualizar datos del propietario:", error);
-        // Mostrar mensaje de error
         Swal.fire({
           icon: 'error',
           title: 'Error',

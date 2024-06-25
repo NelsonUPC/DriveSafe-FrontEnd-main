@@ -40,16 +40,10 @@ export default {
       try {
         const token = localStorage.getItem("userToken");
         const decodedToken = jwtDecode(token);
-
         const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
 
-
-        console.log("Usuario ID:", userId);
         const response = await RentService.getByUserId(userId);
-        console.log("Response:", response.data);
         this.rents = response.data;
-
-        console.log("Alquileres:", this.rents);
 
 
         for (const rent of this.rents) {
@@ -62,11 +56,7 @@ export default {
           const response2 = await UserService.getUserById(rent.OwnerId);
 
           rent.Owner = response2.data;
-
-          console.log("Propietario:", response2.data);
         }
-
-        console.log("Alquileres:", this.rents);
       } catch (error) {
         console.error("Error al cargar los rents:", error);
       }

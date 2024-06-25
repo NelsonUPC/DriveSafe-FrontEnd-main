@@ -63,13 +63,10 @@ export default {
       };
 
       console.log(alquilerData)
-
-      // Llamamos al método create de RentService para crear el alquiler
       RentService.create(alquilerData)
           .then(() => {
             localStorage.setItem("vehiculoId", null);
             console.log("Alquiler creado con éxito.");
-            // Mostrar alerta de éxito
             Swal.fire({
               title: this.$t('RentCar.alerts.title'),
               text: this.$t('RentCar.alerts.rent_success'),
@@ -79,7 +76,6 @@ export default {
           })
           .catch((error) => {
             console.error("Error al crear alquiler:", error);
-            // Mostrar alerta de error
             Swal.fire({
               icon: 'error',
               title: 'Error',
@@ -97,15 +93,11 @@ export default {
             const vehicleFind = response.data.find(
                 (v) => v.Id === parseInt(vehicleId)
             );
-
             if (vehicleFind) {
               this.vehicle = vehicleFind;
-
-              // Ahora obtenemos la información del owner
               UserService.getUserById(parseInt(this.vehicle.OwnerId))
                   .then((response) => {
                     this.owner = response.data;
-                    // Ahora que tenemos la información del owner, podemos imprimir la información del vehículo
                     console.log("Costo Total", this.vehicle.rental_cost);
                     console.log("Vehiculo Id", this.vehicle.id);
                     console.log("Propietario_id", parseInt(this.vehicle.owner_id));

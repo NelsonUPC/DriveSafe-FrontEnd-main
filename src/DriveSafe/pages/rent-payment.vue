@@ -59,9 +59,7 @@ export default {
     },
     async cashPayment () {
       try {
-        // Realizar el pago
         await this.pay()
-        // Mostrar el mensaje de pago procesado
         this.payment_processed = true;
       } catch (error) {
         console.error('Error al procesar el pago:', error);
@@ -129,7 +127,6 @@ export default {
             </pv-button>
           </router-link>
           <router-link to="/profile-tenant" role="menuitem">
-            <!-- Agrega la imagen a la derecha -->
             <img
                 src="https://i.postimg.cc/Fs9Z3g3V/usuario-1.png"
                 alt="Usuario"

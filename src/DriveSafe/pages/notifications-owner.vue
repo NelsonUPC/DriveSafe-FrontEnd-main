@@ -53,18 +53,13 @@ export default {
         const maintenances = [];
 
         for (let maintenance of maintenancesFiltered) {
-          // Obtener los datos del arrendatario
           const maintenanceId = maintenance.Id;
           const userResponse = await UserService.getUserById(maintenance.TenantId);
           const name = userResponse.data.Name;
           const last_name = userResponse.data.LastName;
-
-          // Obtener los datos del mantenimiento
           const description = maintenance.Description;
           const title = maintenance.Title;
           const type_problem = maintenance.TypeProblem;
-
-          // Agregar los datos del mantenimiento al arreglo
           maintenances.push({
             Id: maintenanceId,
             Name: name,
@@ -74,8 +69,6 @@ export default {
             Description: description
           });
         }
-
-        // Asignar el arreglo de maintenances a la variable de datos maintenances
         this.maintenances = maintenances;
       } catch(error){
         console.error('Error al cargar los maintenances', error);
@@ -112,16 +105,13 @@ export default {
     },
   },
   created() {
-    // Obtener el ID del propietario del localStorage y convertirlo a un número entero
     const token = localStorage.getItem("userToken");
     const decodedToken = jwtDecode(token);
 
     const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
 
     console.log('Propietario ID:', userId);
-    // Cargar los rents asociados al propietario
     this.loadRents();
-    // Cargar los maintenances asociados al propietario
     this.loadMaintenances();
   }
 };

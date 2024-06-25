@@ -57,8 +57,6 @@ export default {
         const response = await RentService.getAll();
         this.rents = response.data
         console.log("Alquileres", this.rents)
-
-        // Conjunto para almacenar los nombres únicos de los propietarios
         const uniqueOwners = new Set();
         const uniqueIds = new Set();
 
@@ -97,8 +95,6 @@ export default {
         return;
       }
       const selectedUserIndex = this.userOptions.indexOf(this.selectedUser);
-
-      // Obtiene el ID correspondiente al nombre seleccionado
       const ownerId = this.userOptionsId[selectedUserIndex];
 
       console.log("Propietario seleccionado:", this.selectedUser);
@@ -117,8 +113,6 @@ export default {
       try {
         const response = await MaintenanceService.create(maintenance);
         console.log("Mantenimiento creado:", response);
-
-        // Mostrar mensaje de éxito utilizando Swal
         Swal.fire({
           icon: 'success',
           title: this.$t('MaintenanceTenant.success'),
@@ -128,8 +122,6 @@ export default {
 
       } catch (error) {
         console.error("Error al crear el mantenimiento:", error);
-        // Aquí puedes manejar el error, mostrar un mensaje de error, etc.
-        // Mostrar mensaje de error utilizando Swal
         Swal.fire({
           icon: 'error',
           title: this.$t('MaintenanceTenant.error'),

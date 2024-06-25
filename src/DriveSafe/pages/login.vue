@@ -39,14 +39,6 @@ export default {
 
           const token2 = localStorage.getItem("userToken");
 
-          /*const decodedToken = jwtDecode(token2);
-
-          const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
-
-          console.log("Decoded Token", decodedToken);
-
-          console.log("User ID", userId);*/
-
           const decodedToken = jwtDecode(token2);
 
           const userId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid'];
