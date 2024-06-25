@@ -1,7 +1,7 @@
 import axios from 'axios';
 import http from '@/shared/services/http-common.js';
 
-const API = 'http://localhost:5232/api/';
+const API = 'https://drivesafes.azurewebsites.net/api/';
 
 class RentService {
     getAll() {

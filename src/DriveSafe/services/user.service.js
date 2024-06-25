@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = 'http://localhost:5232/api/';
+const API = 'https://drivesafes.azurewebsites.net/api/';
 
 class UserService {
     getUsers() {
