@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:5232/api/',
+    baseURL: 'https://drivesafes.azurewebsites.net/api/',
     headers: { 'Content-type': 'application/json' }
 });
 
